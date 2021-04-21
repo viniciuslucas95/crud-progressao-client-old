@@ -1,0 +1,9 @@
+﻿<Application x:Class="crud_progressao.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:crud_progressao"
+             StartupUri="LoginWindow.xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
