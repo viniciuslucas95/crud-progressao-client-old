@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace crud_progressao {
@@ -22,7 +24,7 @@ namespace crud_progressao {
         public void CloseSearch(object sender, RoutedEventArgs e) {
             if (_isSearching) return;
 
-            EnableSearch(false);
+            EnableSearchPanel(false);
         }
 
         public void SetFeedbackDgText(string text, bool error = false) {
@@ -45,28 +47,15 @@ namespace crud_progressao {
             lblFeedbackTotal.Foreground = color;
         }
 
-        private void EnableButtons(bool value) {
-            btnRegister.IsEnabled = value;
-            btnSearch.IsEnabled = value;
-            btnCancelSearch.IsEnabled = value;
-            inptFirstName.IsEnabled = value;
-            inptLastName.IsEnabled = value;
-            inptClassName.IsEnabled = value;
-            inptResponsible.IsEnabled = value;
-            inptAddress.IsEnabled = value;
-            inptDiscount.IsEnabled = value;
-            _isSearching = !value;
-        }
-
-        private async void Search(object sender, RoutedEventArgs e) {
+        private async Task Search() {
             SetFeedbackDgText($"Procurando alunos...");
 
             EnableButtons(false);
-            
+
             bool res = await ApiDatabaseManager.GetDatabaseAsync(inptFirstName.Text, inptLastName.Text, inptClassName.Text, inptResponsible.Text, inptAddress.Text, inptDiscount.Text);
 
             EnableButtons(true);
-            EnableSearch(false);
+            EnableSearchPanel(false);
 
             if (!res) {
                 SetFeedbackDgText($"Não foi possível acessar o banco de dados!", true);
@@ -85,8 +74,31 @@ namespace crud_progressao {
             SetFeedbackTotalText($"Soma total das parcelas: R$ {total}");
         }
 
-        private void SearchButton(object sender, RoutedEventArgs e) {
-            EnableSearch(true);
+        private async void EnterKeyPressed(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
+            await Search();
+        }
+
+        private async void SearchButton(object sender, RoutedEventArgs e) {
+            await Search();
+        }
+
+        private void EnableButtons(bool value) {
+            btnRegister.IsEnabled = value;
+            btnSearch.IsEnabled = value;
+            btnCancelSearch.IsEnabled = value;
+            inptFirstName.IsEnabled = value;
+            inptLastName.IsEnabled = value;
+            inptClassName.IsEnabled = value;
+            inptResponsible.IsEnabled = value;
+            inptAddress.IsEnabled = value;
+            inptDiscount.IsEnabled = value;
+            _isSearching = !value;
+        }
+
+        private void EnableSearchPanelButton(object sender, RoutedEventArgs e) {
+            EnableSearchPanel(true);
         }
 
         private void Register(object sender, RoutedEventArgs e) {
@@ -98,7 +110,7 @@ namespace crud_progressao {
                 Responsible = inptResponsible.Text,
                 Address = inptAddress.Text
             };
-            EnableSearch(false);
+            EnableSearchPanel(false);
             new StudentWindow(student).ShowDialog();
         }
 
@@ -109,7 +121,7 @@ namespace crud_progressao {
             new StudentWindow(student).ShowDialog();
         }
 
-        private void EnableSearch(bool enable) {
+        private void EnableSearchPanel(bool enable) {
             switch (enable) {
                 case true:
                     btnOpenSearch.Visibility = Visibility.Hidden;
@@ -144,49 +156,5 @@ namespace crud_progressao {
         private void OnProgramClose(object sender, System.ComponentModel.CancelEventArgs e) {
             LogManager.Write("Closing program...");
         }
-
-        /*private async void FindStudents(object sender, System.Windows.RoutedEventArgs e) {
-            txtRefresh.Text = "Procurando aluno...";
-            await ApiDatabaseManager.UpdateDatabaseAsync();
-
-            if (!_studentInfo.IsAnyFieldFilled() || Student.Database.Length == 0) {
-                UpdateDataGrid(Student.Database);
-                txtRefresh.Text = "";
-                return;
-            }
-
-            List<Student> databaseFilter = new List<Student>();
-
-            foreach(Student student in Student.Database) {
-                if(_studentInfo.FirstName.Length > 0) {
-                    if (!Regex.IsMatch(student.FirstName, _studentInfo.FirstName, RegexOptions.IgnoreCase)) continue;
-                }
-                if (_studentInfo.LastName.Length > 0) {
-                    if (!Regex.IsMatch(student.LastName, _studentInfo.LastName, RegexOptions.IgnoreCase)) continue;
-                }
-                if (_studentInfo.Address.Length > 0) {
-                    if (!Regex.IsMatch(student.Address, _studentInfo.Address, RegexOptions.IgnoreCase)) continue;
-                }
-                if (_studentInfo.AddressNumber.Length > 0) {
-                    if (!Regex.IsMatch(student.AddressNumber, _studentInfo.AddressNumber, RegexOptions.IgnoreCase)) continue;
-                }
-                if (_studentInfo.ClassName.Length > 0) {
-                    if (!Regex.IsMatch(student.ClassName, _studentInfo.ClassName, RegexOptions.IgnoreCase)) continue;
-                }
-                if (_studentInfo.Installment.Length > 0) {
-                    if (!Regex.IsMatch(student.Installment, _studentInfo.Installment, RegexOptions.IgnoreCase)) continue;
-                }
-                if (_studentInfo.Responsible.Length > 0) {
-                    if (!Regex.IsMatch(student.Responsible, _studentInfo.Responsible, RegexOptions.IgnoreCase)) continue;
-                }
-
-                databaseFilter.Add(student);
-            }
-
-            if (databaseFilter.Count > 0) UpdateDataGrid(databaseFilter.ToArray());
-            else dgStudents.Items.Clear();
-
-            txtRefresh.Text = "";
-        }*/
     }
 }

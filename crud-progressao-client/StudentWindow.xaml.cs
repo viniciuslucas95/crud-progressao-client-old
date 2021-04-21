@@ -1,6 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -18,6 +20,65 @@ namespace crud_progressao {
             // If the student exists already.
             if (!string.IsNullOrEmpty(_student.Id))
                 ChangeInterfaceToUpdate();
+        }
+
+        private async void EnterKeyPressed(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
+            await Confirm();
+        }
+
+        private async void ConfirmButton(object sender, RoutedEventArgs e) {
+            await Confirm();
+        }
+
+        private async Task Confirm() {
+            if (string.IsNullOrEmpty(_student.Id)) { // Register
+                SetStudentValues();
+                EnableButtons(false);
+                SetFeedbackText("Registrando novo aluno...");
+                string id = await ApiDatabaseManager.RegisterStudentAsync(_student);
+                EnableButtons(true);
+
+                if (!string.IsNullOrEmpty(id)) {
+                    _student.Id = id;
+                    ChangeInterfaceToUpdate();
+                    SetFeedbackText("Aluno registrado com sucesso!");
+                    AddStudentAndScrollToIt();
+                } else {
+                    SetFeedbackText("Erro ao tentar registrar o aluno!", true);
+                }
+            } else { // Update
+                Student beforeUpdate = _student;
+                SetStudentValues();
+                EnableButtons(false);
+                SetFeedbackText("Atualizando informações do aluno...");
+                bool result = await ApiDatabaseManager.UpdateStudentAsync(_student);
+                EnableButtons(true);
+
+                if (result) {
+                    MainWindow.Singleton.SetFeedbackDgText("Informações do aluno atualizada com sucesso!");
+                    Student.Database.Remove(beforeUpdate);
+                    AddStudentAndScrollToIt();
+                } else {
+                    SetFeedbackText("Erro ao tentar atualizar as informações do aluno!", true);
+                }
+            }
+        }
+
+        private async void Delete(object sender, RoutedEventArgs e) {
+            EnableButtons(false);
+            SetFeedbackText("Deletando aluno...");
+            bool result = await ApiDatabaseManager.DeleteStudentAsync(_student.Id);
+            EnableButtons(true);
+
+            if (result) {
+                MainWindow.Singleton.SetFeedbackDgText("Aluno deletado com sucesso!");
+                Student.Database.Remove(_student);
+                Close();
+            } else {
+                SetFeedbackText("Erro ao tentar deletar o aluno!", true);
+            }
         }
 
         private void ChangeInterfaceToUpdate() {
@@ -87,39 +148,7 @@ namespace crud_progressao {
             }
         }
 
-        private async void Confirm(object sender, RoutedEventArgs e) {
-            if (string.IsNullOrEmpty(_student.Id)) { // Register
-                SetStudentValues();
-                EnableButtons(false);
-                SetFeedbackText("Registrando novo aluno...");
-                string id = await ApiDatabaseManager.RegisterStudentAsync(_student);
-                EnableButtons(true);
-
-                if (!string.IsNullOrEmpty(id)) {
-                    _student.Id = id;
-                    ChangeInterfaceToUpdate();
-                    SetFeedbackText("Aluno registrado com sucesso!");
-                    AddStudentAndScrollToIt();
-                } else {
-                    SetFeedbackText("Erro ao tentar registrar o aluno!", true);
-                }
-            } else { // Update
-                Student beforeUpdate = _student;
-                SetStudentValues();
-                EnableButtons(false);
-                SetFeedbackText("Atualizando informações do aluno...");
-                bool result = await ApiDatabaseManager.UpdateStudentAsync(_student);
-                EnableButtons(true);
-
-                if (result) {
-                    MainWindow.Singleton.SetFeedbackDgText("Informações do aluno atualizada com sucesso!");
-                    Student.Database.Remove(beforeUpdate);
-                    AddStudentAndScrollToIt();
-                } else {
-                    SetFeedbackText("Erro ao tentar atualizar as informações do aluno!", true);
-                }
-            }
-        }
+        
 
         private void AddStudentAndScrollToIt() {
             Student.Database.Insert(0, _student);
@@ -143,21 +172,6 @@ namespace crud_progressao {
             btnDelete.IsEnabled = value;
             btnFindPicture.IsEnabled = value;
             btnCancel.IsEnabled = value;
-        }
-
-        private async void Delete(object sender, RoutedEventArgs e) {
-            EnableButtons(false);
-            SetFeedbackText("Deletando aluno...");
-            bool result = await ApiDatabaseManager.DeleteStudentAsync(_student.Id);
-            EnableButtons(true);
-
-            if (result) {
-                MainWindow.Singleton.SetFeedbackDgText("Aluno deletado com sucesso!");
-                Student.Database.Remove(_student);
-                Close();
-            } else {
-                SetFeedbackText("Erro ao tentar deletar o aluno!", true);
-            }
         }
 
         private void Cancel(object sender, RoutedEventArgs e) {

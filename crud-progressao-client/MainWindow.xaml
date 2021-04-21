@@ -73,7 +73,7 @@
             </Grid.ColumnDefinitions>
             <Grid Background="Transparent" HorizontalAlignment="Stretch" Grid.ColumnSpan="6" MouseDown="CloseSearch"/>
             <Image HorizontalAlignment="Left" VerticalAlignment="Stretch" Source="/Images/Curso Progressão Logo.png" RenderOptions.BitmapScalingMode="HighQuality" Margin="5" Width="156"/>
-            <Border x:Name="btnOpenSearch" HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderThickness="1" BorderBrush="#b4b4b4" Height="31" Background="white" CornerRadius="0 0 10 10" MouseDown="SearchButton" Grid.Column="2" IsHitTestVisible="True">
+            <Border x:Name="btnOpenSearch" HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderThickness="1" BorderBrush="#b4b4b4" Height="31" Background="white" CornerRadius="0 0 10 10" MouseDown="EnableSearchPanelButton" Grid.Column="2" IsHitTestVisible="True">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="75"/>
@@ -83,7 +83,7 @@
                     <Label Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10 0 0 0"  BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" Cursor="IBeam"/>
                 </Grid>
             </Border>
-            <Button x:Name="btnSearch" Content="Procurar" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="8 4" FontWeight="SemiBold" FontSize="12" Grid.Column="3" Background="White" BorderThickness="1" BorderBrush="#b4b4b4" Foreground="#FF323232" Height="31" Click="Search" Visibility="Hidden" IsEnabled="False" Margin="10 0 0 0"/>
+            <Button x:Name="btnSearch" Content="Procurar" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="8 4" FontWeight="SemiBold" FontSize="12" Grid.Column="3" Background="White" BorderThickness="1" BorderBrush="#b4b4b4" Foreground="#FF323232" Height="31" Click="SearchButton" Visibility="Hidden" IsEnabled="False" Margin="10 0 0 0" KeyDown="EnterKeyPressed"/>
             <Button x:Name="btnCancelSearch" Content="Cancelar" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="8 4" FontWeight="SemiBold" FontSize="12" Grid.Column="1" Background="White" BorderThickness="1" BorderBrush="#b4b4b4" Foreground="#FF323232"  Height="31" Click="CloseSearch" Visibility="Hidden" IsEnabled="False" Margin="0 0 10 0"/>
             <Button x:Name="btnRegister" Content="Registrar Aluno" VerticalAlignment="Center" Padding="8 4" FontWeight="Bold" FontSize="12" Margin="30 10" Grid.Column="4" Background="White" BorderThickness="1" BorderBrush="#b4b4b4" Foreground="#FF323232" Height="31" Click="Register"/>
         </Grid>
@@ -112,7 +112,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Nome" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0" Foreground="#FF646464"/>
-                            <TextBox x:Name="inptFirstName" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828"/>
+                            <TextBox x:Name="inptFirstName" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828" KeyDown="EnterKeyPressed"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="1">
@@ -122,7 +122,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Sobrenome" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0" Foreground="#FF646464"/>
-                            <TextBox x:Name="inptLastName" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828"/>
+                            <TextBox x:Name="inptLastName" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828" KeyDown="EnterKeyPressed"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="2" BorderThickness="0 1" BorderBrush="#b4b4b4">
@@ -132,7 +132,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Turma" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0" Foreground="#FF646464"/>
-                            <TextBox x:Name="inptClassName" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828"/>
+                            <TextBox x:Name="inptClassName" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828" KeyDown="EnterKeyPressed"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="3" BorderThickness="0 0 0 1" BorderBrush="#b4b4b4">
@@ -142,7 +142,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Desconto %" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0" Foreground="#FF646464"/>
-                            <TextBox x:Name="inptDiscount" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828"/>
+                            <TextBox x:Name="inptDiscount" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828" KeyDown="EnterKeyPressed"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="4">
@@ -152,7 +152,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Responsável" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0" Foreground="#FF646464"/>
-                            <TextBox x:Name="inptResponsible" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828"/>
+                            <TextBox x:Name="inptResponsible" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828" KeyDown="EnterKeyPressed"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="5" BorderThickness="0 1 0 0" BorderBrush="#b4b4b4">
@@ -162,7 +162,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Endereço" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0" Foreground="#FF646464"/>
-                            <TextBox x:Name="inptAddress" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828"/>
+                            <TextBox x:Name="inptAddress" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Margin="10 0" Padding="5" BorderThickness="1 0 0 0" BorderBrush="#b4b4b4" FontSize="14" Foreground="#FF282828" KeyDown="EnterKeyPressed"/>
                         </Grid>
                     </Border>                    
                 </Grid>
