@@ -75,7 +75,7 @@ namespace crud_progressao {
         }
 
         private async void EnterKeyPressed(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return) return;
+            if (e.Key != Key.Return || _isSearching) return;
 
             await Search();
         }

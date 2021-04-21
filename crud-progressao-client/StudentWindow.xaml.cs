@@ -10,6 +10,8 @@ namespace crud_progressao {
     public partial class StudentWindow : Window {
         private Student _student;
 
+        private bool _tryingToConfirm;
+
         public StudentWindow(Student student) {
             InitializeComponent();
 
@@ -23,7 +25,7 @@ namespace crud_progressao {
         }
 
         private async void EnterKeyPressed(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return) return;
+            if (e.Key != Key.Return || _tryingToConfirm) return;
 
             await Confirm();
         }
@@ -172,6 +174,7 @@ namespace crud_progressao {
             btnDelete.IsEnabled = value;
             btnFindPicture.IsEnabled = value;
             btnCancel.IsEnabled = value;
+            _tryingToConfirm = !value;
         }
 
         private void Cancel(object sender, RoutedEventArgs e) {

@@ -1,11 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace crud_progressao {
     public partial class LoginWindow : Window {
+        private bool _isLogging;
+
         public LoginWindow() {
             InitializeComponent();
         }
@@ -18,6 +19,7 @@ namespace crud_progressao {
             if (inptUsername.Text.Length == 0 || inptPassword.Text.Length == 0) return;
 
             btnLogar.IsEnabled = false;
+            _isLogging = true;
             SetFeedbackText("Logando...");
 
             bool res = await ApiDatabaseManager.LoginAsync(inptUsername.Text, inptPassword.Text);
@@ -27,6 +29,7 @@ namespace crud_progressao {
                 Close();
             } else {
                 btnLogar.IsEnabled = true;
+                _isLogging = false;
                 SetFeedbackText("Erro ao tentar logar!", true);
             }
         }
@@ -42,7 +45,7 @@ namespace crud_progressao {
         }
 
         private async void EnterKeyPressed(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return) return;
+            if (e.Key != Key.Return || _isLogging) return;
 
             await LogIn();
         }
