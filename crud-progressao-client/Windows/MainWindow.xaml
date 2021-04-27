@@ -1,0 +1,176 @@
+﻿<Window x:Class="crud_progressao.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:crud_progressao"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Style="{StaticResource WindowStyle}" Closing="OnProgramClose"
+        Title="Sistema de Gerenciamento de Alunos" MinWidth="640" MinHeight="480"
+        Width="800" Height="600">
+    <Window.Resources>
+        <local:DataGridWidth x:Key="DataGridWidth"/>
+    </Window.Resources>
+    <Grid x:Name="gridMain">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.75*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.75*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="75"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Image HorizontalAlignment="Left" Margin="5" x:Name="imageLogo"
+               Source="/Assets/Images/Curso Progressão Logo.png"
+               RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Rectangle x:Name="rectNavbar" Grid.ColumnSpan="6" Fill="Transparent"
+                   MouseDown="CloseSearch"/>
+        <DataGrid x:Name="dataGridStudents" Grid.Row="1" Grid.ColumnSpan="6"
+                  PreviewMouseDown="CloseSearch">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding Id}" Width="*"
+                                    MinWidth="50" Visibility="Hidden"/>
+                <DataGridTextColumn Header="Nome"
+                                    Binding="{Binding FirstName}" Width="*"
+                                    MinWidth="50"/>
+                <DataGridTextColumn Header="Sobrenome"
+                                    Binding="{Binding LastName}" Width="*"
+                                    MinWidth="50"/>
+                <DataGridTextColumn Header="Turma"
+                                    Binding="{Binding ClassName}" Width="*"
+                                    MinWidth="50"/>
+                <DataGridTextColumn Header="Parcela"
+                                    Binding="{Binding InstallmentString}"
+                                    Width="*" MinWidth="50"/>
+                <DataGridTextColumn Header="Desconto"
+                                    Binding="{Binding DiscountString}"
+                                    Width="*" MinWidth="50"/>
+                <DataGridTextColumn Header="Total"
+                                    Binding="{Binding TotalString}"
+                                    Width="*" MinWidth="50"/>
+                <DataGridTextColumn Header="Responsável"
+                                    Binding="{Binding Responsible}"
+                                    Width="*" MinWidth="50"/>
+                <DataGridTextColumn Header="Endereço"
+                                    Binding="{Binding Address}" Width="*"
+                                    MinWidth="50"/>
+            </DataGrid.Columns>
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid Width="{Binding ElementName=dataGridStudents,
+                        Path=ActualWidth,
+                        Converter={StaticResource DataGridWidth}}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="148"/>
+                            <RowDefinition Height="52" />
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="1" Grid.ColumnSpan="2" Background="Transparent"
+                                BorderThickness="0 0 0 1" BorderBrush="#FF787878"/>
+                        <Image Grid.RowSpan="2" Source="{Binding Picture}"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               Height="200"/>
+                        <TextBlock Text="{Binding Note}" Grid.Column="1"
+                            Foreground="#FF282828"
+                            TextWrapping="Wrap"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Padding="8 4" TextAlignment="Center"/>
+                        <Button Grid.Row= "1" Grid.Column="1"
+                                Click="UpdateButton"
+                                Content="Editar Informações"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Margin="0 10"/>
+                    </Grid>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+        <Border x:Name="buttonFilter" Height="32" Grid.Column="2"
+                VerticalAlignment="Center" MouseDown="EnableSearchPanelButton"
+                Grid.ColumnSpan="2" HorizontalAlignment="Stretch"
+                CornerRadius="0 0 10 10" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Procurar" Style="{StaticResource SmallLabel}"
+                       Background="Transparent"/>
+                <Label Grid.Column="1" HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch" Padding="10 0 0 0"
+                       BorderThickness="1 0 0 0" BorderBrush="#646464"
+                       Cursor="IBeam" Background="Transparent"/>
+            </Grid>
+        </Border>
+        <Border x:Name="panelFilter" Grid.RowSpan="2" Grid.ColumnSpan="2"
+                Visibility="Hidden" HorizontalAlignment="Stretch"
+                VerticalAlignment="Top" Margin="0 22 0 0" Grid.Column="2"
+                CornerRadius="0 0 10 10" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                </Grid.RowDefinitions>
+                <Label Style="{StaticResource SmallLabel}" Content="Nome"/>
+                <TextBox x:Name="inputFirstName" Grid.Column="1"
+                         KeyDown="EnterKeyPressed"/>
+                <Label Style="{StaticResource SmallLabel}" Content="Sobrenome"
+                       Grid.Row="1" BorderThickness="0 1"/>
+                <TextBox x:Name="inputLastName" Grid.Column="1" Grid.Row="1"
+                         BorderThickness="1 1 0 1" KeyDown="EnterKeyPressed"/>
+                <Label Style="{StaticResource SmallLabel}" Content="Turma"
+                       Grid.Row="2"/>
+                <TextBox x:Name="inputClassName" Grid.Column="1" Grid.Row="2"
+                         KeyDown="EnterKeyPressed"/>
+                <Label Style="{StaticResource SmallLabel}" Content="Desconto %"
+                       Grid.Row="3" BorderThickness="0 1"/>
+                <TextBox x:Name="inputDiscount" Grid.Column="1" Grid.Row="3"
+                         BorderThickness="1 1 0 1" KeyDown="EnterKeyPressed"/>
+                <Label Style="{StaticResource SmallLabel}" Content="Responsável"
+                       Grid.Row="4"/>
+                <TextBox x:Name="inputResponsible" Grid.Column="1" Grid.Row="4"
+                         KeyDown="EnterKeyPressed"/>
+                <Label Style="{StaticResource SmallLabel}" Content="Endereço"
+                       Grid.Row="5" BorderThickness="0 1 0 0"
+                       Background="Transparent"/>
+                <TextBox x:Name="inputAddress" Grid.Column="1" Grid.Row="5"
+                         BorderThickness="1 1 0 0" Background="Transparent"
+                         KeyDown="EnterKeyPressed"/>
+            </Grid>
+        </Border>
+        <Button x:Name="buttonSearch" Content="Procurar"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Grid.Column="4" Click="SearchButton" Visibility="Hidden"
+                KeyDown="EnterKeyPressed"/>
+        <Button x:Name="buttonRegister" Content="Registrar Aluno"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Grid.Column="5" Click="Register"/>
+        <Button x:Name="buttonCancel" Content="Cancelar" Grid.Column="1"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Click="CloseSearch" Visibility="Hidden" KeyDown="EnterKeyPressed"/>
+        <Label x:Name="labelFeedbackQuantity" Grid.Row="2" FontSize="16"
+               Content="" Grid.ColumnSpan="3"/>
+        <Label x:Name="labelFeedbackTotal" Grid.Column="3" Grid.Row="2"
+                Content="" Grid.ColumnSpan="3"/>
+    </Grid>
+</Window>

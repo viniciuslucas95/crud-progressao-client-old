@@ -9,7 +9,6 @@ using System.Windows.Media.Imaging;
 namespace crud_progressao {
     public partial class StudentWindow : Window {
         private Student _student;
-
         private bool _tryingToConfirm;
 
         public StudentWindow(Student student) {
@@ -84,13 +83,13 @@ namespace crud_progressao {
         }
 
         private void ChangeInterfaceToUpdate() {
-            btnDelete.Visibility = Visibility.Visible;
-            btnDelete.IsEnabled = true;
+            buttonDelete.Visibility = Visibility.Visible;
+            buttonDelete.IsEnabled = true;
             Title = "Atualizar informações do aluno";
-            btnConfirm.Content = "Atualizar";
+            buttonConfirm.Content = "Atualizar";
 
             if (imgPicture.Source != null)
-                btnFindPicture.Content = "Alterar foto";
+                buttonPicture.Content = "Alterar foto";
         }
 
         private void SetFieldValues() {
@@ -142,7 +141,7 @@ namespace crud_progressao {
             try {
                 BitmapImage img = new BitmapImage(new Uri(fileName));
                 imgPicture.Source = img;
-                btnFindPicture.Content = "Alterar foto";
+                buttonPicture.Content = "Alterar foto";
                 LogManager.Write("Picture set");
             } catch (Exception ex) {
                 imgPicture.Source = null;
@@ -154,8 +153,8 @@ namespace crud_progressao {
 
         private void AddStudentAndScrollToIt() {
             Student.Database.Insert(0, _student);
-            MainWindow.Singleton.dgStudents.SelectedItem = _student;
-            MainWindow.Singleton.dgStudents.ScrollIntoView(_student);
+            MainWindow.Singleton.dataGridStudents.SelectedItem = _student;
+            MainWindow.Singleton.dataGridStudents.ScrollIntoView(_student);
             Close();
         }
 
@@ -165,15 +164,15 @@ namespace crud_progressao {
 
             if (error) color = Brushes.Red;
 
-            lblFeedback.Content = text;
-            lblFeedback.Foreground = color;
+            labelFeedback.Content = text;
+            labelFeedback.Foreground = color;
         }
 
         private void EnableButtons(bool value) {
-            btnConfirm.IsEnabled = value;
-            btnDelete.IsEnabled = value;
-            btnFindPicture.IsEnabled = value;
-            btnCancel.IsEnabled = value;
+            buttonConfirm.IsEnabled = value;
+            buttonDelete.IsEnabled = value;
+            buttonPicture.IsEnabled = value;
+            buttonCancel.IsEnabled = value;
             _tryingToConfirm = !value;
         }
 

@@ -9,6 +9,8 @@ namespace crud_progressao {
 
         public LoginWindow() {
             InitializeComponent();
+
+            inputUsername.Focus();
         }
 
         private async void ConfirmButton(object sender, RoutedEventArgs e) {
@@ -16,19 +18,19 @@ namespace crud_progressao {
         }
 
         private async Task LogIn() {
-            if (inptUsername.Text.Length == 0 || inptPassword.Text.Length == 0) return;
+            if (inputUsername.Text.Length == 0 || inputPassword.Password.Length == 0) return;
 
-            btnLogar.IsEnabled = false;
+            buttonLogin.IsEnabled = false;
             _isLogging = true;
             SetFeedbackText("Logando...");
 
-            bool res = await ApiDatabaseManager.LoginAsync(inptUsername.Text, inptPassword.Text);
+            bool res = await ApiDatabaseManager.LoginAsync(inputUsername.Text, inputPassword.Password);
 
             if (res) {
-                new MainWindow(inptUsername.Text, inptPassword.Text).Show();
+                new MainWindow(inputUsername.Text, inputPassword.Password).Show();
                 Close();
             } else {
-                btnLogar.IsEnabled = true;
+                buttonLogin.IsEnabled = true;
                 _isLogging = false;
                 SetFeedbackText("Erro ao tentar logar!", true);
             }
@@ -40,8 +42,8 @@ namespace crud_progressao {
 
             if (error) color = Brushes.Red;
 
-            lblFeedback.Content = text;
-            lblFeedback.Foreground = color;
+            labelFeedback.Content = text;
+            labelFeedback.Foreground = color;
         }
 
         private async void EnterKeyPressed(object sender, KeyEventArgs e) {

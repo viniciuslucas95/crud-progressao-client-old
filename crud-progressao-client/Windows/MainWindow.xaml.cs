@@ -16,7 +16,7 @@ namespace crud_progressao {
 
             Singleton = this;
 
-            dgStudents.ItemsSource = Student.Database;
+            dataGridStudents.ItemsSource = Student.Database;
 
             LogManager.Write("Starting program...");
         }
@@ -33,8 +33,8 @@ namespace crud_progressao {
 
             if (error) color = Brushes.Red;
 
-            lblFeedbackDg.Content = text;
-            lblFeedbackDg.Foreground = color;
+            labelFeedbackQuantity.Content = text;
+            labelFeedbackQuantity.Foreground = color;
         }
 
         public void SetFeedbackTotalText(string text, bool error = false) {
@@ -43,8 +43,8 @@ namespace crud_progressao {
 
             if (error) color = Brushes.Red;
 
-            lblFeedbackTotal.Content = text;
-            lblFeedbackTotal.Foreground = color;
+            labelFeedbackTotal.Content = text;
+            labelFeedbackTotal.Foreground = color;
         }
 
         private async Task Search() {
@@ -52,7 +52,7 @@ namespace crud_progressao {
 
             EnableButtons(false);
 
-            bool res = await ApiDatabaseManager.GetDatabaseAsync(inptFirstName.Text, inptLastName.Text, inptClassName.Text, inptResponsible.Text, inptAddress.Text, inptDiscount.Text);
+            bool res = await ApiDatabaseManager.GetDatabaseAsync(inputFirstName.Text, inputLastName.Text, inputClassName.Text, inputResponsible.Text, inputAddress.Text, inputDiscount.Text);
 
             EnableButtons(true);
             EnableSearchPanel(false);
@@ -85,15 +85,15 @@ namespace crud_progressao {
         }
 
         private void EnableButtons(bool value) {
-            btnRegister.IsEnabled = value;
-            btnSearch.IsEnabled = value;
-            btnCancelSearch.IsEnabled = value;
-            inptFirstName.IsEnabled = value;
-            inptLastName.IsEnabled = value;
-            inptClassName.IsEnabled = value;
-            inptResponsible.IsEnabled = value;
-            inptAddress.IsEnabled = value;
-            inptDiscount.IsEnabled = value;
+            buttonRegister.IsEnabled = value;
+            buttonSearch.IsEnabled = value;
+            buttonCancel.IsEnabled = value;
+            inputFirstName.IsEnabled = value;
+            inputLastName.IsEnabled = value;
+            inputClassName.IsEnabled = value;
+            inputResponsible.IsEnabled = value;
+            inputAddress.IsEnabled = value;
+            inputDiscount.IsEnabled = value;
             _isSearching = !value;
         }
 
@@ -104,11 +104,11 @@ namespace crud_progressao {
         private void Register(object sender, RoutedEventArgs e) {
             Student student = new Student()
             {
-                FirstName = inptFirstName.Text,
-                LastName = inptLastName.Text,
-                ClassName = inptClassName.Text,
-                Responsible = inptResponsible.Text,
-                Address = inptAddress.Text
+                FirstName = inputFirstName.Text,
+                LastName = inputLastName.Text,
+                ClassName = inputClassName.Text,
+                Responsible = inputResponsible.Text,
+                Address = inputAddress.Text
             };
             EnableSearchPanel(false);
             new StudentWindow(student).ShowDialog();
@@ -124,31 +124,31 @@ namespace crud_progressao {
         private void EnableSearchPanel(bool enable) {
             switch (enable) {
                 case true:
-                    btnOpenSearch.Visibility = Visibility.Hidden;
-                    btnOpenSearch.IsEnabled = false;
-                    btnCancelSearch.Visibility = Visibility.Visible;
-                    btnCancelSearch.IsEnabled = true;
-                    btnSearch.Visibility = Visibility.Visible;
-                    btnSearch.IsEnabled = true;
-                    grdSearch.Visibility = Visibility.Visible;
-                    grdSearch.IsEnabled = true;
-                    inptFirstName.Focus();
+                    buttonFilter.Visibility = Visibility.Hidden;
+                    buttonFilter.IsEnabled = false;
+                    buttonCancel.Visibility = Visibility.Visible;
+                    buttonCancel.IsEnabled = true;
+                    buttonSearch.Visibility = Visibility.Visible;
+                    buttonSearch.IsEnabled = true;
+                    panelFilter.Visibility = Visibility.Visible;
+                    panelFilter.IsEnabled = true;
+                    inputFirstName.Focus();
                     break;
                 case false:
-                    btnOpenSearch.Visibility = Visibility.Visible;
-                    btnOpenSearch.IsEnabled = true;
-                    btnCancelSearch.Visibility = Visibility.Hidden;
-                    btnCancelSearch.IsEnabled = false;
-                    btnSearch.Visibility = Visibility.Hidden;
-                    btnSearch.IsEnabled = false;
-                    grdSearch.Visibility = Visibility.Hidden;
-                    grdSearch.IsEnabled = false;
-                    inptFirstName.Text = "";
-                    inptLastName.Text = "";
-                    inptClassName.Text = "";
-                    inptResponsible.Text = "";
-                    inptAddress.Text = "";
-                    inptDiscount.Text = "";
+                    buttonFilter.Visibility = Visibility.Visible;
+                    buttonFilter.IsEnabled = true;
+                    buttonCancel.Visibility = Visibility.Hidden;
+                    buttonCancel.IsEnabled = false;
+                    buttonSearch.Visibility = Visibility.Hidden;
+                    buttonSearch.IsEnabled = false;
+                    panelFilter.Visibility = Visibility.Hidden;
+                    panelFilter.IsEnabled = false;
+                    inputFirstName.Text = "";
+                    inputLastName.Text = "";
+                    inputClassName.Text = "";
+                    inputDiscount.Text = "";
+                    inputResponsible.Text = "";
+                    inputAddress.Text = "";
                     break;
             }
         }
