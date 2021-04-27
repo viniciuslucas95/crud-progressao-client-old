@@ -18,6 +18,11 @@ namespace crud_progressao {
 
             dataGridStudents.ItemsSource = Student.Database;
 
+            if (ApiDatabaseManager.HasPrivilege)
+                labelFeedbackTotal.Visibility = Visibility.Visible;
+            else
+                labelFeedbackTotal.Visibility = Visibility.Hidden;
+
             LogManager.Write("Starting program...");
         }
 
@@ -38,6 +43,8 @@ namespace crud_progressao {
         }
 
         public void SetFeedbackTotalText(string text, bool error = false) {
+            if (!ApiDatabaseManager.HasPrivilege) return;
+
             Color darkGrayColor = (Color)ColorConverter.ConvertFromString("#FF323232");
             SolidColorBrush color = new SolidColorBrush(darkGrayColor);
 

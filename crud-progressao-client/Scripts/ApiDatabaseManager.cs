@@ -7,6 +7,8 @@ using System.Windows.Media.Imaging;
 
 namespace crud_progressao {
     static class ApiDatabaseManager {
+        public static bool HasPrivilege { get { return _client.DefaultRequestHeaders.Contains("privilege"); } }
+
         private readonly static HttpClient _client = new HttpClient();
         private static string _url;
 
@@ -29,6 +31,10 @@ namespace crud_progressao {
                         res.Dispose();
                         return false;
                     }
+
+                    bool privilege = await res.Content.ReadAsAsync<bool>();
+
+                    if(privilege) _client.DefaultRequestHeaders.Add("privilege", privilege.ToString());
 
                     LogManager.Write("Logged in");
                     res.Dispose();

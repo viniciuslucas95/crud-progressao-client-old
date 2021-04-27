@@ -169,7 +169,7 @@
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 Click="CloseSearch" Visibility="Hidden" KeyDown="EnterKeyPressed"/>
         <Label x:Name="labelFeedbackQuantity" Grid.Row="2" FontSize="16"
-               Content="" Grid.ColumnSpan="3"/>
+               Content="" Grid.ColumnSpan="6"/>
         <Label x:Name="labelFeedbackTotal" Grid.Column="3" Grid.Row="2"
                 Content="" Grid.ColumnSpan="3"/>
     </Grid>
