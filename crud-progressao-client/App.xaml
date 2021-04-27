@@ -97,7 +97,7 @@
             <Setter Property="SnapsToDevicePixels" Value="True"/>
         </Style>
         <Style TargetType="DataGrid">
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderThickness" Value="1 0 0 0"/>
             <Setter Property="BorderBrush" Value="#FF787878"/>
             <Setter Property="AutoGenerateColumns" Value="False"/>
             <Setter Property="IsReadOnly" Value="True"/>

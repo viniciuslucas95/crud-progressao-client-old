@@ -5,7 +5,7 @@ using System.Windows.Data;
 
 namespace crud_progressao {
     public class DataGridWidth : IValueConverter {
-        private double _scrollbarWidth = SystemParameters.VerticalScrollBarWidth + 2; // 2 is the borders
+        private double _scrollbarWidth = SystemParameters.VerticalScrollBarWidth + 1;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             return (double)value - _scrollbarWidth;
