@@ -9,7 +9,7 @@
         Title="Sistema de Gerenciamento de Alunos" MinWidth="640" MinHeight="480"
         Width="800" Height="600">
     <Window.Resources>
-        <local:DataGridWidth x:Key="DataGridWidth"/>
+        <local:GetWidthWithoutScrollBar x:Key="GetWidthWithoutScrollBar"/>
     </Window.Resources>
     <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
@@ -65,7 +65,7 @@
                 <DataTemplate>
                     <Grid Width="{Binding ElementName=dataGridStudents,
                         Path=ActualWidth,
-                        Converter={StaticResource DataGridWidth}}"
+                        Converter={StaticResource GetWidthWithoutScrollBar}}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top">
                         <Grid.ColumnDefinitions>
