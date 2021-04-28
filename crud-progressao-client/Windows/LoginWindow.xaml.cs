@@ -1,28 +1,19 @@
-﻿using System.Threading.Tasks;
+﻿using crud_progressao.Scripts;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 
-namespace crud_progressao {
+namespace crud_progressao.Windows {
     public partial class LoginWindow : Window {
-        private bool _isLogging;
-
         public LoginWindow() {
-            InitializeComponent();
+            InitializeComponent(); ;
 
             inputUsername.Focus();
         }
 
-        private async void ConfirmButton(object sender, RoutedEventArgs e) {
-            await LogIn();
-        }
-
         private async Task LogIn() {
-            if (inputUsername.Text.Length == 0 || inputPassword.Password.Length == 0) return;
-
-            buttonLogin.IsEnabled = false;
-            _isLogging = true;
-            SetFeedbackText("Logando...");
+            EnableControls(false);
+            TextManager.SetText(labelFeedback, "Logando...");
 
             bool res = await ApiDatabaseManager.LoginAsync(inputUsername.Text, inputPassword.Password);
 
@@ -30,26 +21,43 @@ namespace crud_progressao {
                 new MainWindow(inputUsername.Text, inputPassword.Password).Show();
                 Close();
             } else {
-                buttonLogin.IsEnabled = true;
-                _isLogging = false;
-                SetFeedbackText("Erro ao tentar logar!", true);
+                EnableControls(true);
+                TextManager.SetText(labelFeedback, "Erro ao tentar logar!", true);
             }
         }
 
-        private void SetFeedbackText(string text, bool error = false) {
-            Color darkGrayColor = (Color)ColorConverter.ConvertFromString("#FF323232");
-            SolidColorBrush color = new SolidColorBrush(darkGrayColor);
-
-            if (error) color = Brushes.Red;
-
-            labelFeedback.Content = text;
-            labelFeedback.Foreground = color;
+        private async void ConfirmButton(object sender, RoutedEventArgs e) {
+            await LogIn();
         }
 
         private async void EnterKeyPressed(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || _isLogging) return;
+            if (e.Key != Key.Return || !CheckButton()) return;
 
             await LogIn();
+        }
+
+        private void EnableControls(bool value) {
+            inputUsername.IsEnabled = value;
+            inputPassword.IsEnabled = value;
+            buttonLogin.IsEnabled = value;
+        }
+
+        private void UsernameChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
+            CheckButton();
+        }
+
+        private void PasswordChanged(object sender, RoutedEventArgs e) {
+            CheckButton();
+        }
+
+        private bool CheckButton() {
+            if (inputUsername.Text.Length == 0 || inputPassword.Password.Length == 0) {
+                buttonLogin.IsEnabled = false;
+                return false;
+            } else {
+                buttonLogin.IsEnabled = true;
+                return true;
+            }
         }
     }
 }

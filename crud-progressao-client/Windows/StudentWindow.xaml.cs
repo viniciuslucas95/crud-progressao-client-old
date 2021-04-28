@@ -6,7 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace crud_progressao {
+namespace crud_progressao.Windows {
     public partial class StudentWindow : Window {
         private Student _student;
         private bool _tryingToConfirm;

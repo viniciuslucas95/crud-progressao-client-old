@@ -68,10 +68,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Scripts\ApiDatabaseManager.cs" />
+    <Compile Include="Scripts\TextManager.cs" />
     <Compile Include="Windows\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Scripts\GetWidthWithoutScrollBar.cs" />
+    <Compile Include="Scripts\WidthWithoutScrollBar.cs" />
     <Compile Include="Scripts\Student.cs" />
     <Compile Include="Scripts\LogManager.cs" />
     <Page Include="ResourceDictionaries\ComboBoxDictionary.xaml">

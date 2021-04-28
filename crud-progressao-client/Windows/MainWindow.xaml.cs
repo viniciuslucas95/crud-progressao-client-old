@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace crud_progressao {
+namespace crud_progressao.Windows {
     public partial class MainWindow : Window {
         public static MainWindow Singleton { get; private set; }
 

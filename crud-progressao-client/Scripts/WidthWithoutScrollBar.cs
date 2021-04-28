@@ -3,8 +3,8 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace crud_progressao {
-    public class GetWidthWithoutScrollBar : IValueConverter {
+namespace crud_progressao.Scripts {
+    public class WidthWithoutScrollBar : IValueConverter {
         private readonly double _scrollbarWidth = SystemParameters.VerticalScrollBarWidth + 1;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
