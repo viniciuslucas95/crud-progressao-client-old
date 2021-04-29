@@ -16,6 +16,7 @@ namespace crud_progressao {
         public double Installment { get; set; }
         public double Discount { get; set; }
         public DiscountTypeOptions DiscountType { get; set; }
+        public int DueDate { get; set; }
         public string Note { get; set; }
         public BitmapImage Picture { get; set; }
         public MemoryStream MemoryStream { get; set; }

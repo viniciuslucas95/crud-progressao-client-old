@@ -2,74 +2,46 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
+using crud_progressao.Scripts;
 
 namespace crud_progressao.Windows {
     public partial class MainWindow : Window {
         public static MainWindow Singleton { get; private set; }
 
-        private bool _isSearching;
-
-        public MainWindow(string username, string password) {
+        public MainWindow() {
             InitializeComponent();
-            ApiDatabaseManager.InitializeAuthentication(username, password);
 
             Singleton = this;
 
             dataGridStudents.ItemsSource = Student.Database;
 
             if (ApiDatabaseManager.HasPrivilege)
-                labelFeedbackTotal.Visibility = Visibility.Visible;
+                labelFeedbackSum.Visibility = Visibility.Visible;
             else
-                labelFeedbackTotal.Visibility = Visibility.Hidden;
+                labelFeedbackSum.Visibility = Visibility.Hidden;
 
             LogManager.Write("Starting program...");
         }
 
-        public void CloseSearch(object sender, RoutedEventArgs e) {
-            if (_isSearching) return;
+        private async Task SearchAsync() {
+            if (!IsControlsEnabled()) return;
 
-            EnableSearchPanel(false);
-        }
+            TextManager.SetText(labelFeedbackAmount, $"Procurando alunos...");
 
-        public void SetFeedbackDgText(string text, bool error = false) {
-            Color darkGrayColor = (Color)ColorConverter.ConvertFromString("#FF323232");
-            SolidColorBrush color = new SolidColorBrush(darkGrayColor);
-
-            if (error) color = Brushes.Red;
-
-            labelFeedbackQuantity.Content = text;
-            labelFeedbackQuantity.Foreground = color;
-        }
-
-        public void SetFeedbackTotalText(string text, bool error = false) {
-            if (!ApiDatabaseManager.HasPrivilege) return;
-
-            Color darkGrayColor = (Color)ColorConverter.ConvertFromString("#FF323232");
-            SolidColorBrush color = new SolidColorBrush(darkGrayColor);
-
-            if (error) color = Brushes.Red;
-
-            labelFeedbackTotal.Content = text;
-            labelFeedbackTotal.Foreground = color;
-        }
-
-        private async Task Search() {
-            SetFeedbackDgText($"Procurando alunos...");
-
-            EnableButtons(false);
+            EnableControls(false);
 
             bool res = await ApiDatabaseManager.GetDatabaseAsync(inputFirstName.Text, inputLastName.Text, inputClassName.Text, inputResponsible.Text, inputAddress.Text, inputDiscount.Text);
 
-            EnableButtons(true);
-            EnableSearchPanel(false);
+            EnableControls(true);
 
             if (!res) {
-                SetFeedbackDgText($"Não foi possível acessar o banco de dados!", true);
+                TextManager.SetText(labelFeedbackAmount, $"Não foi possível acessar o banco de dados!", true);
                 return;
             }
 
-            SetFeedbackDgText($"{Student.Database.Count} registros encontrados");
+            EnablePanel(false);
+
+            TextManager.SetText(labelFeedbackAmount, $"{Student.Database.Count} registros encontrados");
 
             if (Student.Database.Count == 0) return;
 
@@ -78,20 +50,20 @@ namespace crud_progressao.Windows {
             foreach (Student student in Student.Database)
                 total += student.Total;
 
-            SetFeedbackTotalText($"Soma total das parcelas: R$ {total}");
+            TextManager.SetText(labelFeedbackSum, $"Soma total das parcelas: R$ {total}");
         }
 
         private async void EnterKeyPressed(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || _isSearching) return;
+            if (e.Key != Key.Return) return;
 
-            await Search();
+            await SearchAsync();
         }
 
-        private async void SearchButton(object sender, RoutedEventArgs e) {
-            await Search();
+        private async void Search(object sender, RoutedEventArgs e) {
+            await SearchAsync();
         }
 
-        private void EnableButtons(bool value) {
+        private void EnableControls(bool value) {
             buttonRegister.IsEnabled = value;
             buttonSearch.IsEnabled = value;
             buttonCancel.IsEnabled = value;
@@ -101,11 +73,21 @@ namespace crud_progressao.Windows {
             inputResponsible.IsEnabled = value;
             inputAddress.IsEnabled = value;
             inputDiscount.IsEnabled = value;
-            _isSearching = !value;
+            dataGridStudents.IsEnabled = value;
         }
 
-        private void EnableSearchPanelButton(object sender, RoutedEventArgs e) {
-            EnableSearchPanel(true);
+        private bool IsControlsEnabled() {
+            return buttonRegister.IsEnabled;
+        }
+
+        private void CloseSearchPanel(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
+            EnablePanel(false);
+        }
+
+        private void OpenSearchPanel(object sender, RoutedEventArgs e) {
+            EnablePanel(true);
         }
 
         private void Register(object sender, RoutedEventArgs e) {
@@ -117,39 +99,32 @@ namespace crud_progressao.Windows {
                 Responsible = inputResponsible.Text,
                 Address = inputAddress.Text
             };
-            EnableSearchPanel(false);
+
+            EnablePanel(false);
             new StudentWindow(student).ShowDialog();
         }
 
         private void UpdateButton(object sender, RoutedEventArgs e) {
-            if (_isSearching) return;
+            if (!IsControlsEnabled()) return;
 
             Student student = (Student)(sender as Button).DataContext;
             new StudentWindow(student).ShowDialog();
         }
 
-        private void EnableSearchPanel(bool enable) {
+        private void EnablePanel(bool enable) {
             switch (enable) {
                 case true:
                     buttonFilter.Visibility = Visibility.Hidden;
-                    buttonFilter.IsEnabled = false;
                     buttonCancel.Visibility = Visibility.Visible;
-                    buttonCancel.IsEnabled = true;
                     buttonSearch.Visibility = Visibility.Visible;
-                    buttonSearch.IsEnabled = true;
                     panelFilter.Visibility = Visibility.Visible;
-                    panelFilter.IsEnabled = true;
                     inputFirstName.Focus();
                     break;
                 case false:
                     buttonFilter.Visibility = Visibility.Visible;
-                    buttonFilter.IsEnabled = true;
                     buttonCancel.Visibility = Visibility.Hidden;
-                    buttonCancel.IsEnabled = false;
                     buttonSearch.Visibility = Visibility.Hidden;
-                    buttonSearch.IsEnabled = false;
                     panelFilter.Visibility = Visibility.Hidden;
-                    panelFilter.IsEnabled = false;
                     inputFirstName.Text = "";
                     inputLastName.Text = "";
                     inputClassName.Text = "";

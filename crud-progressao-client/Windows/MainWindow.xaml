@@ -29,9 +29,9 @@
                Source="/Assets/Images/Curso Progressão Logo.png"
                RenderOptions.BitmapScalingMode="HighQuality"/>
         <Rectangle x:Name="rectNavbar" Grid.ColumnSpan="6" Fill="Transparent"
-                   MouseDown="CloseSearch"/>
+                   MouseDown="CloseSearchPanel"/>
         <DataGrid x:Name="dataGridStudents" Grid.Row="1" Grid.ColumnSpan="6"
-                  PreviewMouseDown="CloseSearch">
+                  PreviewMouseDown="CloseSearchPanel">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"
                                     Binding="{Binding Id}" Width="*"
@@ -53,6 +53,9 @@
                                     Width="*" MinWidth="50"/>
                 <DataGridTextColumn Header="Total"
                                     Binding="{Binding TotalString}"
+                                    Width="*" MinWidth="50"/>
+                <DataGridTextColumn Header="Vencimento"
+                                    Binding="{Binding DueDate}"
                                     Width="*" MinWidth="50"/>
                 <DataGridTextColumn Header="Responsável"
                                     Binding="{Binding Responsible}"
@@ -98,7 +101,7 @@
             </DataGrid.RowDetailsTemplate>
         </DataGrid>
         <Border x:Name="buttonFilter" Height="32" Grid.Column="2"
-                VerticalAlignment="Center" MouseDown="EnableSearchPanelButton"
+                VerticalAlignment="Center" MouseDown="OpenSearchPanel"
                 Grid.ColumnSpan="2" HorizontalAlignment="Stretch"
                 CornerRadius="0 0 10 10" BorderThickness="1">
             <Grid>
@@ -160,17 +163,17 @@
         </Border>
         <Button x:Name="buttonSearch" Content="Procurar"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
-                Grid.Column="4" Click="SearchButton" Visibility="Hidden"
+                Grid.Column="4" Click="Search" Visibility="Hidden"
                 KeyDown="EnterKeyPressed"/>
         <Button x:Name="buttonRegister" Content="Registrar Aluno"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 Grid.Column="5" Click="Register"/>
         <Button x:Name="buttonCancel" Content="Cancelar" Grid.Column="1"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
-                Click="CloseSearch" Visibility="Hidden" KeyDown="EnterKeyPressed"/>
-        <Label x:Name="labelFeedbackQuantity" Grid.Row="2" FontSize="16"
+                Click="CloseSearchPanel" Visibility="Hidden" KeyDown="EnterKeyPressed"/>
+        <Label x:Name="labelFeedbackAmount" Grid.Row="2" FontSize="16"
                Content="" Grid.ColumnSpan="6"/>
-        <Label x:Name="labelFeedbackTotal" Grid.Column="3" Grid.Row="2"
+        <Label x:Name="labelFeedbackSum" Grid.Column="3" Grid.Row="2"
                 Content="" Grid.ColumnSpan="3"/>
     </Grid>
 </Window>

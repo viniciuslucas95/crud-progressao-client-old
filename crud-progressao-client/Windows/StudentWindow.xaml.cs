@@ -1,9 +1,9 @@
-﻿using Microsoft.Win32;
+﻿using crud_progressao.Scripts;
+using Microsoft.Win32;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace crud_progressao.Windows {
@@ -37,48 +37,48 @@ namespace crud_progressao.Windows {
             if (string.IsNullOrEmpty(_student.Id)) { // Register
                 SetStudentValues();
                 EnableButtons(false);
-                SetFeedbackText("Registrando novo aluno...");
+                TextManager.SetText(labelFeedback, "Registrando novo aluno...");
                 string id = await ApiDatabaseManager.RegisterStudentAsync(_student);
                 EnableButtons(true);
 
                 if (!string.IsNullOrEmpty(id)) {
                     _student.Id = id;
                     ChangeInterfaceToUpdate();
-                    SetFeedbackText("Aluno registrado com sucesso!");
+                    TextManager.SetText(labelFeedback, "Aluno registrado com sucesso!");
                     AddStudentAndScrollToIt();
                 } else {
-                    SetFeedbackText("Erro ao tentar registrar o aluno!", true);
+                    TextManager.SetText(labelFeedback, "Erro ao tentar registrar o aluno!", true);
                 }
             } else { // Update
                 Student beforeUpdate = _student;
                 SetStudentValues();
                 EnableButtons(false);
-                SetFeedbackText("Atualizando informações do aluno...");
+                TextManager.SetText(labelFeedback, "Atualizando informações do aluno...");
                 bool result = await ApiDatabaseManager.UpdateStudentAsync(_student);
                 EnableButtons(true);
 
                 if (result) {
-                    MainWindow.Singleton.SetFeedbackDgText("Informações do aluno atualizada com sucesso!");
+                    TextManager.SetText(MainWindow.Singleton.labelFeedbackAmount, "Informações do aluno atualizada com sucesso!");
                     Student.Database.Remove(beforeUpdate);
                     AddStudentAndScrollToIt();
                 } else {
-                    SetFeedbackText("Erro ao tentar atualizar as informações do aluno!", true);
+                    TextManager.SetText(labelFeedback, "Erro ao tentar atualizar as informações do aluno!", true);
                 }
             }
         }
 
         private async void Delete(object sender, RoutedEventArgs e) {
             EnableButtons(false);
-            SetFeedbackText("Deletando aluno...");
+            TextManager.SetText(labelFeedback, "Deletando aluno...");
             bool result = await ApiDatabaseManager.DeleteStudentAsync(_student.Id);
             EnableButtons(true);
 
             if (result) {
-                MainWindow.Singleton.SetFeedbackDgText("Aluno deletado com sucesso!");
+                TextManager.SetText(MainWindow.Singleton.labelFeedbackAmount, "Aluno deletado com sucesso!");
                 Student.Database.Remove(_student);
                 Close();
             } else {
-                SetFeedbackText("Erro ao tentar deletar o aluno!", true);
+                TextManager.SetText(labelFeedback, "Erro ao tentar deletar o aluno!", true);
             }
         }
 
@@ -101,13 +101,15 @@ namespace crud_progressao.Windows {
             inputInstallment.Text = _student.Installment.ToString();
             inputDiscount.Text = _student.Discount.ToString();
             comboDiscount.SelectedIndex = (int)_student.DiscountType;
+            inputDueDate.Text = _student.DueDate.ToString();
             inputNote.Text = _student.Note;
             imgPicture.Source = _student.Picture;
         }
 
         private void SetStudentValues() {
-            float.TryParse(inputInstallment.Text, out float installment);
-            float.TryParse(inputDiscount.Text, out float discount);
+            double.TryParse(inputInstallment.Text, out double installment);
+            double.TryParse(inputDiscount.Text, out double discount);
+            int.TryParse(inputDueDate.Text, out int dueDate);
 
             _student = new Student()
             {
@@ -120,6 +122,7 @@ namespace crud_progressao.Windows {
                 Installment = installment,
                 Discount = discount,
                 DiscountType = (Student.DiscountTypeOptions)comboDiscount.SelectedIndex,
+                DueDate = dueDate,
                 Note = inputNote.Text,
                 Picture = (BitmapImage)imgPicture.Source
             };
@@ -158,16 +161,6 @@ namespace crud_progressao.Windows {
             Close();
         }
 
-        private void SetFeedbackText(string text, bool error = false) {
-            Color darkGrayColor = (Color)ColorConverter.ConvertFromString("#FF282828");
-            SolidColorBrush color = new SolidColorBrush(darkGrayColor);
-
-            if (error) color = Brushes.Red;
-
-            labelFeedback.Content = text;
-            labelFeedback.Foreground = color;
-        }
-
         private void EnableButtons(bool value) {
             buttonConfirm.IsEnabled = value;
             buttonDelete.IsEnabled = value;
@@ -185,8 +178,8 @@ namespace crud_progressao.Windows {
 
             Student.DiscountTypeOptions discountType = (Student.DiscountTypeOptions)comboDiscount.SelectedIndex;
 
-            float.TryParse(inputInstallment.Text, out float installment);
-            float.TryParse(inputDiscount.Text, out float discount);
+            double.TryParse(inputInstallment.Text, out double installment);
+            double.TryParse(inputDiscount.Text, out double discount);
 
             string value;
 

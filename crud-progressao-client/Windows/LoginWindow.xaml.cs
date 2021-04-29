@@ -11,14 +11,14 @@ namespace crud_progressao.Windows {
             inputUsername.Focus();
         }
 
-        private async Task LogIn() {
+        private async Task LogInAsync() {
             EnableControls(false);
             TextManager.SetText(labelFeedback, "Logando...");
 
             bool res = await ApiDatabaseManager.LoginAsync(inputUsername.Text, inputPassword.Password);
 
             if (res) {
-                new MainWindow(inputUsername.Text, inputPassword.Password).Show();
+                new MainWindow().Show();
                 Close();
             } else {
                 EnableControls(true);
@@ -27,13 +27,13 @@ namespace crud_progressao.Windows {
         }
 
         private async void ConfirmButton(object sender, RoutedEventArgs e) {
-            await LogIn();
+            await LogInAsync();
         }
 
         private async void EnterKeyPressed(object sender, KeyEventArgs e) {
             if (e.Key != Key.Return || !CheckButton()) return;
 
-            await LogIn();
+            await LogInAsync();
         }
 
         private void EnableControls(bool value) {

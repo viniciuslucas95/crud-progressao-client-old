@@ -1,4 +1,5 @@
-﻿using crud_progressao.Windows;
+﻿using crud_progressao.Scripts;
+using crud_progressao.Windows;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -12,11 +13,6 @@ namespace crud_progressao {
 
         private readonly static HttpClient _client = new HttpClient();
         private static string _url;
-
-        public static void InitializeAuthentication(string username, string password) {
-            _client.DefaultRequestHeaders.Add("username", username);
-            _client.DefaultRequestHeaders.Add("password", password);
-        }
 
         public static async Task<bool> LoginAsync(string username, string password) {
             if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
@@ -32,6 +28,9 @@ namespace crud_progressao {
                         res.Dispose();
                         return false;
                     }
+
+                    _client.DefaultRequestHeaders.Add("username", username);
+                    _client.DefaultRequestHeaders.Add("password", password);
 
                     bool privilege = await res.Content.ReadAsAsync<bool>();
 
@@ -74,47 +73,10 @@ namespace crud_progressao {
                 }
             } catch (Exception e) {
                 LogManager.Write(e.Message);
-                MainWindow.Singleton.SetFeedbackDgText($"Não foi possível acessar o banco de dados!", true);
+                TextManager.SetText(MainWindow.Singleton.labelFeedbackAmount, $"Não foi possível acessar o banco de dados!", true);
                 return false;
             }
         }
-
-        /*public static async Task<bool> GetDatabaseAsync() {
-            if (string.IsNullOrEmpty(_url)) if(!GetConfigFile()) return false;
-
-            LogManager.Write("Trying to get the database...");
-
-            try {
-                using (HttpResponseMessage res = await _client.GetAsync($"{_url}/students")) {
-                    if (!res.IsSuccessStatusCode) {
-                        LogManager.Write("ERROR trying to get the database");
-                        res.Dispose();
-                        return false;
-                    }
-
-                    string json = await res.Content.ReadAsStringAsync();
-                    dynamic database = JsonConvert.DeserializeObject(json);
-
-                    if (database.Count == 0) {
-                        LogManager.Write("Database gotten, but it is empty");
-                        return true;
-                    }
-
-                    Student.Database.Clear();
-
-                    for (int i = 0; i < database.Count; i++)
-                        Student.Database.Add(ConvertJsonDataToStudent(database[i]));
-
-                    LogManager.Write("Database gotten");
-                    res.Dispose();
-                    return true;
-                }
-            } catch (Exception e) {
-                LogManager.Write(e.Message);
-                MainWindow.Singleton.SetFeedbackDgText($"Não foi possível acessar o banco de dados!", true);
-                return false;
-            }
-        }*/
 
         /// <returns>Returns the new student id if the register is successful, or empty if isn't</returns>
         public static async Task<string> RegisterStudentAsync(Student student) {
@@ -265,6 +227,7 @@ namespace crud_progressao {
                 Installment = student.Installment,
                 Discount = student.Discount,
                 DiscountType = (int)student.DiscountType,
+                DueDate = student.DueDate,
                 Note = student.Note,
                 Picture = BitmapImageToString(student.Picture)
             };
@@ -282,6 +245,7 @@ namespace crud_progressao {
                 Installment = studentData.installment,
                 Discount = studentData.discount,
                 DiscountType = (Student.DiscountTypeOptions)studentData.discountType,
+                DueDate = studentData.dueDate,
                 Note = studentData.note,
                 Picture = StringToBitmapImage((string)studentData.picture)
             };
@@ -299,6 +263,7 @@ namespace crud_progressao {
             public double Installment { get; set; }
             public double Discount { get; set; }
             public int DiscountType { get; set; }
+            public int DueDate { get; set; }
             public string Note { get; set; }
             public string Picture { get; set; }
         }

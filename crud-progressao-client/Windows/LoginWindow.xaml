@@ -25,10 +25,10 @@
         <Label x:Name="labelPassword" Content="Senha" Grid.Row="2"
                Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
         <PasswordBox x:Name="inputPassword" Grid.Row="2" Grid.Column="1"
-                KeyDown="EnterKeyPressed" BorderThickness="1 0 1 1"
-                PasswordChanged="PasswordChanged"/>
-        <Button x:Name="buttonLogin" Grid.Row="3" Grid.ColumnSpan="2" Content="Logar"
-                HorizontalAlignment="Center" KeyDown="EnterKeyPressed"
-                Click="ConfirmButton" IsEnabled="False"/>
+                     KeyDown="EnterKeyPressed" BorderThickness="1 0 1 1"
+                     PasswordChanged="PasswordChanged"/>
+        <Button x:Name="buttonLogin" Grid.Row="3" Grid.ColumnSpan="2"
+                Content="Logar" Click="ConfirmButton" IsEnabled="False"
+                HorizontalAlignment="Center" KeyDown="EnterKeyPressed" />
     </Grid>
 </Window>

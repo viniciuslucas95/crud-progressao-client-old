@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Style="{StaticResource WindowStyle}" ResizeMode="NoResize" MinHeight="425"
-        Title="Registrar novo aluno" Width="450" Height="425" MinWidth="450">
+        Style="{StaticResource WindowStyle}" ResizeMode="NoResize" MinHeight="450"
+        Title="Registrar novo aluno" Width="450" Height="450" MinWidth="450">
     <Window.Resources>
         <ResourceDictionary Source="../ResourceDictionaries/ComboBoxDictionary.xaml"/>
     </Window.Resources>
@@ -35,6 +35,7 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="32"/>
                     <RowDefinition Height="32"/>
                     <RowDefinition Height="32"/>
                     <RowDefinition Height="32"/>
@@ -111,6 +112,13 @@
                        Content="R$ 00,00" FontWeight="SemiBold" Grid.Row="4"
                        Grid.Column="3" Foreground="#FF282828" FontSize="14"
                        HorizontalContentAlignment="Left" BorderThickness="1 0 1 1"/>
+                <Label Content="Vencimento" Grid.Row="5"
+                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+                <TextBox x:Name="inputDueDate" MinWidth="100" Grid.Row="5"
+                         Grid.Column="1" KeyDown="EnterKeyPressed"
+                         BorderThickness="1 0 1 1"/>
+                <Label Content="" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"
+                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 1 1"/>
             </Grid>
         </Border>
         <Button x:Name="buttonConfirm" Grid.Row="2" Grid.Column="3"
