@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Style="{StaticResource WindowStyle}" ResizeMode="NoResize" MinHeight="450"
-        Title="Registrar novo aluno" Width="450" Height="450" MinWidth="450">
+        Style="{StaticResource WindowStyle}" ResizeMode="NoResize" MinHeight="460"
+        Title="Registrar novo aluno" Width="450" Height="460" MinWidth="450">
     <Window.Resources>
         <ResourceDictionary Source="../ResourceDictionaries/ComboBoxDictionary.xaml"/>
     </Window.Resources>
