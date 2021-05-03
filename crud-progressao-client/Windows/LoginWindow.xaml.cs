@@ -21,8 +21,9 @@ namespace crud_progressao.Windows {
                 new MainWindow().Show();
                 Close();
             } else {
-                EnableControls(true);
                 TextManager.SetText(labelFeedback, "Erro ao tentar logar!", true);
+                EnableControls(true);
+                inputUsername.Focus();
             }
         }
 
