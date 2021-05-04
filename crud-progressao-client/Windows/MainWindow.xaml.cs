@@ -15,10 +15,11 @@ namespace crud_progressao.Windows {
 
             dataGridStudents.ItemsSource = Student.Database;
 
-            if (ApiDatabaseManager.HasPrivilege)
-                labelFeedbackSum.Visibility = Visibility.Visible;
-            else
+            if (!ApiDatabaseManager.HasPrivilege) {
                 labelFeedbackSum.Visibility = Visibility.Hidden;
+                buttonReport.Visibility = Visibility.Hidden;
+                buttonReport.IsEnabled = false;
+            }
 
             LogManager.Write("Starting program...");
         }
@@ -102,6 +103,10 @@ namespace crud_progressao.Windows {
 
             EnablePanel(false);
             new StudentWindow(student).ShowDialog();
+        }
+
+        private void PaymentsButton(object sender, RoutedEventArgs e) {
+
         }
 
         private void UpdateButton(object sender, RoutedEventArgs e) {
