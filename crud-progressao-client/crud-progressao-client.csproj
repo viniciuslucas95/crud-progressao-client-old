@@ -69,6 +69,12 @@
     </ApplicationDefinition>
     <Compile Include="Scripts\ApiDatabaseManager.cs" />
     <Compile Include="Scripts\TextManager.cs" />
+    <Compile Include="UserControls\DayInputUserControl.xaml.cs">
+      <DependentUpon>DayInputUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MonthInputUserControl.xaml.cs">
+      <DependentUpon>MonthInputUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
@@ -76,6 +82,14 @@
     <Compile Include="Scripts\Student.cs" />
     <Compile Include="Scripts\LogManager.cs" />
     <Page Include="ResourceDictionaries\ComboBoxDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\DayInputUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\MonthInputUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -95,12 +109,26 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\PaymentInfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\PaymentWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\StudentWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Windows\PaymentInfoWindow.xaml.cs">
+      <DependentUpon>PaymentInfoWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\PaymentWindow.xaml.cs">
+      <DependentUpon>PaymentWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\StudentWindow.xaml.cs">
       <DependentUpon>StudentWindow.xaml</DependentUpon>
     </Compile>
