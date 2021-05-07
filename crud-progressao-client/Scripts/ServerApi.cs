@@ -51,7 +51,7 @@ namespace crud_progressao {
             }
         }
 
-        public static async Task<bool> GetDatabaseAsync(string firstName, string lastName, string className, string responsible, string address, string discount) {
+        public static async Task<bool> GetStudentsAsync(string firstName, string lastName, string className, string responsible, string address, string discount) {
             if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
 
             LogManager.Write("Trying to get students from the database...");
@@ -110,7 +110,7 @@ namespace crud_progressao {
         }
 
         /// <returns>Returns the new payment id if the register is successful, or empty if isn't</returns>
-        public static async Task<string> RegisterStudentPaymentAsync(string studentId, Student.Payment payment) {
+        public static async Task<string> RegisterPaymentAsync(string studentId, Student.Payment payment) {
             if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return "";
 
             LogManager.Write("Trying to register the student payment in the database...");
@@ -130,27 +130,6 @@ namespace crud_progressao {
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return "";
-            }
-        }
-
-        public static async Task<bool> UpdateStudentPaymentAsync(string studentId, Student.Payment payment) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
-
-            LogManager.Write("Trying to update the student payment in the database...");
-
-            try {
-                using (HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students/payments/{studentId}", payment)) {
-                    if (res.IsSuccessStatusCode) {
-                        LogManager.Write("Payment updated");
-                    } else
-                        LogManager.Write("ERROR trying to update the student payment in the database");
-
-                    res.Dispose();
-                    return res.IsSuccessStatusCode;
-                }
-            } catch (Exception e) {
-                LogManager.Write(e.Message);
-                return false;
             }
         }
 
@@ -177,6 +156,27 @@ namespace crud_progressao {
             }
         }
 
+        public static async Task<bool> UpdatePaymentAsync(string studentId, Student.Payment payment) {
+            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
+
+            LogManager.Write("Trying to update the student payment in the database...");
+
+            try {
+                using (HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students/payments/{studentId}", payment)) {
+                    if (res.IsSuccessStatusCode) {
+                        LogManager.Write("Payment updated");
+                    } else
+                        LogManager.Write("ERROR trying to update the student payment in the database");
+
+                    res.Dispose();
+                    return res.IsSuccessStatusCode;
+                }
+            } catch (Exception e) {
+                LogManager.Write(e.Message);
+                return false;
+            }
+        }
+
         public static async Task<bool> DeleteStudentAsync(string id) {
             if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
 
@@ -188,6 +188,27 @@ namespace crud_progressao {
                         LogManager.Write("Student deleted");
                     } else
                         LogManager.Write("ERROR trying to delete the student from the database");
+
+                    res.Dispose();
+                    return res.IsSuccessStatusCode;
+                }
+            } catch (Exception e) {
+                LogManager.Write(e.Message);
+                return false;
+            }
+        }
+
+        public static async Task<bool> DeletePaymentAsync(string studentId, string paymentId) {
+            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
+
+            LogManager.Write("Trying to delete the payment from the database...");
+
+            try {
+                using (HttpResponseMessage res = await _client.DeleteAsync($"{ _url}/students/payments/?studentId={studentId}&paymentId={paymentId}")) {
+                    if (res.IsSuccessStatusCode) {
+                        LogManager.Write("Payment deleted");
+                    } else
+                        LogManager.Write("ERROR trying to delete the payment from the database");
 
                     res.Dispose();
                     return res.IsSuccessStatusCode;

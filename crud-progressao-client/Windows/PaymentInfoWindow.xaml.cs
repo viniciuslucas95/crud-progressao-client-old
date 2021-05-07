@@ -27,7 +27,7 @@ namespace crud_progressao.Windows {
 
             if (string.IsNullOrEmpty(_payment.Id)) { // Register
                 TextManager.SetText(labelFeedback, "Registrando novo pagamento...");
-                string id = await ServerApi.RegisterStudentPaymentAsync(_paymentWindow.Student.Id, UpdatedPayment());
+                string id = await ServerApi.RegisterPaymentAsync(_paymentWindow.Student.Id, UpdatedPayment());
 
                 if (!string.IsNullOrEmpty(id)) {
                     TextManager.SetText(_paymentWindow.labelFeedback, "Pagamento registrado com sucesso!");
@@ -39,7 +39,7 @@ namespace crud_progressao.Windows {
                 }
             } else { // Update
                 TextManager.SetText(labelFeedback, "Atualizando pagamento...");
-                bool result = await ServerApi.UpdateStudentPaymentAsync(_paymentWindow.Student.Id, UpdatedPayment());
+                bool result = await ServerApi.UpdatePaymentAsync(_paymentWindow.Student.Id, UpdatedPayment());
 
                 if (result) {
                     TextManager.SetText(_paymentWindow.labelFeedback, "Pagamento atualizado com sucesso!");
@@ -54,7 +54,19 @@ namespace crud_progressao.Windows {
         }
 
         private async Task Delete() {
+            EnableControls(false);
+            TextManager.SetText(labelFeedback, "Deletando pagamento...");
+            bool result = await ServerApi.DeletePaymentAsync(_paymentWindow.Student.Id, _payment.Id);
 
+            if (result) {
+                TextManager.SetText(_paymentWindow.labelFeedback, "Pagamento deletado com sucesso!");
+                RemovePayment();
+                Close();
+            } else {
+                TextManager.SetText(labelFeedback, "Erro ao tentar deletar o pagamento!", true);
+            }
+
+            EnableControls(true);
         }
 
         private async void ConfirmClick(object sender, RoutedEventArgs e) {
@@ -99,6 +111,36 @@ namespace crud_progressao.Windows {
                 PaidValue = paidValue,
                 Note = inputNote.Text
             };            
+        }
+
+        private void RemovePayment() {
+            _paymentWindow.Payments.Remove(_payment);
+
+            Student currentStudent = _paymentWindow.Student;
+            Student newStudent = currentStudent;
+
+            Student.Payment[] currentPayments = currentStudent.Payments;
+            Student.Payment[] newPayments = new Student.Payment[currentPayments.Length - 1];
+
+            if (newPayments.Length > 0) {
+                int skipped = 0;
+
+                for (int i = 0; i < currentPayments.Length; i++) {
+                    if (_payment.Id == currentPayments[i].Id) {
+                        skipped = 1;
+                        continue;
+                    }
+
+                    newPayments[i - skipped] = currentPayments[i];
+                }
+            }
+
+            newStudent.Payments = newPayments;
+            int index = Student.Database.IndexOf(currentStudent);
+            Student.Database.Remove(currentStudent);
+            Student.Database.Insert(index, newStudent);
+            _paymentWindow.MainWindow.dataGridStudents.SelectedItem = newStudent;
+            _paymentWindow.Student = newStudent;
         }
 
         private void InsertPayment(bool updating = false) {

@@ -27,7 +27,7 @@ namespace crud_progressao.Windows {
 
             EnableControls(false);
 
-            bool res = await ServerApi.GetDatabaseAsync(
+            bool res = await ServerApi.GetStudentsAsync(
                 inputFirstName.Text, inputLastName.Text, inputClassName.Text,
                 inputResponsible.Text, inputAddress.Text, inputDiscount.Text);
 
