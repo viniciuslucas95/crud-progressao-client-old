@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:crud_progressao.Scripts"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Style="{StaticResource WindowStyle}" Closing="OnProgramClose"
-        Title="Sistema de Gerenciamento de Alunos" MinWidth="640" MinHeight="480"
+        Title="Sistema de Gerenciamento de Alunos" MinWidth="800" MinHeight="600"
         Width="800" Height="600">
     <Window.Resources>
         <local:WidthWithoutScrollBar x:Key="WidthWithoutScrollBar"/>
@@ -28,10 +28,10 @@
         <Image HorizontalAlignment="Left" Margin="5" x:Name="imageLogo"
                Source="/Assets/Images/Curso Progressão Logo.png"
                RenderOptions.BitmapScalingMode="HighQuality"/>
-        <Rectangle x:Name="rectNavbar" Grid.ColumnSpan="6" Fill="Transparent"
-                   MouseDown="CloseSearchPanel"/>
+        <Rectangle x:Name="rectangleNavbar" Grid.ColumnSpan="6" Fill="Transparent"
+                   MouseDown="BackgroundClick"/>
         <DataGrid x:Name="dataGridStudents" Grid.Row="1" Grid.ColumnSpan="6"
-                  PreviewMouseDown="CloseSearchPanel">
+                  PreviewMouseDown="BackgroundClick">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"
                                     Binding="{Binding Id}" Width="*"
@@ -72,7 +72,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto" MaxWidth="320"/>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
@@ -92,13 +92,15 @@
                             VerticalAlignment="Stretch"
                             Padding="8 4" TextAlignment="Center"/>
                         <Button Grid.Row= "1" Grid.Column="1"
-                                Click="UpdateButton"
+                                Click="EditClick"
+                                KeyDown="EditReturn"
                                 Content="Editar Informações"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Margin="0 10"/>
                         <Button Grid.Row= "1" Grid.Column="2"
-                                Click="PaymentsButton"
+                                Click="PaymentsClick"
+                                KeyDown="PaymentsReturn"
                                 Content="Ver pagamentos"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
@@ -108,9 +110,9 @@
             </DataGrid.RowDetailsTemplate>
         </DataGrid>
         <Border x:Name="buttonFilter" Height="32" Grid.Column="2"
-                VerticalAlignment="Center" MouseDown="OpenSearchPanel"
-                Grid.ColumnSpan="2" HorizontalAlignment="Stretch"
-                CornerRadius="0 0 10 10" BorderThickness="1">
+                VerticalAlignment="Center" MouseDown="OpenClick"
+                CornerRadius="0 0 10 10" BorderThickness="1"
+                Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="90"/>
@@ -143,53 +145,57 @@
                 </Grid.RowDefinitions>
                 <Label Style="{StaticResource SmallLabel}" Content="Nome"/>
                 <TextBox x:Name="inputFirstName" Grid.Column="1"
-                         KeyDown="EnterKeyPressed"/>
+                         KeyDown="SearchReturn"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Sobrenome"
                        Grid.Row="1" BorderThickness="0 1"/>
                 <TextBox x:Name="inputLastName" Grid.Column="1" Grid.Row="1"
-                         BorderThickness="1 1 0 1" KeyDown="EnterKeyPressed"/>
+                         BorderThickness="1 1 0 1" KeyDown="SearchReturn"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Turma"
                        Grid.Row="2"/>
                 <TextBox x:Name="inputClassName" Grid.Column="1" Grid.Row="2"
-                         KeyDown="EnterKeyPressed"/>
+                         KeyDown="SearchReturn"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Desconto %"
                        Grid.Row="3" BorderThickness="0 1"/>
                 <TextBox x:Name="inputDiscount" Grid.Column="1" Grid.Row="3"
-                         BorderThickness="1 1 0 1" KeyDown="EnterKeyPressed"/>
+                         BorderThickness="1 1 0 1" KeyDown="SearchReturn"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Responsável"
                        Grid.Row="4"/>
                 <TextBox x:Name="inputResponsible" Grid.Column="1" Grid.Row="4"
-                         KeyDown="EnterKeyPressed"/>
+                         KeyDown="SearchReturn"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Endereço"
                        Grid.Row="5" BorderThickness="0 1 0 0"
                        Background="Transparent"/>
                 <TextBox x:Name="inputAddress" Grid.Column="1" Grid.Row="5"
                          BorderThickness="1 1 0 0" Background="Transparent"
-                         KeyDown="EnterKeyPressed"/>
+                         KeyDown="SearchReturn"/>
             </Grid>
         </Border>
         <Button x:Name="buttonSearch" Content="Procurar"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
-                Grid.Column="4" Click="Search" Visibility="Hidden"
-                KeyDown="EnterKeyPressed"/>
+                Grid.Column="4" Click="SearchClick" Visibility="Hidden"
+                KeyDown="SearchReturn"/>
         <Button x:Name="buttonRegister" Content="Registrar Aluno"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
-                Grid.Column="5" Click="Register"/>
+                Grid.Column="5" Click="RegisterClick"
+                KeyDown="RegisterReturn"/>
         <Button x:Name="buttonCancel" Content="Cancelar" Grid.Column="1"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
-                Click="CloseSearchPanel" Visibility="Hidden" KeyDown="EnterKeyPressed"/>
+                Click="CloseClick" Visibility="Hidden"
+                KeyDown="CloseReturn"/>
         <Grid Grid.Row="2" Grid.ColumnSpan="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Label x:Name="labelFeedbackAmount" FontSize="16" Content=""
+            <Label x:Name="labelFeedbackAmount" Content="" FontSize="16"
                    Grid.ColumnSpan="3"/>
             <Label x:Name="labelFeedbackSum" Grid.Column="1" Content=""
-                   FontSize="16" BorderThickness="1 1 0 1"/>
-            <Button x:Name="buttonReport" Grid.Column="2"
-                    Content="Gerar Relatório"/>
+                   BorderThickness="1 1 0 1" FontSize="16"
+                   Visibility="Hidden"/>
+            <Button x:Name="buttonReport" Grid.Column="2" FontSize="16"
+                    Content="Gerar Relatório" Visibility="Hidden"
+                    IsEnabled="False"/>
         </Grid>
     </Grid>
 </Window>

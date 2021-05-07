@@ -15,7 +15,7 @@ namespace crud_progressao.Windows {
             EnableControls(false);
             TextManager.SetText(labelFeedback, "Logando...");
 
-            bool res = await ApiDatabaseManager.LoginAsync(inputUsername.Text, inputPassword.Password);
+            bool res = await ServerApi.LoginAsync(inputUsername.Text, inputPassword.Password);
 
             if (res) {
                 new MainWindow().Show();

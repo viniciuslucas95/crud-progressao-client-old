@@ -9,127 +9,146 @@ using System.Windows.Media.Imaging;
 namespace crud_progressao.Windows {
     public partial class StudentWindow : Window {
         private Student _student;
-        private bool _tryingToConfirm;
+        private readonly MainWindow _mainWindow;
 
-        public StudentWindow(Student student) {
+        public StudentWindow(MainWindow mainWindow, Student student = new Student()) {
             InitializeComponent();
 
+            _mainWindow = mainWindow;
             _student = student;
 
-            SetFieldValues();
-
-            // If the student exists already.
+            // The student is new when its id is null or empty
             if (!string.IsNullOrEmpty(_student.Id))
-                ChangeInterfaceToUpdate();
-        }
-
-        private async void EnterKeyPressed(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || _tryingToConfirm) return;
-
-            await Confirm();
-        }
-
-        private async void ConfirmButton(object sender, RoutedEventArgs e) {
-            await Confirm();
-        }
+                SetExistentValues();
+        }        
 
         private async Task Confirm() {
+            EnableControls(false);
+
             if (string.IsNullOrEmpty(_student.Id)) { // Register
-                SetStudentValues();
-                EnableButtons(false);
                 TextManager.SetText(labelFeedback, "Registrando novo aluno...");
-                string id = await ApiDatabaseManager.RegisterStudentAsync(_student);
-                EnableButtons(true);
+                string id = await ServerApi.RegisterStudentAsync(UpdatedStudent());
 
                 if (!string.IsNullOrEmpty(id)) {
-                    _student.Id = id;
-                    ChangeInterfaceToUpdate();
                     TextManager.SetText(labelFeedback, "Aluno registrado com sucesso!");
-                    AddStudentAndScrollToIt();
+                    _student.Id = id;
+                    InsertStudent();
+                    Close();
                 } else {
                     TextManager.SetText(labelFeedback, "Erro ao tentar registrar o aluno!", true);
                 }
             } else { // Update
-                Student beforeUpdate = _student;
-                SetStudentValues();
-                EnableButtons(false);
                 TextManager.SetText(labelFeedback, "Atualizando informações do aluno...");
-                bool result = await ApiDatabaseManager.UpdateStudentAsync(_student);
-                EnableButtons(true);
+                bool result = await ServerApi.UpdateStudentAsync(UpdatedStudent());
 
                 if (result) {
-                    TextManager.SetText(MainWindow.Singleton.labelFeedbackAmount, "Informações do aluno atualizada com sucesso!");
-                    Student.Database.Remove(beforeUpdate);
-                    AddStudentAndScrollToIt();
+                    TextManager.SetText(_mainWindow.labelFeedbackAmount, "Informações do aluno atualizada!");
+                    Student.Database.Remove(_student);
+                    InsertStudent();
+                    Close();
                 } else {
-                    TextManager.SetText(labelFeedback, "Erro ao tentar atualizar as informações do aluno!", true);
+                    TextManager.SetText(labelFeedback, "Erro ao tentar atualizar as informações!", true);
                 }
             }
+
+            EnableControls(true);
         }
 
-        private async void Delete(object sender, RoutedEventArgs e) {
-            EnableButtons(false);
+        private async Task Delete() {
+            EnableControls(false);
             TextManager.SetText(labelFeedback, "Deletando aluno...");
-            bool result = await ApiDatabaseManager.DeleteStudentAsync(_student.Id);
-            EnableButtons(true);
+            bool result = await ServerApi.DeleteStudentAsync(_student.Id);
 
             if (result) {
-                TextManager.SetText(MainWindow.Singleton.labelFeedbackAmount, "Aluno deletado com sucesso!");
+                TextManager.SetText(_mainWindow.labelFeedbackAmount, "Aluno deletado com sucesso!");
                 Student.Database.Remove(_student);
                 Close();
             } else {
                 TextManager.SetText(labelFeedback, "Erro ao tentar deletar o aluno!", true);
             }
+
+            EnableControls(true);
         }
 
-        private void ChangeInterfaceToUpdate() {
+        private async void DeleteReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            await Delete();
+        }
+
+        private async void DeleteClick(object sender, RoutedEventArgs e) {
+            await Delete();
+        }
+
+        private async void ConfirmReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            await Confirm();
+        }
+
+        private async void ConfirmClick(object sender, RoutedEventArgs e) {
+            await Confirm();
+        }
+
+        private Student UpdatedStudent() {
+            double.TryParse(inputInstallment.Text, out double installment);
+            double.TryParse(inputDiscount.Text, out double discount);
+            int.TryParse(inputDueDate.Text, out int dueDate);
+
+            return new Student()
+            {
+                Id = _student.Id,
+                FirstName = inputFirstName.Text,
+                LastName = inputLastName.Text,
+                ClassName = inputClassName.Text,
+                Responsible = inputResponsible.Text,
+                Address = inputAddress.Text,
+                Installment = installment,
+                Discount = discount,
+                DiscountType = (Student.DiscountTypeOptions)comboBoxDiscount.SelectedIndex,
+                DueDate = dueDate,
+                Note = inputNote.Text,
+                Picture = (BitmapImage)imagePicture.Source,
+                Payments = _student.Payments ?? new Student.Payment[0]
+            };
+        }
+
+        private void InsertStudent() {
+            _student = UpdatedStudent();
+            Student.Database.Insert(0, _student);
+            _mainWindow.dataGridStudents.SelectedItem = _student;
+            _mainWindow.dataGridStudents.ScrollIntoView(_student);
+        }
+
+        private void SetExistentValues() {
             buttonDelete.Visibility = Visibility.Visible;
             buttonDelete.IsEnabled = true;
             Title = "Atualizar informações do aluno";
             buttonConfirm.Content = "Atualizar";
 
-            if (imgPicture.Source != null)
+            inputFirstName.Text = _student.FirstName;
+            inputLastName.Text = _student.LastName;
+            inputClassName.Text = _student.ClassName;
+            inputResponsible.Text = _student.Responsible;
+            inputAddress.Text = _student.Address;
+            inputInstallment.Text = _student.Installment.ToString();
+            inputDiscount.Text = _student.Discount.ToString();
+            comboBoxDiscount.SelectedIndex = (int)_student.DiscountType;
+            inputDueDate.Text = _student.DueDate.ToString();
+            inputNote.Text = _student.Note;
+            imagePicture.Source = _student.Picture;
+
+            if (imagePicture.Source != null)
                 buttonPicture.Content = "Alterar foto";
         }
 
-        private void SetFieldValues() {
-            inptFirstName.Text = _student.FirstName;
-            inptLastName.Text = _student.LastName;
-            inptClassName.Text = _student.ClassName;
-            inptResponsible.Text = _student.Responsible;
-            inptAddress.Text = _student.Address;
-            inputInstallment.Text = _student.Installment.ToString();
-            inputDiscount.Text = _student.Discount.ToString();
-            comboDiscount.SelectedIndex = (int)_student.DiscountType;
-            inputDueDate.Text = _student.DueDate.ToString();
-            inputNote.Text = _student.Note;
-            imgPicture.Source = _student.Picture;
+        private bool IsControlsEnabled() {
+            return buttonConfirm.IsEnabled;
         }
 
-        private void SetStudentValues() {
-            double.TryParse(inputInstallment.Text, out double installment);
-            double.TryParse(inputDiscount.Text, out double discount);
-            int.TryParse(inputDueDate.Text, out int dueDate);
-
-            _student = new Student()
+        private void FindPicture() {
+            OpenFileDialog pictureDialog = new OpenFileDialog
             {
-                Id = _student.Id,
-                FirstName = inptFirstName.Text,
-                LastName = inptLastName.Text,
-                ClassName = inptClassName.Text,
-                Responsible = inptResponsible.Text,
-                Address = inptAddress.Text,
-                Installment = installment,
-                Discount = discount,
-                DiscountType = (Student.DiscountTypeOptions)comboDiscount.SelectedIndex,
-                DueDate = dueDate,
-                Note = inputNote.Text,
-                Picture = (BitmapImage)imgPicture.Source
-            };
-        }
-
-        private void FindPicture(object sender, RoutedEventArgs e) {
-            OpenFileDialog pictureDialog = new OpenFileDialog {
                 Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png"
             };
 
@@ -143,65 +162,78 @@ namespace crud_progressao.Windows {
 
             try {
                 BitmapImage img = new BitmapImage(new Uri(fileName));
-                imgPicture.Source = img;
+                imagePicture.Source = img;
                 buttonPicture.Content = "Alterar foto";
                 LogManager.Write("Picture set");
             } catch (Exception ex) {
-                imgPicture.Source = null;
+                imagePicture.Source = null;
                 LogManager.Write(ex.Message);
             }
         }
 
-        
-
-        private void AddStudentAndScrollToIt() {
-            Student.Database.Insert(0, _student);
-            MainWindow.Singleton.dataGridStudents.SelectedItem = _student;
-            MainWindow.Singleton.dataGridStudents.ScrollIntoView(_student);
-            Close();
-        }
-
-        private void EnableButtons(bool value) {
+        private void EnableControls(bool value) {
+            inputFirstName.IsEnabled = value;
+            inputLastName.IsEnabled = value;
+            inputClassName.IsEnabled = value;
+            inputResponsible.IsEnabled = value;
+            inputAddress.IsEnabled = value;
+            inputInstallment.IsEnabled = value;
+            comboBoxDiscount.IsEnabled = value;
+            inputDiscount.IsEnabled = value;
+            inputDueDate.IsEnabled = value;
+            inputNote.IsEnabled = value;
             buttonConfirm.IsEnabled = value;
-            buttonDelete.IsEnabled = value;
             buttonPicture.IsEnabled = value;
             buttonCancel.IsEnabled = value;
-            _tryingToConfirm = !value;
-        }
 
-        private void Cancel(object sender, RoutedEventArgs e) {
-            Close();
+            if (!string.IsNullOrEmpty(_student.Id)) {
+                buttonDelete.IsEnabled = value;
+            }
         }
 
         private void UpdateTotal() {
-            if (inputInstallment == null || inputDiscount == null || lblTotal == null) return;
+            if (inputInstallment == null || inputDiscount == null || labelTotal == null) return;
 
-            Student.DiscountTypeOptions discountType = (Student.DiscountTypeOptions)comboDiscount.SelectedIndex;
+            Student.DiscountTypeOptions discountType = (Student.DiscountTypeOptions)comboBoxDiscount.SelectedIndex;
 
             double.TryParse(inputInstallment.Text, out double installment);
             double.TryParse(inputDiscount.Text, out double discount);
 
-            string value;
+            string value = discountType == Student.DiscountTypeOptions.Fixed
+                ? (installment - discount).ToString()
+                : (installment - installment * discount / 100).ToString();
 
-            if(discountType == Student.DiscountTypeOptions.Fixed) {
-                value = (installment - discount).ToString();                
-            } else {
-                value = (installment - installment * discount / 100).ToString();
-            }
+            double.TryParse(value, out double total);
 
-            lblTotal.Content = "R$ " + Math.Round(double.Parse(value), 2);
+            labelTotal.Content = "R$ " + Math.Round(total, 2);
         }
 
-        private void OnInstallmentChange(object sender, System.Windows.Controls.TextChangedEventArgs e) {
-            UpdateTotal();
+        private void PictureReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            FindPicture();
         }
 
-        private void OnDiscountChange(object sender, System.Windows.Controls.TextChangedEventArgs e) {
+        private void PictureClick(object sender, RoutedEventArgs e) {
+            FindPicture();
+        }
+
+        private void OnTextChange(object sender, System.Windows.Controls.TextChangedEventArgs e) {
             UpdateTotal();
         }
 
         private void OnComboBoxSelectionChange(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
             UpdateTotal();
+        }
+
+        private void CancelReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            Close();
+        }
+
+        private void CancelClick(object sender, RoutedEventArgs e) {
+            Close();
         }
     }
 }

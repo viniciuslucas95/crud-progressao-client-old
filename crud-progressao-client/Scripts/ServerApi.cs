@@ -8,11 +8,16 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace crud_progressao {
-    static class ApiDatabaseManager {
+    static class ServerApi {
         public static bool HasPrivilege { get { return _client.DefaultRequestHeaders.Contains("privilege"); } }
 
         private readonly static HttpClient _client = new HttpClient();
+        private static MainWindow _mainWindow;
         private static string _url;
+
+        public static void SetMainWindow(MainWindow mainWindow) {
+            _mainWindow = mainWindow;
+        }
 
         public static async Task<bool> LoginAsync(string username, string password) {
             if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
@@ -22,7 +27,7 @@ namespace crud_progressao {
             LogManager.Write("Trying to log in...");
 
             try {
-                using (HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/auth", data)) {
+                using (HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/login", data)) {
                     if (!res.IsSuccessStatusCode) {
                         LogManager.Write("ERROR trying to log in");
                         res.Dispose();
@@ -73,7 +78,7 @@ namespace crud_progressao {
                 }
             } catch (Exception e) {
                 LogManager.Write(e.Message);
-                TextManager.SetText(MainWindow.Singleton.labelFeedbackAmount, $"Não foi possível acessar o banco de dados!", true);
+                TextManager.SetText(_mainWindow.labelFeedbackAmount, $"Não foi possível acessar o banco de dados!", true);
                 return false;
             }
         }
@@ -101,6 +106,51 @@ namespace crud_progressao {
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return "";
+            }
+        }
+
+        /// <returns>Returns the new payment id if the register is successful, or empty if isn't</returns>
+        public static async Task<string> RegisterStudentPaymentAsync(string studentId, Student.Payment payment) {
+            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return "";
+
+            LogManager.Write("Trying to register the student payment in the database...");
+
+            try {
+                using (HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/students/payments/{studentId}", payment)) {
+                    string newPaymentId = await res.Content.ReadAsStringAsync();
+
+                    if (res.IsSuccessStatusCode) {
+                        LogManager.Write("Payment registered");
+                    } else
+                        LogManager.Write("ERROR trying to register the payment in the database");
+
+                    res.Dispose();
+                    return newPaymentId;
+                }
+            } catch (Exception e) {
+                LogManager.Write(e.Message);
+                return "";
+            }
+        }
+
+        public static async Task<bool> UpdateStudentPaymentAsync(string studentId, Student.Payment payment) {
+            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
+
+            LogManager.Write("Trying to update the student payment in the database...");
+
+            try {
+                using (HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students/payments/{studentId}", payment)) {
+                    if (res.IsSuccessStatusCode) {
+                        LogManager.Write("Payment updated");
+                    } else
+                        LogManager.Write("ERROR trying to update the student payment in the database");
+
+                    res.Dispose();
+                    return res.IsSuccessStatusCode;
+                }
+            } catch (Exception e) {
+                LogManager.Write(e.Message);
+                return false;
             }
         }
 
@@ -229,12 +279,13 @@ namespace crud_progressao {
                 DiscountType = (int)student.DiscountType,
                 DueDate = student.DueDate,
                 Note = student.Note,
-                Picture = BitmapImageToString(student.Picture)
+                Picture = BitmapImageToString(student.Picture),
+                Payments = student.Payments
             };
         }
 
         private static Student ConvertJsonDataToStudent(dynamic studentData) {
-            Student test = new Student()
+            Student student = new Student()
             {
                 Id = studentData._id,
                 FirstName = studentData.firstName,
@@ -247,10 +298,30 @@ namespace crud_progressao {
                 DiscountType = (Student.DiscountTypeOptions)studentData.discountType,
                 DueDate = studentData.dueDate,
                 Note = studentData.note,
-                Picture = StringToBitmapImage((string)studentData.picture)
+                Picture = StringToBitmapImage((string)studentData.picture),
             };
 
-            return test;
+            student.Payments = new Student.Payment[studentData.payments.Count];
+
+            for(int i = 0; i < studentData.payments.Count; i++) {
+                dynamic paymentData = studentData.payments[i];
+
+                Student.Payment payment = new Student.Payment()
+                {
+                    Id = paymentData._id,
+                    DueDate = paymentData.dueDate.ToObject<int[]>(),
+                    PaymentDate = paymentData.paymentDate.ToObject<int[]>(),
+                    Installment = paymentData.installment,
+                    Discount = paymentData.discount,
+                    DiscountType = (Student.DiscountTypeOptions)paymentData.discountType,
+                    PaidValue = paymentData.paidValue,
+                    Note = paymentData.note
+                };
+
+                student.Payments[i] = payment;
+            }
+
+            return student;
         }
 
         public struct JsonData {
@@ -266,6 +337,7 @@ namespace crud_progressao {
             public int DueDate { get; set; }
             public string Note { get; set; }
             public string Picture { get; set; }
+            public Student.Payment[] Payments { get; set; }
         }
     }
 }

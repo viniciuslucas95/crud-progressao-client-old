@@ -67,13 +67,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Scripts\ApiDatabaseManager.cs" />
+    <Compile Include="Scripts\ServerApi.cs" />
     <Compile Include="Scripts\TextManager.cs" />
-    <Compile Include="UserControls\DayInputUserControl.xaml.cs">
-      <DependentUpon>DayInputUserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\MonthInputUserControl.xaml.cs">
-      <DependentUpon>MonthInputUserControl.xaml</DependentUpon>
+    <Compile Include="UserControls\DateUserControl.xaml.cs">
+      <DependentUpon>DateUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
@@ -85,11 +82,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\DayInputUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\MonthInputUserControl.xaml">
+    <Page Include="UserControls\DateUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
