@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -11,7 +12,7 @@ namespace crud_progressao {
     static class ServerApi {
         public static bool HasPrivilege { get { return _client.DefaultRequestHeaders.Contains("privilege"); } }
 
-        private readonly static HttpClient _client = new HttpClient();
+        private readonly static HttpClient _client = new();
         private static MainWindow _mainWindow;
         private static string _url;
 
@@ -27,24 +28,23 @@ namespace crud_progressao {
             LogManager.Write("Trying to log in...");
 
             try {
-                using (HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/login", data)) {
-                    if (!res.IsSuccessStatusCode) {
-                        LogManager.Write("ERROR trying to log in");
-                        res.Dispose();
-                        return false;
-                    }
-
-                    _client.DefaultRequestHeaders.Add("username", username);
-                    _client.DefaultRequestHeaders.Add("password", password);
-
-                    bool privilege = await res.Content.ReadAsAsync<bool>();
-
-                    if(privilege) _client.DefaultRequestHeaders.Add("privilege", privilege.ToString());
-
-                    LogManager.Write("Logged in");
+                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/login", data);
+                if (!res.IsSuccessStatusCode) {
+                    LogManager.Write("ERROR trying to log in");
                     res.Dispose();
-                    return true;
+                    return false;
                 }
+
+                _client.DefaultRequestHeaders.Add("username", username);
+                _client.DefaultRequestHeaders.Add("password", password);
+
+                bool privilege = await res.Content.ReadAsAsync<bool>();
+
+                if (privilege) _client.DefaultRequestHeaders.Add("privilege", privilege.ToString());
+
+                LogManager.Write("Logged in");
+                res.Dispose();
+                return true;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return false;
@@ -57,25 +57,24 @@ namespace crud_progressao {
             LogManager.Write("Trying to get students from the database...");
 
             try {
-                using (HttpResponseMessage res = await _client.GetAsync($"{_url}/students/?firstName={firstName}&lastName={lastName}&className={className}&responsible={responsible}&address={address}&discount={discount}")) {
-                    if (!res.IsSuccessStatusCode) {
-                        LogManager.Write("ERROR trying to get students from the database");
-                        res.Dispose();
-                        return false;
-                    }
-
-                    string json = await res.Content.ReadAsStringAsync();
-                    dynamic database = JsonConvert.DeserializeObject(json);
-
-                    Student.Database.Clear();
-
-                    for (int i = 0; i < database.Count; i++)
-                        Student.Database.Add(ConvertJsonDataToStudent(database[i]));
-
-                    LogManager.Write("Students gotten");
+                using HttpResponseMessage res = await _client.GetAsync($"{_url}/students/?firstName={firstName}&lastName={lastName}&className={className}&responsible={responsible}&address={address}&discount={discount}");
+                if (!res.IsSuccessStatusCode) {
+                    LogManager.Write("ERROR trying to get students from the database");
                     res.Dispose();
-                    return true;
+                    return false;
                 }
+
+                string json = await res.Content.ReadAsStringAsync();
+                dynamic database = JsonConvert.DeserializeObject(json);
+
+                Student.Database.Clear();
+
+                for (int i = 0; i < database.Count; i++)
+                    Student.Database.Add(ConvertJsonDataToStudent(database[i]));
+
+                LogManager.Write("Students gotten");
+                res.Dispose();
+                return true;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 TextManager.SetText(_mainWindow.labelFeedbackAmount, $"Não foi possível acessar o banco de dados!", true);
@@ -92,17 +91,16 @@ namespace crud_progressao {
             JsonData data = ConvertStudentToJsonData(student);
 
             try {
-                using (HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/students", data)) {
-                    string newStudentId = await res.Content.ReadAsStringAsync();
+                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/students", data);
+                string newStudentId = await res.Content.ReadAsStringAsync();
 
-                    if (res.IsSuccessStatusCode) {
-                        LogManager.Write("Student registered");
-                    } else
-                        LogManager.Write("ERROR trying to register the student in the database");
+                if (res.IsSuccessStatusCode) {
+                    LogManager.Write("Student registered");
+                } else
+                    LogManager.Write("ERROR trying to register the student in the database");
 
-                    res.Dispose();
-                    return newStudentId;
-                }
+                res.Dispose();
+                return newStudentId;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return "";
@@ -116,17 +114,16 @@ namespace crud_progressao {
             LogManager.Write("Trying to register the student payment in the database...");
 
             try {
-                using (HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/students/payments/{studentId}", payment)) {
-                    string newPaymentId = await res.Content.ReadAsStringAsync();
+                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/students/payments/{studentId}", payment);
+                string newPaymentId = await res.Content.ReadAsStringAsync();
 
-                    if (res.IsSuccessStatusCode) {
-                        LogManager.Write("Payment registered");
-                    } else
-                        LogManager.Write("ERROR trying to register the payment in the database");
+                if (res.IsSuccessStatusCode) {
+                    LogManager.Write("Payment registered");
+                } else
+                    LogManager.Write("ERROR trying to register the payment in the database");
 
-                    res.Dispose();
-                    return newPaymentId;
-                }
+                res.Dispose();
+                return newPaymentId;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return "";
@@ -141,15 +138,14 @@ namespace crud_progressao {
             JsonData data = ConvertStudentToJsonData(student);
 
             try {
-                using (HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students", data)) {
-                    if (res.IsSuccessStatusCode) {
-                        LogManager.Write("Student updated");
-                    } else
-                        LogManager.Write("ERROR trying to update the student informations in the database");
+                using HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students", data);
+                if (res.IsSuccessStatusCode) {
+                    LogManager.Write("Student updated");
+                } else
+                    LogManager.Write("ERROR trying to update the student informations in the database");
 
-                    res.Dispose();
-                    return res.IsSuccessStatusCode;
-                }
+                res.Dispose();
+                return res.IsSuccessStatusCode;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return false;
@@ -162,15 +158,14 @@ namespace crud_progressao {
             LogManager.Write("Trying to update the student payment in the database...");
 
             try {
-                using (HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students/payments/{studentId}", payment)) {
-                    if (res.IsSuccessStatusCode) {
-                        LogManager.Write("Payment updated");
-                    } else
-                        LogManager.Write("ERROR trying to update the student payment in the database");
+                using HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students/payments/{studentId}", payment);
+                if (res.IsSuccessStatusCode) {
+                    LogManager.Write("Payment updated");
+                } else
+                    LogManager.Write("ERROR trying to update the student payment in the database");
 
-                    res.Dispose();
-                    return res.IsSuccessStatusCode;
-                }
+                res.Dispose();
+                return res.IsSuccessStatusCode;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return false;
@@ -183,15 +178,14 @@ namespace crud_progressao {
             LogManager.Write("Trying to delete the student from the database...");
 
             try {
-                using (HttpResponseMessage res = await _client.DeleteAsync($"{ _url}/students/{id}")) {
-                    if (res.IsSuccessStatusCode) {
-                        LogManager.Write("Student deleted");
-                    } else
-                        LogManager.Write("ERROR trying to delete the student from the database");
+                using HttpResponseMessage res = await _client.DeleteAsync($"{ _url}/students/{id}");
+                if (res.IsSuccessStatusCode) {
+                    LogManager.Write("Student deleted");
+                } else
+                    LogManager.Write("ERROR trying to delete the student from the database");
 
-                    res.Dispose();
-                    return res.IsSuccessStatusCode;
-                }
+                res.Dispose();
+                return res.IsSuccessStatusCode;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return false;
@@ -204,15 +198,14 @@ namespace crud_progressao {
             LogManager.Write("Trying to delete the payment from the database...");
 
             try {
-                using (HttpResponseMessage res = await _client.DeleteAsync($"{ _url}/students/payments/?studentId={studentId}&paymentId={paymentId}")) {
-                    if (res.IsSuccessStatusCode) {
-                        LogManager.Write("Payment deleted");
-                    } else
-                        LogManager.Write("ERROR trying to delete the payment from the database");
+                using HttpResponseMessage res = await _client.DeleteAsync($"{ _url}/students/payments/?studentId={studentId}&paymentId={paymentId}");
+                if (res.IsSuccessStatusCode) {
+                    LogManager.Write("Payment deleted");
+                } else
+                    LogManager.Write("ERROR trying to delete the payment from the database");
 
-                    res.Dispose();
-                    return res.IsSuccessStatusCode;
-                }
+                res.Dispose();
+                return res.IsSuccessStatusCode;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return false;
@@ -223,14 +216,13 @@ namespace crud_progressao {
             LogManager.Write("Trying to get the config files...");
 
             try {
-                using (StreamReader streamReader = new StreamReader("config.json")) {
-                    string json = streamReader.ReadToEnd();
-                    dynamic config = JsonConvert.DeserializeObject(json);
-                    _url = config.serverUri;
-                    LogManager.Write("Config file gotten");
-                    streamReader.Dispose();
-                    return true;
-                }
+                using StreamReader streamReader = new("config.json");
+                string json = streamReader.ReadToEnd();
+                dynamic config = JsonConvert.DeserializeObject(json);
+                _url = config.serverUri;
+                LogManager.Write("Config file gotten");
+                streamReader.Dispose();
+                return true;
             } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return false;
@@ -243,20 +235,19 @@ namespace crud_progressao {
             LogManager.Write("Trying to convert a string into a bitmap image");
 
             try {
-                BitmapImage img = new BitmapImage();
+                BitmapImage img = new();
                 byte[] data = Convert.FromBase64String(value);
 
-                using (MemoryStream ms = new MemoryStream(data)) {
-                    img.BeginInit();
-                    img.CacheOption = BitmapCacheOption.OnLoad;
-                    img.StreamSource = ms;
-                    img.EndInit();
-                    ms.Dispose();
-                }
+                using MemoryStream ms = new(data);
+                img.BeginInit();
+                img.CacheOption = BitmapCacheOption.OnLoad;
+                img.StreamSource = ms;
+                img.EndInit();
+                ms.Dispose();
 
                 LogManager.Write("String converted");
                 return img;
-            }catch(Exception e) {
+            } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return null;
             }
@@ -268,11 +259,11 @@ namespace crud_progressao {
             LogManager.Write("Trying to convert a bitmap image into a string");
 
             try {
-                JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+                JpegBitmapEncoder encoder = new();
                 encoder.Frames.Add(BitmapFrame.Create(img));
                 byte[] data;
 
-                using (MemoryStream ms = new MemoryStream()) {
+                using (MemoryStream ms = new()) {
                     encoder.Save(ms);
                     data = ms.ToArray();
                     ms.Dispose();
@@ -280,7 +271,7 @@ namespace crud_progressao {
 
                 LogManager.Write("Bitmap image converted");
                 return Convert.ToBase64String(data);
-            }catch(Exception e) {
+            } catch (Exception e) {
                 LogManager.Write(e.Message);
                 return "";
             }
@@ -306,7 +297,7 @@ namespace crud_progressao {
         }
 
         private static Student ConvertJsonDataToStudent(dynamic studentData) {
-            Student student = new Student()
+            Student student = new()
             {
                 Id = studentData._id,
                 FirstName = studentData.firstName,
@@ -324,10 +315,10 @@ namespace crud_progressao {
 
             student.Payments = new Student.Payment[studentData.payments.Count];
 
-            for(int i = 0; i < studentData.payments.Count; i++) {
+            for (int i = 0; i < studentData.payments.Count; i++) {
                 dynamic paymentData = studentData.payments[i];
 
-                Student.Payment payment = new Student.Payment()
+                Student.Payment payment = new()
                 {
                     Id = paymentData._id,
                     DueDate = paymentData.dueDate.ToObject<int[]>(),
