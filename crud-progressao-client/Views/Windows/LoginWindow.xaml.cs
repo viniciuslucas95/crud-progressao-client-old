@@ -1,9 +1,10 @@
 ﻿using crud_progressao.Scripts;
+using crud_progressao.Services;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace crud_progressao.Windows {
+namespace crud_progressao.Views.Windows {
     public partial class LoginWindow : Window {
         public LoginWindow() {
             InitializeComponent(); ;

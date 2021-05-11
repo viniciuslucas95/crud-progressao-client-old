@@ -1,5 +1,6 @@
-﻿using crud_progressao.Scripts;
-using crud_progressao.Windows;
+﻿using crud_progressao.Models;
+using crud_progressao.Scripts;
+using crud_progressao.Views.Windows;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace crud_progressao {
+namespace crud_progressao.Services {
     static class ServerApi {
         public static bool HasPrivilege { get { return _client.DefaultRequestHeaders.Contains("privilege"); } }
 

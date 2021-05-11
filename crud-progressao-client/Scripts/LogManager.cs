@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 
-namespace crud_progressao {
+namespace crud_progressao.Scripts {
     public static class LogManager {
         private static readonly StreamWriter _writer =
-            new StreamWriter(Directory.GetCurrentDirectory() + "/log.txt", append: true) { AutoFlush = true };
+            new(Directory.GetCurrentDirectory() + "/log.txt", append: true) { AutoFlush = true };
 
         public static void Write(string text, bool logInConsole=true) {
             string dateTime = DateTime.Now.ToString();

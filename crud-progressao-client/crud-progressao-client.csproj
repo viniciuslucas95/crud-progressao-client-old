@@ -3,12 +3,12 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
-    <RootNamespace>crud_progressao_client_new</RootNamespace>
+    <RootNamespace>crud_progressao</RootNamespace>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Images\Curso Progressão Logo.png" />
+    <None Remove="Resources\Images\Curso Progressão Logo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,51 +17,51 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Images\Curso Progressão Logo.png" />
+    <Resource Include="Resources\Images\Curso Progressão Logo.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="UserControls\DateUserControl.xaml.cs">
-      <DependentUpon>DateUserControl.xaml</DependentUpon>
+    <Compile Update="Views\UserControls\DateUserControl.xaml.cs">
+      <DependentUpon>Views\UserControls\DateUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\LoginWindow.xaml.cs">
-      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    <Compile Update="Views\Windows\LoginWindow.xaml.cs">
+      <DependentUpon>Views\Windows\LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\MainWindow.xaml.cs">
+    <Compile Update="Views\Windows\MainWindow.xaml.cs">
       <SubType>Code</SubType>
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <DependentUpon>Views\Windows\MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\PaymentInfoWindow.xaml.cs">
-      <DependentUpon>PaymentInfoWindow.xaml</DependentUpon>
+    <Compile Update="Views\Windows\PaymentInfoWindow.xaml.cs">
+      <DependentUpon>Views\Windows\PaymentInfoWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\PaymentWindow.xaml.cs">
-      <DependentUpon>PaymentWindow.xaml</DependentUpon>
+    <Compile Update="Views\Windows\PaymentWindow.xaml.cs">
+      <DependentUpon>Views\Windows\PaymentWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\StudentWindow.xaml.cs">
-      <DependentUpon>StudentWindow.xaml</DependentUpon>
+    <Compile Update="Views\Windows\StudentWindow.xaml.cs">
+      <DependentUpon>Views\Windows\StudentWindow.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="ResourceDictionaries\ComboBoxDictionary.xaml">
+    <Page Update="Views\ResourceDictionaries\ComboBoxDictionary.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\DateUserControl.xaml">
+    <Page Update="Views\UserControls\DateUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Windows\LoginWindow.xaml">
+    <Page Update="Views\Windows\LoginWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Windows\MainWindow.xaml">
+    <Page Update="Views\Windows\MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Windows\PaymentInfoWindow.xaml">
+    <Page Update="Views\Windows\PaymentInfoWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Windows\PaymentWindow.xaml">
+    <Page Update="Views\Windows\PaymentWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Windows\StudentWindow.xaml">
+    <Page Update="Views\Windows\StudentWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

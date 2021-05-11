@@ -1,4 +1,6 @@
-﻿using crud_progressao.Scripts;
+﻿using crud_progressao.Models;
+using crud_progressao.Scripts;
+using crud_progressao.Services;
 using Microsoft.Win32;
 using System;
 using System.Threading.Tasks;
@@ -6,7 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace crud_progressao.Windows {
+namespace crud_progressao.Views.Windows {
     public partial class StudentWindow : Window {
         private Student _student;
         private readonly MainWindow _mainWindow;
@@ -109,7 +111,7 @@ namespace crud_progressao.Windows {
                 DueDate = dueDate,
                 Note = inputNote.Text,
                 Picture = (BitmapImage)imagePicture.Source,
-                Payments = _student.Payments ?? new Student.Payment[0]
+                Payments = _student.Payments ?? Array.Empty<Student.Payment>()
             };
         }
 
@@ -147,7 +149,7 @@ namespace crud_progressao.Windows {
         }
 
         private void FindPicture() {
-            OpenFileDialog pictureDialog = new OpenFileDialog
+            OpenFileDialog pictureDialog = new()
             {
                 Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png"
             };
@@ -161,7 +163,7 @@ namespace crud_progressao.Windows {
             LogManager.Write("Trying to set the student picture in the student window");
 
             try {
-                BitmapImage img = new BitmapImage(new Uri(fileName));
+                BitmapImage img = new(new Uri(fileName));
                 imagePicture.Source = img;
                 buttonPicture.Content = "Alterar foto";
                 LogManager.Write("Picture set");

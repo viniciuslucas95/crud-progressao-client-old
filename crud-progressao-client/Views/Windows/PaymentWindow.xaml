@@ -1,16 +1,12 @@
-﻿<Window x:Class="crud_progressao.Windows.PaymentWindow"
+﻿<Window x:Class="crud_progressao.Views.Windows.PaymentWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:crud_progressao.Scripts"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Style="{StaticResource WindowStyle}" Width="600" Height="460" MinHeight="460"
         Title="Pagamentos de {nome} - Vencimento dia {dia}" MinWidth="600"
         ResizeMode="NoResize">
-    <Window.Resources>
-        <local:WidthWithoutScrollBar x:Key="WidthWithoutScrollBar"/>
-    </Window.Resources>
     <Grid x:Name="gridMain"> 
         <Grid.RowDefinitions>
             <RowDefinition Height="32"/>
@@ -46,8 +42,7 @@
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
                     <Grid Width="{Binding ElementName=dataGridPayments,
-                        Path=ActualWidth,
-                        Converter={StaticResource WidthWithoutScrollBar}}"
+                        Path=ActualWidth}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top">
                         <Grid.RowDefinitions>

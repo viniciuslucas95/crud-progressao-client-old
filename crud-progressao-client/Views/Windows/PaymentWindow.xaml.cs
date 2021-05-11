@@ -1,9 +1,11 @@
 ﻿using crud_progressao.Scripts;
+using crud_progressao.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using crud_progressao.Services;
 
-namespace crud_progressao.Windows {
+namespace crud_progressao.Views.Windows {
     public partial class PaymentWindow : Window {
         public ObservableCollection<Student.Payment> Payments { get; private set; }
         public MainWindow MainWindow { get; private set; }

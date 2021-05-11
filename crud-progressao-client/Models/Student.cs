@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
 
-namespace crud_progressao {
+namespace crud_progressao.Models {
     public struct Student {
         public static ObservableCollection<Student> Database { get; set; } = new ObservableCollection<Student>();
 

@@ -2,9 +2,11 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using crud_progressao.Models;
 using crud_progressao.Scripts;
+using crud_progressao.Services;
 
-namespace crud_progressao.Windows {
+namespace crud_progressao.Views.Windows {
     public partial class MainWindow : Window {
         public MainWindow() {
             InitializeComponent();

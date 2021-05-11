@@ -1,10 +1,12 @@
-﻿using crud_progressao.Scripts;
+﻿using crud_progressao.Services;
+using crud_progressao.Models;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using crud_progressao.Scripts;
 
-namespace crud_progressao.Windows {
+namespace crud_progressao.Views.Windows {
     public partial class PaymentInfoWindow : Window {
         private readonly PaymentWindow _paymentWindow;
         private Student.Payment _payment;
