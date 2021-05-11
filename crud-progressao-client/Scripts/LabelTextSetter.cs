@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 
 namespace crud_progressao.Scripts {
-    public static class TextManager {
+    public static class LabelTextSetter {
         private static readonly Color _darkGrayColor = (Color)ColorConverter.ConvertFromString("#FF323232");
 
         public static void SetText(Label label, string text,bool error = false) {

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using crud_progressao.Services;
+using System.Windows.Input;
 
 namespace crud_progressao.Views.Windows {
     public partial class PaymentWindow : Window {
@@ -13,6 +14,8 @@ namespace crud_progressao.Views.Windows {
 
         public PaymentWindow(MainWindow mainWindow, Student student) {
             InitializeComponent();
+
+            LogWritter.WriteLog("Payment window opened");
 
             MainWindow = mainWindow;
             Student = student;
@@ -27,7 +30,7 @@ namespace crud_progressao.Views.Windows {
         }
 
         public void SetPayments() {
-            TextManager.SetText(labelFeedback, "Procurando pagamentos...");
+            LabelTextSetter.SetText(labelFeedback, "Procurando pagamentos...");
 
             Payments = new ObservableCollection<Student.Payment>();
 
@@ -38,24 +41,53 @@ namespace crud_progressao.Views.Windows {
             dataGridPayments.ItemsSource = Payments;
 
             string plural = Student.Payments.Length != 1 ? "s" : "";
-            TextManager.SetText(labelFeedback, $"{Student.Payments.Length} pagamento{plural} encontrado{plural}");
+            LabelTextSetter.SetText(labelFeedback, $"{Student.Payments.Length} pagamento{plural} encontrado{plural}");
         }
 
-        private void NewPaymentButton(object sender, RoutedEventArgs e) {
+        private void PaymentReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
             new PaymentInfoWindow(this).ShowDialog();
         }
 
-        private void EditButton(object sender, RoutedEventArgs e) {
+        private void PaymentClick(object sender, RoutedEventArgs e) {
+            new PaymentInfoWindow(this).ShowDialog();
+        }
+
+        private void EditReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
             Student.Payment payment = (Student.Payment)(sender as Button).DataContext;
             new PaymentInfoWindow(this, payment).ShowDialog();
         }
 
-        private void ReportButton(object sender, RoutedEventArgs e) {
+        private void EditClick(object sender, RoutedEventArgs e) {
+            Student.Payment payment = (Student.Payment)(sender as Button).DataContext;
+            new PaymentInfoWindow(this, payment).ShowDialog();
+        }
+
+        private void ReportReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
 
         }
 
-        private void CloseButton(object sender, RoutedEventArgs e) {
+        private void ReportClick(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void CloseReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
             Close();
+        }
+
+        private void CloseClick(object sender, RoutedEventArgs e) {
+            Close();
+        }
+
+        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
+            LogWritter.WriteLog("Payment window closed");
         }
     }
 }

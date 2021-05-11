@@ -11,65 +11,40 @@ namespace crud_progressao.Views.Windows {
         public MainWindow() {
             InitializeComponent();
 
-            ServerApi.SetMainWindow(this);
+            LogWritter.WriteLog("Main window opened");
 
             dataGridStudents.ItemsSource = Student.Database;
 
             if (ServerApi.HasPrivilege) {
-                labelFeedbackSum.Visibility = Visibility.Visible;
+                labelFeedbackTotal.Visibility = Visibility.Visible;
                 buttonReport.Visibility = Visibility.Visible;
                 buttonReport.IsEnabled = true;
             }
-
-            LogManager.Write("Starting program...");
         }
 
         private async Task SearchAsync() {
-            TextManager.SetText(labelFeedbackAmount, $"Procurando alunos...");
+            LabelTextSetter.SetText(labelFeedback, $"Procurando alunos...");
 
             EnableControls(false);
 
-            bool res = await ServerApi.GetStudentsAsync(
+            bool result = await ServerApi.GetStudentsAsync(
                 inputFirstName.Text, inputLastName.Text, inputClassName.Text,
                 inputResponsible.Text, inputAddress.Text, inputDiscount.Text);
 
             EnableControls(true);
 
-            if (!res) {
-                TextManager.SetText(labelFeedbackAmount, $"Não foi possível acessar o banco de dados!", true);
+            if (!result) {
+                LabelTextSetter.SetText(labelFeedback, $"Não foi possível acessar o banco de dados!", true);
                 return;
             }
 
             EnablePanel(false);
 
             string plural = Student.Database.Count != 1 ? "s" : "";
-            TextManager.SetText(labelFeedbackAmount, $"{Student.Database.Count} registro{plural} encontrado{plural}");
+            LabelTextSetter.SetText(labelFeedback, $"{Student.Database.Count} registro{plural} encontrado{plural}");
 
             CalculateTotal();
-        }
-
-        private async void SearchReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
-
-            await SearchAsync();
-        }
-
-        private async void SearchClick(object sender, RoutedEventArgs e) {
-            await SearchAsync();
-        }
-
-        private void Register() {
-            EnablePanel(false);
-            new StudentWindow(this).ShowDialog();
-        }
-
-        private void Update(Student student) {
-            new StudentWindow(this, student).ShowDialog();
-        }
-
-        private void Payments(Student student) {
-            new PaymentWindow(this, student).ShowDialog();
-        }
+        }        
 
         private void CalculateTotal() {
             if (Student.Database.Count == 0) return;
@@ -79,7 +54,7 @@ namespace crud_progressao.Views.Windows {
             foreach (Student student in Student.Database)
                 total += student.Total;
 
-            TextManager.SetText(labelFeedbackSum, $"Valor total: R$ {total}");
+            LabelTextSetter.SetText(labelFeedbackTotal, $"Valor total: R$ {total}");
         }
 
         private void EnableControls(bool value) {
@@ -123,8 +98,33 @@ namespace crud_progressao.Views.Windows {
             }
         }
 
+        private void Register() {
+            EnablePanel(false);
+            new StudentWindow(this).ShowDialog();
+        }
+
+        private void Update(Student student) {
+            new StudentWindow(this, student).ShowDialog();
+        }
+
+        private void Payments(Student student) {
+            new PaymentWindow(this, student).ShowDialog();
+        }
+
         private bool IsControlsEnabled() {
             return buttonRegister.IsEnabled;
+        }
+
+        private void SearchReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            _ = SearchAsync();
+        }
+
+        private void SearchClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
+            _ = SearchAsync();
         }
 
         private void RegisterReturn(object sender, KeyEventArgs e) {
@@ -134,6 +134,8 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void RegisterClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
             Register();
         }
 
@@ -144,10 +146,14 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void CloseClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
             EnablePanel(false);
         }
 
         private void BackgroundClick(object sender, MouseButtonEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
             EnablePanel(false);
         }
 
@@ -180,11 +186,13 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void OpenClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
             EnablePanel(true);
         }
 
-        private void OnProgramClose(object sender, System.ComponentModel.CancelEventArgs e) {
-            LogManager.Write("Closing program...");
+        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
+            LogWritter.WriteLog("Main window closed");
         }
     }
 }

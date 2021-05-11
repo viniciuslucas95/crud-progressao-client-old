@@ -117,11 +117,12 @@
             <Setter Property="SelectionMode" Value="Single"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
         </Style>
         <Style TargetType="DataGridColumnHeader">
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="8 4"/>
-            <Setter Property="BorderThickness" Value="0 1 1 1"/>
+            <Setter Property="BorderThickness" Value="0 0 1 1"/>
             <Setter Property="BorderBrush" Value="#FF787878"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
         </Style>

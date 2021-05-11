@@ -14,93 +14,79 @@ namespace crud_progressao.Views.Windows {
         public PaymentInfoWindow(PaymentWindow paymentWindow, Student.Payment payment = new Student.Payment()) {
             InitializeComponent();
 
+            LogWritter.WriteLog("Payment info window opened");
+
             _paymentWindow = paymentWindow;
             _payment = payment;
 
             // The payment is new when its id is null or empty
-            if (!string.IsNullOrEmpty(_payment.Id))
+            if (!string.IsNullOrEmpty(_payment.Id)) {
                 SetExistentValues();
-            else
-                SetDefaultValues();
+                return;
+            }
+            
+            SetDefaultValues();
         }
 
         private async Task Confirm() {
             EnableControls(false);
 
             if (string.IsNullOrEmpty(_payment.Id)) { // Register
-                TextManager.SetText(labelFeedback, "Registrando novo pagamento...");
+                LabelTextSetter.SetText(labelFeedback, "Registrando novo pagamento...");
                 string id = await ServerApi.RegisterPaymentAsync(_paymentWindow.Student.Id, UpdatedPayment());
 
                 if (!string.IsNullOrEmpty(id)) {
-                    TextManager.SetText(_paymentWindow.labelFeedback, "Pagamento registrado com sucesso!");
+                    LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento registrado com sucesso!");
                     _payment.Id = id;
                     InsertPayment();
                     Close();
-                } else {
-                    TextManager.SetText(labelFeedback, "Erro ao tentar registrar o pagamento!", true);
+                    return;
                 }
+
+                LabelTextSetter.SetText(labelFeedback, "Erro ao tentar registrar o pagamento!", true);
             } else { // Update
-                TextManager.SetText(labelFeedback, "Atualizando pagamento...");
+                LabelTextSetter.SetText(labelFeedback, "Atualizando pagamento...");
                 bool result = await ServerApi.UpdatePaymentAsync(_paymentWindow.Student.Id, UpdatedPayment());
 
                 if (result) {
-                    TextManager.SetText(_paymentWindow.labelFeedback, "Pagamento atualizado com sucesso!");
+                    LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento atualizado com sucesso!");
                     InsertPayment(true);
                     Close();
-                } else {
-                    TextManager.SetText(labelFeedback, "Erro ao tentar atualizar o pagamento!", true);
+                    return;
                 }
+
+                LabelTextSetter.SetText(labelFeedback, "Erro ao tentar atualizar o pagamento!", true);
             }
 
             EnableControls(true);
         }
 
         private async Task Delete() {
-            EnableControls(false);
-            TextManager.SetText(labelFeedback, "Deletando pagamento...");
+            LabelTextSetter.SetText(labelFeedback, "Deletando pagamento...");
+            EnableControls(false);            
             bool result = await ServerApi.DeletePaymentAsync(_paymentWindow.Student.Id, _payment.Id);
 
             if (result) {
-                TextManager.SetText(_paymentWindow.labelFeedback, "Pagamento deletado com sucesso!");
+                LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento deletado com sucesso!");
                 RemovePayment();
                 Close();
-            } else {
-                TextManager.SetText(labelFeedback, "Erro ao tentar deletar o pagamento!", true);
+                return;
             }
 
+            LabelTextSetter.SetText(labelFeedback, "Erro ao tentar deletar o pagamento!", true);
             EnableControls(true);
         }
 
-        private async void ConfirmClick(object sender, RoutedEventArgs e) {
-            await Confirm();
-        }
-
-        private async void ConfirmReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
-
-            await Confirm();
-        }
-
-        private async void DeleteClick(object sender, RoutedEventArgs e) {
-            await Delete();
-        }
-
-        private async void DeleteReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
-
-            await Delete();
-        }
-
         private Student.Payment UpdatedPayment() {
-            int.TryParse(userControlDueDate.inputDay.Text, out int dueDateDay);
-            int.TryParse(userControlDueDate.inputMonth.Text, out int dueDateMonth);
-            int.TryParse(userControlDueDate.inputYear.Text, out int dueDateYear);
-            int.TryParse(userControlPaymentDate.inputDay.Text, out int paymentDay);
-            int.TryParse(userControlPaymentDate.inputMonth.Text, out int paymentMonth);
-            int.TryParse(userControlPaymentDate.inputYear.Text, out int paymentYear);
-            double.TryParse(inputInstallment.Text, out double installment);
-            double.TryParse(inputDiscount.Text, out double discount);
-            double.TryParse(inputPaidValue.Text, out double paidValue);
+            _ = int.TryParse(userControlDueDate.inputDay.Text, out int dueDateDay);
+            _ = int.TryParse(userControlDueDate.inputMonth.Text, out int dueDateMonth);
+            _ = int.TryParse(userControlDueDate.inputYear.Text, out int dueDateYear);
+            _ = int.TryParse(userControlPaymentDate.inputDay.Text, out int paymentDay);
+            _ = int.TryParse(userControlPaymentDate.inputMonth.Text, out int paymentMonth);
+            _ = int.TryParse(userControlPaymentDate.inputYear.Text, out int paymentYear);
+            _ = double.TryParse(inputInstallment.Text, out double installment);
+            _ = double.TryParse(inputDiscount.Text, out double discount);
+            _ = double.TryParse(inputPaidValue.Text, out double paidValue);
 
             return new Student.Payment()
             {
@@ -171,10 +157,8 @@ namespace crud_progressao.Views.Windows {
         private Student.Payment[] CreatePaymentInTheArray(Student currentStudent) {
             Student.Payment[] currentPayments = currentStudent.Payments;
             Student.Payment[] newPayments = new Student.Payment[currentPayments.Length + 1];
-
-            for (int i = 0; i < currentPayments.Length; i++) {
-                newPayments[i] = currentPayments[i];
-            }
+            
+            currentPayments.CopyTo(newPayments, 0);            
 
             newPayments[currentPayments.Length] = _payment;
             return newPayments;
@@ -197,14 +181,14 @@ namespace crud_progressao.Views.Windows {
 
             Student.DiscountTypeOptions discountType = (Student.DiscountTypeOptions)comboBoxDiscount.SelectedIndex;
 
-            double.TryParse(inputInstallment.Text, out double installment);
-            double.TryParse(inputDiscount.Text, out double discount);
+            _ = double.TryParse(inputInstallment.Text, out double installment);
+            _ = double.TryParse(inputDiscount.Text, out double discount);
 
             string value = discountType == Student.DiscountTypeOptions.Fixed
                 ? (installment - discount).ToString()
                 : (installment - installment * discount / 100).ToString();
 
-            double.TryParse(value, out double total);
+            _ = double.TryParse(value, out double total);
 
             labelTotal.Content = "R$ " + Math.Round(total, 2);
         }
@@ -264,11 +248,45 @@ namespace crud_progressao.Views.Windows {
                 buttonDelete.IsEnabled = value;
         }
 
+        private void OnTextChange(object sender, System.Windows.Controls.TextChangedEventArgs e) {
+            UpdateTotal();
+        }
+
+        private void OnComboBoxSelectionChange(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+            UpdateTotal();
+        }
+
         private bool IsControlsEnabled() {
             return buttonConfirm.IsEnabled;
         }
 
+        private void ConfirmClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
+            _ = Confirm();
+        }
+
+        private void ConfirmReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            _ = Confirm();
+        }
+
+        private void DeleteClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
+            _ = Delete();
+        }
+
+        private void DeleteReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            _ = Delete();
+        }
+
         private void CancelClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
             Close();
         }
 
@@ -278,12 +296,8 @@ namespace crud_progressao.Views.Windows {
             Close();
         }
 
-        private void OnTextChange(object sender, System.Windows.Controls.TextChangedEventArgs e) {
-            UpdateTotal();
-        }
-
-        private void OnComboBoxSelectionChange(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
-            UpdateTotal();
+        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
+            LogWritter.WriteLog("Payment info window closed");
         }
     }
 }

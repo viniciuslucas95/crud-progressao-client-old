@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Style="{StaticResource WindowStyle}" Closing="OnProgramClose"
+        Style="{StaticResource WindowStyle}" Closing="OnWindowClose"
         Title="Sistema de Gerenciamento de Alunos" MinWidth="800" MinHeight="600"
         Width="800" Height="600">
-    <Grid x:Name="gridMain">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="0.75*"/>
@@ -25,7 +25,8 @@
                Source="/Resources/Images/Curso Progressão Logo.png"
                RenderOptions.BitmapScalingMode="HighQuality"/>
         <Rectangle x:Name="rectangleNavbar" Grid.ColumnSpan="6" Fill="Transparent"
-                   MouseDown="BackgroundClick"/>
+                   MouseDown="BackgroundClick" Stroke="#FF787878"
+                   StrokeThickness="1" StrokeDashArray="0 0 1 0"/>
         <DataGrid x:Name="dataGridStudents" Grid.Row="1" Grid.ColumnSpan="6"
                   PreviewMouseDown="BackgroundClick">
             <DataGrid.Columns>
@@ -62,10 +63,7 @@
             </DataGrid.Columns>
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
-                    <Grid Width="{Binding ElementName=dataGridStudents,
-                        Path=ActualWidth}"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" MaxWidth="320"/>
                             <ColumnDefinition Width="*" />
@@ -183,9 +181,9 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Label x:Name="labelFeedbackAmount" Content="" FontSize="16"
+            <Label x:Name="labelFeedback" Content="" FontSize="16"
                    Grid.ColumnSpan="3"/>
-            <Label x:Name="labelFeedbackSum" Grid.Column="1" Content=""
+            <Label x:Name="labelFeedbackTotal" Grid.Column="1" Content=""
                    BorderThickness="1 1 0 1" FontSize="16"
                    Visibility="Hidden"/>
             <Button x:Name="buttonReport" Grid.Column="2" FontSize="16"

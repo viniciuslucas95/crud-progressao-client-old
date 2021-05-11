@@ -13,25 +13,23 @@ namespace crud_progressao.Services {
     static class ServerApi {
         public static bool HasPrivilege { get { return _client.DefaultRequestHeaders.Contains("privilege"); } }
 
-        private readonly static HttpClient _client = new();
-        private static MainWindow _mainWindow;
-        private static string _url;
-
-        public static void SetMainWindow(MainWindow mainWindow) {
-            _mainWindow = mainWindow;
+        private static string Url {
+            get {
+                return ConfigFileGetter.GetConfigFile();
+            }
         }
 
+        private readonly static HttpClient _client = new();
+
         public static async Task<bool> LoginAsync(string username, string password) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
+            LogWritter.WriteLog("Trying to log in...");
 
             object data = new { username, password };
 
-            LogManager.Write("Trying to log in...");
-
             try {
-                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/login", data);
+                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{Url}/login", data);
                 if (!res.IsSuccessStatusCode) {
-                    LogManager.Write("ERROR trying to log in");
+                    LogWritter.WriteError("Trying to log in");
                     res.Dispose();
                     return false;
                 }
@@ -39,28 +37,24 @@ namespace crud_progressao.Services {
                 _client.DefaultRequestHeaders.Add("username", username);
                 _client.DefaultRequestHeaders.Add("password", password);
 
-                bool privilege = await res.Content.ReadAsAsync<bool>();
+                if (await res.Content.ReadAsAsync<bool>()) _client.DefaultRequestHeaders.Add("privilege", "true");
 
-                if (privilege) _client.DefaultRequestHeaders.Add("privilege", privilege.ToString());
-
-                LogManager.Write("Logged in");
                 res.Dispose();
+                LogWritter.WriteLog("Logged in");
                 return true;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return false;
             }
         }
 
         public static async Task<bool> GetStudentsAsync(string firstName, string lastName, string className, string responsible, string address, string discount) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
-
-            LogManager.Write("Trying to get students from the database...");
+            LogWritter.WriteLog("Trying to get students from the database...");
 
             try {
-                using HttpResponseMessage res = await _client.GetAsync($"{_url}/students/?firstName={firstName}&lastName={lastName}&className={className}&responsible={responsible}&address={address}&discount={discount}");
+                using HttpResponseMessage res = await _client.GetAsync($"{Url}/students/?firstName={firstName}&lastName={lastName}&className={className}&responsible={responsible}&address={address}&discount={discount}");
                 if (!res.IsSuccessStatusCode) {
-                    LogManager.Write("ERROR trying to get students from the database");
+                    LogWritter.WriteError("Trying to get students from the database");
                     res.Dispose();
                     return false;
                 }
@@ -73,159 +67,129 @@ namespace crud_progressao.Services {
                 for (int i = 0; i < database.Count; i++)
                     Student.Database.Add(ConvertJsonDataToStudent(database[i]));
 
-                LogManager.Write("Students gotten");
+                LogWritter.WriteLog("Students gotten");
                 res.Dispose();
                 return true;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
-                TextManager.SetText(_mainWindow.labelFeedbackAmount, $"Não foi possível acessar o banco de dados!", true);
+                LogWritter.WriteError(e.Message);
                 return false;
             }
         }
 
         /// <returns>Returns the new student id if the register is successful, or empty if isn't</returns>
         public static async Task<string> RegisterStudentAsync(Student student) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return "";
-
-            LogManager.Write("Trying to register the student in the database...");
+            LogWritter.WriteLog("Trying to register the student in the database...");
 
             JsonData data = ConvertStudentToJsonData(student);
 
             try {
-                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/students", data);
+                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{Url}/students", data);
                 string newStudentId = await res.Content.ReadAsStringAsync();
 
                 if (res.IsSuccessStatusCode) {
-                    LogManager.Write("Student registered");
+                    LogWritter.WriteLog("Student registered");
                 } else
-                    LogManager.Write("ERROR trying to register the student in the database");
+                    LogWritter.WriteError("Trying to register the student in the database");
 
                 res.Dispose();
                 return newStudentId;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return "";
             }
         }
 
         /// <returns>Returns the new payment id if the register is successful, or empty if isn't</returns>
         public static async Task<string> RegisterPaymentAsync(string studentId, Student.Payment payment) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return "";
-
-            LogManager.Write("Trying to register the student payment in the database...");
+            LogWritter.WriteLog("Trying to register the student payment in the database...");
 
             try {
-                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{_url}/students/payments/{studentId}", payment);
+                using HttpResponseMessage res = await _client.PostAsJsonAsync($"{Url}/students/payments/{studentId}", payment);
                 string newPaymentId = await res.Content.ReadAsStringAsync();
 
                 if (res.IsSuccessStatusCode) {
-                    LogManager.Write("Payment registered");
+                    LogWritter.WriteLog("Payment registered");
                 } else
-                    LogManager.Write("ERROR trying to register the payment in the database");
+                    LogWritter.WriteError("Trying to register the payment in the database");
 
                 res.Dispose();
                 return newPaymentId;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return "";
             }
         }
 
         public static async Task<bool> UpdateStudentAsync(Student student) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
-
-            LogManager.Write("Trying to update the student informations in the database...");
+            LogWritter.WriteLog("Trying to update the student informations in the database...");
 
             JsonData data = ConvertStudentToJsonData(student);
 
             try {
-                using HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students", data);
+                using HttpResponseMessage res = await _client.PutAsJsonAsync($"{Url}/students/{student.Id}", data);
                 if (res.IsSuccessStatusCode) {
-                    LogManager.Write("Student updated");
+                    LogWritter.WriteLog("Student updated");
                 } else
-                    LogManager.Write("ERROR trying to update the student informations in the database");
+                    LogWritter.WriteError("Trying to update the student informations in the database");
 
                 res.Dispose();
                 return res.IsSuccessStatusCode;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return false;
             }
         }
 
         public static async Task<bool> UpdatePaymentAsync(string studentId, Student.Payment payment) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
-
-            LogManager.Write("Trying to update the student payment in the database...");
+            LogWritter.WriteLog("Trying to update the student payment in the database...");
 
             try {
-                using HttpResponseMessage res = await _client.PutAsJsonAsync($"{_url}/students/payments/{studentId}", payment);
+                using HttpResponseMessage res = await _client.PutAsJsonAsync($"{Url}/students/payments/{studentId}", payment);
                 if (res.IsSuccessStatusCode) {
-                    LogManager.Write("Payment updated");
+                    LogWritter.WriteLog("Payment updated");
                 } else
-                    LogManager.Write("ERROR trying to update the student payment in the database");
+                    LogWritter.WriteError("Trying to update the student payment in the database");
 
                 res.Dispose();
                 return res.IsSuccessStatusCode;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return false;
             }
         }
 
         public static async Task<bool> DeleteStudentAsync(string id) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
-
-            LogManager.Write("Trying to delete the student from the database...");
+            LogWritter.WriteLog("Trying to delete the student from the database...");
 
             try {
-                using HttpResponseMessage res = await _client.DeleteAsync($"{ _url}/students/{id}");
+                using HttpResponseMessage res = await _client.DeleteAsync($"{Url}/students/{id}");
                 if (res.IsSuccessStatusCode) {
-                    LogManager.Write("Student deleted");
+                    LogWritter.WriteLog("Student deleted");
                 } else
-                    LogManager.Write("ERROR trying to delete the student from the database");
+                    LogWritter.WriteError("Trying to delete the student from the database");
 
                 res.Dispose();
                 return res.IsSuccessStatusCode;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return false;
             }
         }
 
         public static async Task<bool> DeletePaymentAsync(string studentId, string paymentId) {
-            if (string.IsNullOrEmpty(_url)) if (!GetConfigFile()) return false;
-
-            LogManager.Write("Trying to delete the payment from the database...");
+            LogWritter.WriteLog("Trying to delete the payment from the database...");
 
             try {
-                using HttpResponseMessage res = await _client.DeleteAsync($"{ _url}/students/payments/?studentId={studentId}&paymentId={paymentId}");
+                using HttpResponseMessage res = await _client.DeleteAsync($"{Url}/students/payments/{studentId}?paymentId={paymentId}");
                 if (res.IsSuccessStatusCode) {
-                    LogManager.Write("Payment deleted");
+                    LogWritter.WriteLog("Payment deleted");
                 } else
-                    LogManager.Write("ERROR trying to delete the payment from the database");
+                    LogWritter.WriteError("Trying to delete the payment from the database");
 
                 res.Dispose();
                 return res.IsSuccessStatusCode;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
-                return false;
-            }
-        }
-
-        private static bool GetConfigFile() {
-            LogManager.Write("Trying to get the config files...");
-
-            try {
-                using StreamReader streamReader = new("config.json");
-                string json = streamReader.ReadToEnd();
-                dynamic config = JsonConvert.DeserializeObject(json);
-                _url = config.serverUri;
-                LogManager.Write("Config file gotten");
-                streamReader.Dispose();
-                return true;
-            } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return false;
             }
         }
@@ -233,7 +197,7 @@ namespace crud_progressao.Services {
         private static BitmapImage StringToBitmapImage(string value) {
             if (string.IsNullOrEmpty(value)) return null;
 
-            LogManager.Write("Trying to convert a string into a bitmap image");
+            LogWritter.WriteLog("Trying to convert a string into a bitmap image");
 
             try {
                 BitmapImage img = new();
@@ -246,10 +210,10 @@ namespace crud_progressao.Services {
                 img.EndInit();
                 ms.Dispose();
 
-                LogManager.Write("String converted");
+                LogWritter.WriteLog("String converted");
                 return img;
             } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return null;
             }
         }
@@ -257,7 +221,7 @@ namespace crud_progressao.Services {
         private static string BitmapImageToString(BitmapImage img) {
             if (img == null) return "";
 
-            LogManager.Write("Trying to convert a bitmap image into a string");
+            LogWritter.WriteLog("Trying to convert a bitmap image into a string");
 
             try {
                 JpegBitmapEncoder encoder = new();
@@ -270,10 +234,10 @@ namespace crud_progressao.Services {
                     ms.Dispose();
                 }
 
-                LogManager.Write("Bitmap image converted");
+                LogWritter.WriteLog("Bitmap image converted");
                 return Convert.ToBase64String(data);
             } catch (Exception e) {
-                LogManager.Write(e.Message);
+                LogWritter.WriteError(e.Message);
                 return "";
             }
         }

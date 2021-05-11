@@ -16,6 +16,8 @@ namespace crud_progressao.Views.Windows {
         public StudentWindow(MainWindow mainWindow, Student student = new Student()) {
             InitializeComponent();
 
+            LogWritter.WriteLog("Student window opened");
+
             _mainWindow = mainWindow;
             _student = student;
 
@@ -28,74 +30,56 @@ namespace crud_progressao.Views.Windows {
             EnableControls(false);
 
             if (string.IsNullOrEmpty(_student.Id)) { // Register
-                TextManager.SetText(labelFeedback, "Registrando novo aluno...");
+                LabelTextSetter.SetText(labelFeedback, "Registrando novo aluno...");
                 string id = await ServerApi.RegisterStudentAsync(UpdatedStudent());
 
                 if (!string.IsNullOrEmpty(id)) {
-                    TextManager.SetText(labelFeedback, "Aluno registrado com sucesso!");
+                    LabelTextSetter.SetText(_mainWindow.labelFeedback, "Aluno registrado com sucesso!");
                     _student.Id = id;
                     InsertStudent();
                     Close();
-                } else {
-                    TextManager.SetText(labelFeedback, "Erro ao tentar registrar o aluno!", true);
+                    return;
                 }
+
+                LabelTextSetter.SetText(labelFeedback, "Erro ao tentar registrar o aluno!", true);
             } else { // Update
-                TextManager.SetText(labelFeedback, "Atualizando informações do aluno...");
+                LabelTextSetter.SetText(labelFeedback, "Atualizando informações do aluno...");
                 bool result = await ServerApi.UpdateStudentAsync(UpdatedStudent());
 
                 if (result) {
-                    TextManager.SetText(_mainWindow.labelFeedbackAmount, "Informações do aluno atualizada!");
+                    LabelTextSetter.SetText(_mainWindow.labelFeedback, "Informações do aluno atualizada!");
                     Student.Database.Remove(_student);
                     InsertStudent();
                     Close();
-                } else {
-                    TextManager.SetText(labelFeedback, "Erro ao tentar atualizar as informações!", true);
+                    return;
                 }
+
+                LabelTextSetter.SetText(labelFeedback, "Erro ao tentar atualizar as informações!", true);
             }
 
             EnableControls(true);
         }
 
         private async Task Delete() {
+            LabelTextSetter.SetText(labelFeedback, "Deletando aluno...");
             EnableControls(false);
-            TextManager.SetText(labelFeedback, "Deletando aluno...");
             bool result = await ServerApi.DeleteStudentAsync(_student.Id);
 
             if (result) {
-                TextManager.SetText(_mainWindow.labelFeedbackAmount, "Aluno deletado com sucesso!");
+                LabelTextSetter.SetText(_mainWindow.labelFeedback, "Aluno deletado com sucesso!");
                 Student.Database.Remove(_student);
                 Close();
-            } else {
-                TextManager.SetText(labelFeedback, "Erro ao tentar deletar o aluno!", true);
+                return;
             }
 
+            LabelTextSetter.SetText(labelFeedback, "Erro ao tentar deletar o aluno!", true);
             EnableControls(true);
         }
 
-        private async void DeleteReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
-
-            await Delete();
-        }
-
-        private async void DeleteClick(object sender, RoutedEventArgs e) {
-            await Delete();
-        }
-
-        private async void ConfirmReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
-
-            await Confirm();
-        }
-
-        private async void ConfirmClick(object sender, RoutedEventArgs e) {
-            await Confirm();
-        }
-
         private Student UpdatedStudent() {
-            double.TryParse(inputInstallment.Text, out double installment);
-            double.TryParse(inputDiscount.Text, out double discount);
-            int.TryParse(inputDueDate.Text, out int dueDate);
+            _ = double.TryParse(inputInstallment.Text, out double installment);
+            _ = double.TryParse(inputDiscount.Text, out double discount);
+            _ = int.TryParse(inputDueDate.Text, out int dueDate);
 
             return new Student()
             {
@@ -144,10 +128,6 @@ namespace crud_progressao.Views.Windows {
                 buttonPicture.Content = "Alterar foto";
         }
 
-        private bool IsControlsEnabled() {
-            return buttonConfirm.IsEnabled;
-        }
-
         private void FindPicture() {
             OpenFileDialog pictureDialog = new()
             {
@@ -160,16 +140,16 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void SetPicture(string fileName) {
-            LogManager.Write("Trying to set the student picture in the student window");
+            LogWritter.WriteLog("Trying to set the student picture in the student window");
 
             try {
                 BitmapImage img = new(new Uri(fileName));
                 imagePicture.Source = img;
                 buttonPicture.Content = "Alterar foto";
-                LogManager.Write("Picture set");
+                LogWritter.WriteLog("Picture set");
             } catch (Exception ex) {
                 imagePicture.Source = null;
-                LogManager.Write(ex.Message);
+                LogWritter.WriteError(ex.Message);
             }
         }
 
@@ -198,16 +178,20 @@ namespace crud_progressao.Views.Windows {
 
             Student.DiscountTypeOptions discountType = (Student.DiscountTypeOptions)comboBoxDiscount.SelectedIndex;
 
-            double.TryParse(inputInstallment.Text, out double installment);
-            double.TryParse(inputDiscount.Text, out double discount);
+            _ = double.TryParse(inputInstallment.Text, out double installment);
+            _ = double.TryParse(inputDiscount.Text, out double discount);
 
             string value = discountType == Student.DiscountTypeOptions.Fixed
                 ? (installment - discount).ToString()
                 : (installment - installment * discount / 100).ToString();
 
-            double.TryParse(value, out double total);
+            _ = double.TryParse(value, out double total);
 
             labelTotal.Content = "R$ " + Math.Round(total, 2);
+        }
+
+        private bool IsControlsEnabled() {
+            return buttonConfirm.IsEnabled;
         }
 
         private void PictureReturn(object sender, KeyEventArgs e) {
@@ -217,6 +201,8 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void PictureClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
             FindPicture();
         }
 
@@ -228,6 +214,30 @@ namespace crud_progressao.Views.Windows {
             UpdateTotal();
         }
 
+        private void DeleteReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            _ = Delete();
+        }
+
+        private void DeleteClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
+            _ = Delete();
+        }
+
+        private void ConfirmReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            _ = Confirm();
+        }
+
+        private void ConfirmClick(object sender, RoutedEventArgs e) {
+            if (!IsControlsEnabled()) return;
+
+            _ = Confirm();
+        }
+
         private void CancelReturn(object sender, KeyEventArgs e) {
             if (e.Key != Key.Return || !IsControlsEnabled()) return;
 
@@ -235,7 +245,13 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void CancelClick(object sender, RoutedEventArgs e) {
+            if(!IsControlsEnabled()) return;
+
             Close();
+        }
+
+        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
+            LogWritter.WriteLog("Student window closed");
         }
     }
 }

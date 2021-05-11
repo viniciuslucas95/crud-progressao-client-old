@@ -4,16 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:UserControls="clr-namespace:crud_progressao.Views.UserControls"
+        Style="{StaticResource WindowStyle}" Closing="OnWindowClose"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         Width="400" MinWidth="400" Height="320" MinHeight="320"
         Title="Criar pagamento">
     <Window.Resources>
         <ResourceDictionary Source="../ResourceDictionaries/ComboBoxDictionary.xaml"/>
     </Window.Resources>
-    <Window.Style>
-        <StaticResource ResourceKey="WindowStyle"/>
-    </Window.Style>
-    <Grid x:Name="gridMain">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>

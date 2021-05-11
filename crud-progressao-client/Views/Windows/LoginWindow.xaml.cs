@@ -7,35 +7,28 @@ using System.Windows.Input;
 namespace crud_progressao.Views.Windows {
     public partial class LoginWindow : Window {
         public LoginWindow() {
-            InitializeComponent(); ;
+            InitializeComponent();
+
+            LogWritter.WriteLog("Login window opened");
 
             inputUsername.Focus();
         }
 
         private async Task LogInAsync() {
             EnableControls(false);
-            TextManager.SetText(labelFeedback, "Logando...");
+            LabelTextSetter.SetText(labelFeedback, "Logando...");
 
-            bool res = await ServerApi.LoginAsync(inputUsername.Text, inputPassword.Password);
+            bool result = await ServerApi.LoginAsync(inputUsername.Text, inputPassword.Password);
 
-            if (res) {
+            if (result) {
                 new MainWindow().Show();
                 Close();
-            } else {
-                TextManager.SetText(labelFeedback, "Erro ao tentar logar!", true);
-                EnableControls(true);
-                inputUsername.Focus();
+                return;
             }
-        }
 
-        private async void ConfirmButton(object sender, RoutedEventArgs e) {
-            await LogInAsync();
-        }
-
-        private async void EnterKeyPressed(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !CheckButton()) return;
-
-            await LogInAsync();
+            LabelTextSetter.SetText(labelFeedback, "Erro ao tentar logar!", true);
+            EnableControls(true);
+            inputUsername.Focus();
         }
 
         private void EnableControls(bool value) {
@@ -44,22 +37,38 @@ namespace crud_progressao.Views.Windows {
             buttonLogin.IsEnabled = value;
         }
 
-        private void UsernameChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
-            CheckButton();
-        }
-
-        private void PasswordChanged(object sender, RoutedEventArgs e) {
-            CheckButton();
-        }
-
-        private bool CheckButton() {
+        private bool CanLogin() {
             if (inputUsername.Text.Length == 0 || inputPassword.Password.Length == 0) {
                 buttonLogin.IsEnabled = false;
                 return false;
-            } else {
-                buttonLogin.IsEnabled = true;
-                return true;
             }
+
+            buttonLogin.IsEnabled = true;
+            return true;
+        }
+
+        private void OnUsernameChange(object sender, System.Windows.Controls.TextChangedEventArgs e) {
+            CanLogin();
+        }
+
+        private void OnPasswordChange(object sender, RoutedEventArgs e) {
+            CanLogin();
+        }
+
+        private void ConfirmClick(object sender, RoutedEventArgs e) {
+            if (!CanLogin()) return;
+
+            _ = LogInAsync();
+        }
+
+        private void ConfirmButton(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !CanLogin()) return;
+
+            _ = LogInAsync();
+        }
+
+        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
+            LogWritter.WriteLog("Login window closed");
         }
     }
 }
