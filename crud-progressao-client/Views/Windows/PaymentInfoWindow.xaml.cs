@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using crud_progressao.Scripts;
+using crud_progressao.DataTypes;
 
 namespace crud_progressao.Views.Windows {
     public partial class PaymentInfoWindow : Window {
         private readonly PaymentWindow _paymentWindow;
-        private Student.Payment _payment;
+        private Payment _payment;
 
-        public PaymentInfoWindow(PaymentWindow paymentWindow, Student.Payment payment = new Student.Payment()) {
+        public PaymentInfoWindow(PaymentWindow paymentWindow, Payment payment = new Payment()) {
             InitializeComponent();
 
             LogWritter.WriteLog("Payment info window opened");
@@ -77,7 +78,7 @@ namespace crud_progressao.Views.Windows {
             EnableControls(true);
         }
 
-        private Student.Payment UpdatedPayment() {
+        private Payment UpdatedPayment() {
             _ = int.TryParse(userControlDueDate.inputDay.Text, out int dueDateDay);
             _ = int.TryParse(userControlDueDate.inputMonth.Text, out int dueDateMonth);
             _ = int.TryParse(userControlDueDate.inputYear.Text, out int dueDateYear);
@@ -88,14 +89,14 @@ namespace crud_progressao.Views.Windows {
             _ = double.TryParse(inputDiscount.Text, out double discount);
             _ = double.TryParse(inputPaidValue.Text, out double paidValue);
 
-            return new Student.Payment()
+            return new Payment()
             {
                 Id = _payment.Id,
                 DueDate = new int[3] { dueDateDay, dueDateMonth, dueDateYear },
                 PaymentDate = new int[3] { paymentDay, paymentMonth, paymentYear },
                 Installment = installment,
                 Discount = discount,
-                DiscountType = (Student.DiscountTypeOptions)comboBoxDiscount.SelectedIndex,
+                DiscountType = (DiscountType)comboBoxDiscount.SelectedIndex,
                 PaidValue = paidValue,
                 Note = inputNote.Text
             };            
@@ -107,8 +108,8 @@ namespace crud_progressao.Views.Windows {
             Student currentStudent = _paymentWindow.Student;
             Student newStudent = currentStudent;
 
-            Student.Payment[] currentPayments = currentStudent.Payments;
-            Student.Payment[] newPayments = new Student.Payment[currentPayments.Length - 1];
+            Payment[] currentPayments = currentStudent.Payments;
+            Payment[] newPayments = new Payment[currentPayments.Length - 1];
 
             if (newPayments.Length > 0) {
                 int skipped = 0;
@@ -124,9 +125,9 @@ namespace crud_progressao.Views.Windows {
             }
 
             newStudent.Payments = newPayments;
-            int index = Student.Database.IndexOf(currentStudent);
-            Student.Database.Remove(currentStudent);
-            Student.Database.Insert(index, newStudent);
+            int index = _paymentWindow.MainWindow.Students.IndexOf(currentStudent);
+            _paymentWindow.MainWindow.Students.Remove(currentStudent);
+            _paymentWindow.MainWindow.Students.Insert(index, newStudent);
             _paymentWindow.MainWindow.dataGridStudents.SelectedItem = newStudent;
             _paymentWindow.Student = newStudent;
         }
@@ -138,15 +139,15 @@ namespace crud_progressao.Views.Windows {
             Student currentStudent = _paymentWindow.Student;
             Student newStudent = currentStudent;
 
-            Student.Payment[] newPayments =
+            Payment[] newPayments =
                 updating
                 ? UpdatePaymentInTheArray(currentStudent)
                 : CreatePaymentInTheArray(currentStudent);
 
             newStudent.Payments = newPayments;
-            int index = Student.Database.IndexOf(currentStudent);
-            Student.Database.Remove(currentStudent);
-            Student.Database.Insert(index, newStudent);
+            int index = _paymentWindow.MainWindow.Students.IndexOf(currentStudent);
+            _paymentWindow.MainWindow.Students.Remove(currentStudent);
+            _paymentWindow.MainWindow.Students.Insert(index, newStudent);
             _paymentWindow.MainWindow.dataGridStudents.SelectedItem = newStudent;
             _paymentWindow.Student = newStudent;
             _paymentWindow.Payments.Insert(0, _payment);
@@ -154,9 +155,9 @@ namespace crud_progressao.Views.Windows {
             _paymentWindow.dataGridPayments.ScrollIntoView(_payment);
         }
 
-        private Student.Payment[] CreatePaymentInTheArray(Student currentStudent) {
-            Student.Payment[] currentPayments = currentStudent.Payments;
-            Student.Payment[] newPayments = new Student.Payment[currentPayments.Length + 1];
+        private Payment[] CreatePaymentInTheArray(Student currentStudent) {
+            Payment[] currentPayments = currentStudent.Payments;
+            Payment[] newPayments = new Payment[currentPayments.Length + 1];
             
             currentPayments.CopyTo(newPayments, 0);            
 
@@ -164,8 +165,8 @@ namespace crud_progressao.Views.Windows {
             return newPayments;
         }
 
-        private Student.Payment[] UpdatePaymentInTheArray(Student currentStudent) {
-            Student.Payment[] newPayments = currentStudent.Payments;
+        private Payment[] UpdatePaymentInTheArray(Student currentStudent) {
+            Payment[] newPayments = currentStudent.Payments;
 
             for (int i = 0; i < newPayments.Length; i++) {
                 if (newPayments[i].Id != _payment.Id) continue;
@@ -179,12 +180,12 @@ namespace crud_progressao.Views.Windows {
         private void UpdateTotal() {
             if (inputInstallment == null || inputDiscount == null || labelTotal == null) return;
 
-            Student.DiscountTypeOptions discountType = (Student.DiscountTypeOptions)comboBoxDiscount.SelectedIndex;
+            DiscountType discountType = (DiscountType)comboBoxDiscount.SelectedIndex;
 
             _ = double.TryParse(inputInstallment.Text, out double installment);
             _ = double.TryParse(inputDiscount.Text, out double discount);
 
-            string value = discountType == Student.DiscountTypeOptions.Fixed
+            string value = discountType == DiscountType.Fixed
                 ? (installment - discount).ToString()
                 : (installment - installment * discount / 100).ToString();
 

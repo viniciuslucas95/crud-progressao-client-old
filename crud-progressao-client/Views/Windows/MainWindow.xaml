@@ -188,7 +188,8 @@
                    Visibility="Hidden"/>
             <Button x:Name="buttonReport" Grid.Column="2" FontSize="16"
                     Content="Gerar Relatório" Visibility="Hidden"
-                    IsEnabled="False"/>
+                    IsEnabled="False" Click="ReportClick"
+                    KeyDown="ReportReturn"/>
         </Grid>
     </Grid>
 </Window>

@@ -1,22 +1,16 @@
-﻿using System.Windows.Media.Imaging;
-using crud_progressao.DataTypes;
+﻿using crud_progressao.DataTypes;
 using crud_progressao.Scripts;
 
 namespace crud_progressao.Models {
-    public struct Student {
+    public struct Payment {
         public string Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string ClassName { get; set; }
-        public string Responsible { get; set; }
-        public string Address { get; set; }
+        public int[] DueDate { get; set; }
+        public int[] PaymentDate { get; set; }
         public double Installment { get; set; }
         public double Discount { get; set; }
         public DiscountType DiscountType { get; set; }
-        public int DueDate { get; set; }
+        public double PaidValue { get; set; }
         public string Note { get; set; }
-        public BitmapImage Picture { get; set; }
-        public Payment[] Payments { get; set; }
 
         public double Total {
             get {
@@ -36,6 +30,21 @@ namespace crud_progressao.Models {
         public string TotalString {
             get {
                 return MoneyTextConverter.GetTotalString(DiscountType, Installment, Discount);
+            }
+        }
+        public string DueDateString {
+            get {
+                return $"{DueDate[0]} / {DueDate[1]} / {DueDate[2]}";
+            }
+        }
+        public string PaidValueString {
+            get {
+                return $"R$ {MoneyTextConverter.Round(PaidValue)}";
+            }
+        }
+        public string PaymentDateString {
+            get {
+                return $"{PaymentDate[0]} / {PaymentDate[1]} / {PaymentDate[2]}";
             }
         }
     }

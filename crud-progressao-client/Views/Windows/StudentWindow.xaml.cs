@@ -1,4 +1,5 @@
-﻿using crud_progressao.Models;
+﻿using crud_progressao.DataTypes;
+using crud_progressao.Models;
 using crud_progressao.Scripts;
 using crud_progressao.Services;
 using Microsoft.Win32;
@@ -48,7 +49,7 @@ namespace crud_progressao.Views.Windows {
 
                 if (result) {
                     LabelTextSetter.SetText(_mainWindow.labelFeedback, "Informações do aluno atualizada!");
-                    Student.Database.Remove(_student);
+                    _mainWindow.Students.Remove(_student);
                     InsertStudent();
                     Close();
                     return;
@@ -67,7 +68,7 @@ namespace crud_progressao.Views.Windows {
 
             if (result) {
                 LabelTextSetter.SetText(_mainWindow.labelFeedback, "Aluno deletado com sucesso!");
-                Student.Database.Remove(_student);
+                _mainWindow.Students.Remove(_student);
                 Close();
                 return;
             }
@@ -91,17 +92,17 @@ namespace crud_progressao.Views.Windows {
                 Address = inputAddress.Text,
                 Installment = installment,
                 Discount = discount,
-                DiscountType = (Student.DiscountTypeOptions)comboBoxDiscount.SelectedIndex,
+                DiscountType = (DiscountType)comboBoxDiscount.SelectedIndex,
                 DueDate = dueDate,
                 Note = inputNote.Text,
                 Picture = (BitmapImage)imagePicture.Source,
-                Payments = _student.Payments ?? Array.Empty<Student.Payment>()
+                Payments = _student.Payments ?? Array.Empty<Payment>()
             };
         }
 
         private void InsertStudent() {
             _student = UpdatedStudent();
-            Student.Database.Insert(0, _student);
+            _mainWindow.Students.Insert(0, _student);
             _mainWindow.dataGridStudents.SelectedItem = _student;
             _mainWindow.dataGridStudents.ScrollIntoView(_student);
         }
@@ -176,12 +177,12 @@ namespace crud_progressao.Views.Windows {
         private void UpdateTotal() {
             if (inputInstallment == null || inputDiscount == null || labelTotal == null) return;
 
-            Student.DiscountTypeOptions discountType = (Student.DiscountTypeOptions)comboBoxDiscount.SelectedIndex;
+            DiscountType discountType = (DiscountType)comboBoxDiscount.SelectedIndex;
 
             _ = double.TryParse(inputInstallment.Text, out double installment);
             _ = double.TryParse(inputDiscount.Text, out double discount);
 
-            string value = discountType == Student.DiscountTypeOptions.Fixed
+            string value = discountType == DiscountType.Fixed
                 ? (installment - discount).ToString()
                 : (installment - installment * discount / 100).ToString();
 

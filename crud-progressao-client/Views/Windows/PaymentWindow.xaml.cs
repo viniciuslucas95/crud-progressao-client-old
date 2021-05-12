@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace crud_progressao.Views.Windows {
     public partial class PaymentWindow : Window {
-        public ObservableCollection<Student.Payment> Payments { get; private set; }
+        public ObservableCollection<Payment> Payments { get; private set; }
         public MainWindow MainWindow { get; private set; }
         public Student Student { get; set; }
 
@@ -32,7 +32,7 @@ namespace crud_progressao.Views.Windows {
         public void SetPayments() {
             LabelTextSetter.SetText(labelFeedback, "Procurando pagamentos...");
 
-            Payments = new ObservableCollection<Student.Payment>();
+            Payments = new ObservableCollection<Payment>();
 
             for (int i = 0; i < Student.Payments.Length; i++) {
                 Payments.Add(Student.Payments[i]);
@@ -45,44 +45,52 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void PaymentReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return) return;
+            if (e.Key != Key.Return || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
 
             new PaymentInfoWindow(this).ShowDialog();
         }
 
         private void PaymentClick(object sender, RoutedEventArgs e) {
+            if (ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+
             new PaymentInfoWindow(this).ShowDialog();
         }
 
         private void EditReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return) return;
+            if (e.Key != Key.Return || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
 
-            Student.Payment payment = (Student.Payment)(sender as Button).DataContext;
+            Payment payment = (Payment)(sender as Button).DataContext;
             new PaymentInfoWindow(this, payment).ShowDialog();
         }
 
         private void EditClick(object sender, RoutedEventArgs e) {
-            Student.Payment payment = (Student.Payment)(sender as Button).DataContext;
+            if (ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+
+            Payment payment = (Payment)(sender as Button).DataContext;
             new PaymentInfoWindow(this, payment).ShowDialog();
         }
 
         private void ReportReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return) return;
+            if (e.Key != Key.Return || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
 
 
         }
 
         private void ReportClick(object sender, RoutedEventArgs e) {
+            if (ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+
 
         }
 
         private void CloseReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return) return;
+            if (e.Key != Key.Return || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
 
             Close();
         }
 
         private void CloseClick(object sender, RoutedEventArgs e) {
+            if (ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+
             Close();
         }
 
