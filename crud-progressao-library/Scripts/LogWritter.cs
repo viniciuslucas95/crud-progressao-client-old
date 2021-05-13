@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace crud_progressao.Scripts {
+namespace crud_progressao_library.Scripts {
     public static class LogWritter {
         private static readonly StreamWriter _writer =
             new(Directory.GetCurrentDirectory() + "/log.txt", append: true) { AutoFlush = true };

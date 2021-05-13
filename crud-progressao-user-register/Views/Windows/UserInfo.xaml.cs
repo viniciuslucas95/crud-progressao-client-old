@@ -1,6 +1,6 @@
-﻿using crud_progressao.Scripts;
+﻿using crud_progressao_library.Scripts;
+using crud_progressao_library.Services;
 using crud_progressao_user_register.Models;
-using crud_progressao_user_register.Services;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -9,12 +9,14 @@ namespace crud_progressao_user_register.Views.Windows {
     public partial class UserInfoWindow : Window {
         private User _user;
         private readonly MainWindow _mainWindow;
+        private readonly string _url;
 
         public UserInfoWindow(MainWindow mainWindow, User user = new User()) {
             InitializeComponent();
 
             _mainWindow = mainWindow;
             _user = user;
+            _url = "users";
 
             if (!string.IsNullOrEmpty(_user.Id))
                 SetExistentValues();
@@ -25,7 +27,7 @@ namespace crud_progressao_user_register.Views.Windows {
 
             if (string.IsNullOrEmpty(_user.Id)) { // Register
                 LabelTextSetter.SetText(labelFeedback, "Registrando novo usuário...");
-                string id = await ServerApi.RegisterUserAsync(UpdatedUser());
+                string id = await ServerApi.RegisterAsync(_url, _user.Id, UpdatedUser());
 
                 if (!string.IsNullOrEmpty(id)) {
                     LabelTextSetter.SetText(_mainWindow.labelFeedback, "Usuário registrado com sucesso!");
@@ -38,7 +40,7 @@ namespace crud_progressao_user_register.Views.Windows {
                 LabelTextSetter.SetText(labelFeedback, "Erro ao tentar registrar o usuário!", true);
             } else { // Update
                 LabelTextSetter.SetText(labelFeedback, "Atualizando informações do usuário...");
-                bool result = await ServerApi.UpdateUserAsync(UpdatedUser());
+                bool result = await ServerApi.UpdateAsync(_url, _user.Id, UpdatedUser());
 
                 if (result) {
                     LabelTextSetter.SetText(_mainWindow.labelFeedback, "Informações do aluno atualizada!");
@@ -57,7 +59,7 @@ namespace crud_progressao_user_register.Views.Windows {
         private async Task Delete() {
             LabelTextSetter.SetText(labelFeedback, "Deletando usuário...");
             EnableControls(false);
-            bool result = await ServerApi.DeleteUserAsync(_user.Id);
+            bool result = await ServerApi.DeleteAsync(_url, _user.Id, "");
 
             if (result) {
                 LabelTextSetter.SetText(_mainWindow.labelFeedback, "Usuário deletado com sucesso!");
@@ -112,6 +114,7 @@ namespace crud_progressao_user_register.Views.Windows {
             return buttonConfirm.IsEnabled;
         }
 
+        #region UI Interaction Events
         private void DeleteReturn(object sender, KeyEventArgs e) {
             if (e.Key != Key.Return || !IsControlsEnabled()) return;
 
@@ -147,5 +150,6 @@ namespace crud_progressao_user_register.Views.Windows {
 
             Close();
         }
+#endregion
     }
 }

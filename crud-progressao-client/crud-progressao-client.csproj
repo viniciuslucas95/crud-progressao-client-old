@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\crud-progressao-library\crud-progressao-library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Images\Curso Progressão Logo.png" />
   </ItemGroup>
 

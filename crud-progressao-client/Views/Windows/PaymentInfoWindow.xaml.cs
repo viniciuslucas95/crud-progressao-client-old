@@ -1,24 +1,27 @@
-﻿using crud_progressao.Services;
-using crud_progressao.Models;
+﻿using crud_progressao.Models;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using crud_progressao.Scripts;
 using crud_progressao.DataTypes;
+using crud_progressao_library.Scripts;
+using System.Windows.Controls;
+using System.ComponentModel;
+using crud_progressao_library.Services;
 
 namespace crud_progressao.Views.Windows {
     public partial class PaymentInfoWindow : Window {
         private readonly PaymentWindow _paymentWindow;
         private Payment _payment;
+        private readonly string _param;
+        private readonly string _url = "students/payments";
 
         public PaymentInfoWindow(PaymentWindow paymentWindow, Payment payment = new Payment()) {
             InitializeComponent();
-
             LogWritter.WriteLog("Payment info window opened");
-
             _paymentWindow = paymentWindow;
             _payment = payment;
+            _param = _paymentWindow.Student.Id;
 
             // The payment is new when its id is null or empty
             if (!string.IsNullOrEmpty(_payment.Id)) {
@@ -34,7 +37,7 @@ namespace crud_progressao.Views.Windows {
 
             if (string.IsNullOrEmpty(_payment.Id)) { // Register
                 LabelTextSetter.SetText(labelFeedback, "Registrando novo pagamento...");
-                string id = await ServerApi.RegisterPaymentAsync(_paymentWindow.Student.Id, UpdatedPayment());
+                string id = await ServerApi.RegisterAsync(_url, _param, UpdatedPayment());
 
                 if (!string.IsNullOrEmpty(id)) {
                     LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento registrado com sucesso!");
@@ -47,7 +50,7 @@ namespace crud_progressao.Views.Windows {
                 LabelTextSetter.SetText(labelFeedback, "Erro ao tentar registrar o pagamento!", true);
             } else { // Update
                 LabelTextSetter.SetText(labelFeedback, "Atualizando pagamento...");
-                bool result = await ServerApi.UpdatePaymentAsync(_paymentWindow.Student.Id, UpdatedPayment());
+                bool result = await ServerApi.UpdateAsync(_url, _param, UpdatedPayment());
 
                 if (result) {
                     LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento atualizado com sucesso!");
@@ -64,8 +67,9 @@ namespace crud_progressao.Views.Windows {
 
         private async Task Delete() {
             LabelTextSetter.SetText(labelFeedback, "Deletando pagamento...");
-            EnableControls(false);            
-            bool result = await ServerApi.DeletePaymentAsync(_paymentWindow.Student.Id, _payment.Id);
+            EnableControls(false);
+            string query = $"paymentId={_payment.Id}";
+            bool result = await ServerApi.DeleteAsync(_url, _param, query);
 
             if (result) {
                 LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento deletado com sucesso!");
@@ -249,16 +253,17 @@ namespace crud_progressao.Views.Windows {
                 buttonDelete.IsEnabled = value;
         }
 
-        private void OnTextChange(object sender, System.Windows.Controls.TextChangedEventArgs e) {
-            UpdateTotal();
-        }
-
-        private void OnComboBoxSelectionChange(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
-            UpdateTotal();
-        }
-
         private bool IsControlsEnabled() {
             return buttonConfirm.IsEnabled;
+        }
+
+        #region UI Interaction Events
+        private void OnTextChange(object sender, TextChangedEventArgs e) {
+            UpdateTotal();
+        }
+
+        private void OnComboBoxSelectionChange(object sender, SelectionChangedEventArgs e) {
+            UpdateTotal();
         }
 
         private void ConfirmClick(object sender, RoutedEventArgs e) {
@@ -297,8 +302,9 @@ namespace crud_progressao.Views.Windows {
             Close();
         }
 
-        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
+        private void OnWindowClose(object sender, CancelEventArgs e) {
             LogWritter.WriteLog("Payment info window closed");
         }
+#endregion
     }
 }

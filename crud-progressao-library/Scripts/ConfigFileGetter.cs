@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace crud_progressao.Scripts {
+namespace crud_progressao_library.Scripts {
     public static class ConfigFileGetter {
         public static string GetConfigFile() {
             LogWritter.WriteLog("Trying to get the config file...");
@@ -16,7 +16,7 @@ namespace crud_progressao.Scripts {
                 return config.serverUri;
             } catch (Exception e) {
                 LogWritter.WriteError(e.Message);
-                return null;
+                return "";
             }
         }
     }

@@ -4,8 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "crud-progressao-client", "crud-progressao-client\crud-progressao-client.csproj", "{8EA62212-F1C8-4AE4-83B1-A7C8AF049A0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9145FA6F-7204-4C9B-8182-9BB6427456EC} = {9145FA6F-7204-4C9B-8182-9BB6427456EC}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crud-progressao-user-register", "crud-progressao-user-register\crud-progressao-user-register.csproj", "{A27C83A8-BA2F-492D-86E6-F05834D1CC5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "crud-progressao-user-register", "crud-progressao-user-register\crud-progressao-user-register.csproj", "{A27C83A8-BA2F-492D-86E6-F05834D1CC5E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9145FA6F-7204-4C9B-8182-9BB6427456EC} = {9145FA6F-7204-4C9B-8182-9BB6427456EC}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crud-progressao-library", "crud-progressao-library\crud-progressao-library.csproj", "{9145FA6F-7204-4C9B-8182-9BB6427456EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,10 @@ Global
 		{A27C83A8-BA2F-492D-86E6-F05834D1CC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A27C83A8-BA2F-492D-86E6-F05834D1CC5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A27C83A8-BA2F-492D-86E6-F05834D1CC5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9145FA6F-7204-4C9B-8182-9BB6427456EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9145FA6F-7204-4C9B-8182-9BB6427456EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9145FA6F-7204-4C9B-8182-9BB6427456EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9145FA6F-7204-4C9B-8182-9BB6427456EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

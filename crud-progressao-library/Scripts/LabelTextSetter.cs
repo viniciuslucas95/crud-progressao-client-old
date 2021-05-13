@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media;
 using System.Windows.Controls;
 
-namespace crud_progressao.Scripts {
+namespace crud_progressao_library.Scripts {
     public static class LabelTextSetter {
         private static readonly Color _darkGrayColor = (Color)ColorConverter.ConvertFromString("#FF323232");
 

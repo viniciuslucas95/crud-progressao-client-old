@@ -1,5 +1,6 @@
-﻿using crud_progressao.Scripts;
-using crud_progressao.Services;
+﻿using crud_progressao_library.Scripts;
+using crud_progressao_library.Services;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -8,19 +9,25 @@ namespace crud_progressao.Views.Windows {
     public partial class LoginWindow : Window {
         public LoginWindow() {
             InitializeComponent();
-
             LogWritter.WriteLog("Login window opened");
-
             inputUsername.Focus();
         }
 
         private async Task LogInAsync() {
             EnableControls(false);
             LabelTextSetter.SetText(labelFeedback, "Logando...");
+            string username = inputUsername.Text;
+            string password = inputPassword.Password;
+            string query = $"username={username}&password={password}";
+            string url = "login";
+            dynamic result = await ServerApi.GetAsync(url, query);
 
-            bool result = await ServerApi.LoginAsync(inputUsername.Text, inputPassword.Password);
+            if (result != null) {
+                ServerApi.SetHeader("username", username);
+                ServerApi.SetHeader("password", password);
 
-            if (result) {
+                if ((bool)result.privilege) ServerApi.SetHeader("privilege", "true");
+
                 new MainWindow().Show();
                 Close();
                 return;
@@ -67,7 +74,7 @@ namespace crud_progressao.Views.Windows {
             _ = LogInAsync();
         }
 
-        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
+        private void OnWindowClose(object sender, CancelEventArgs e) {
             LogWritter.WriteLog("Login window closed");
         }
     }

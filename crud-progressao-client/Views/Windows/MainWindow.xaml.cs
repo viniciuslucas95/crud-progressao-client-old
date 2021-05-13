@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using crud_progressao.Models;
 using crud_progressao.Scripts;
-using crud_progressao.Services;
+using crud_progressao_library.Scripts;
+using crud_progressao_library.Services;
 
 namespace crud_progressao.Views.Windows {
     public partial class MainWindow : Window {
@@ -13,11 +15,8 @@ namespace crud_progressao.Views.Windows {
 
         public MainWindow() {
             InitializeComponent();
-
             LogWritter.WriteLog("Main window opened");
-
-            Students = new ObservableCollection<Student>();
-            dataGridStudents.ItemsSource = Students;
+            SetDataGritItemsSource(new ObservableCollection<Student>());
 
             if (ServerApi.HasPrivilege) {
                 labelFeedbackTotal.Visibility = Visibility.Visible;
@@ -28,13 +27,11 @@ namespace crud_progressao.Views.Windows {
 
         private async Task SearchAsync() {
             LabelTextSetter.SetText(labelFeedback, $"Procurando alunos...");
-
             EnableControls(false);
-
-            Student[] result = await ServerApi.GetStudentsAsync(
-                inputFirstName.Text ?? "", inputLastName.Text ?? "", inputClassName.Text ?? "",
-                inputResponsible.Text ?? "", inputAddress.Text ?? "", inputDiscount.Text ?? "");
-
+            string query = $"firstName={inputFirstName.Text}&lastName={inputLastName.Text}&className={inputClassName.Text}" +
+                $"&responsible={inputResponsible.Text}&address={inputAddress.Text}&discount={inputDiscount.Text}";
+            string url = "students";
+            dynamic result = await ServerApi.GetAsync(url, query);
             EnableControls(true);
 
             if (result == null) {
@@ -42,18 +39,16 @@ namespace crud_progressao.Views.Windows {
                 return;
             }
 
-            Students.Clear();
-
-            if (result.Length > 0)
-                foreach (Student student in result)
-                    Students.Add(student);
-
             EnablePanel(false);
-
+            SetDataGritItemsSource(DynamicToObservableCollectionConverter.Convert<Student>(result, new DynamicToStudentConverter()));
             string plural = Students.Count != 1 ? "s" : "";
             LabelTextSetter.SetText(labelFeedback, $"{Students.Count} registro{plural} encontrado{plural}");
-
             CalculateTotal();
+        }
+
+        private void SetDataGritItemsSource(ObservableCollection<Student> students) {
+            Students = students;
+            dataGridStudents.ItemsSource = students;
         }
 
         private void CalculateTotal() {
@@ -125,96 +120,105 @@ namespace crud_progressao.Views.Windows {
             return buttonRegister.IsEnabled;
         }
 
+        private bool IsProcessingAsyncOperation() {
+            if (AsyncOperationChecker.Check(labelFeedback))
+                return true;
+
+            return false;
+        }
+
+        #region UI Interaction Events
         private void SearchReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             _ = SearchAsync();
         }
 
         private void SearchClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             _ = SearchAsync();
         }
 
         private void RegisterReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             Register();
         }
 
         private void RegisterClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             Register();
         }
 
         private void CloseReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             EnablePanel(false);
         }
 
         private void CloseClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             EnablePanel(false);
         }
 
         private void BackgroundClick(object sender, MouseButtonEventArgs e) {
-            if (!IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             EnablePanel(false);
         }
 
         private void EditReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             Student student = (Student)(sender as Button).DataContext;
             Update(student);
         }
 
         private void EditClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             Student student = (Student)(sender as Button).DataContext;
             Update(student);
         }
 
         private void PaymentsReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             Student student = (Student)(sender as Button).DataContext;
             Payments(student);
         }
 
         private void PaymentsClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             Student student = (Student)(sender as Button).DataContext;
             Payments(student);
         }
 
         private void ReportReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
 
         }
 
         private void ReportClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
 
         }
 
         private void OpenClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || ServerApi.IsProcessingAsyncOperation(labelFeedback)) return;
+            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
             EnablePanel(true);
         }
 
-        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
+        private void OnWindowClose(object sender, CancelEventArgs e) {
             LogWritter.WriteLog("Main window closed");
         }
+        #endregion
     }
 }
