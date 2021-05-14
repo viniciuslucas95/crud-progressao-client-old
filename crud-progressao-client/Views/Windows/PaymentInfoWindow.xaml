@@ -6,16 +6,15 @@
         xmlns:UserControls="clr-namespace:crud_progressao.Views.UserControls"
         Style="{StaticResource WindowStyle}" Closing="OnWindowClose"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-        Width="400" MinWidth="400" Height="320" MinHeight="320"
-        Title="Criar pagamento">
+        Title="Criar pagamento" SizeToContent="WidthAndHeight">
     <Window.Resources>
         <ResourceDictionary Source="../ResourceDictionaries/ComboBoxDictionary.xaml"/>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="32"/>
@@ -25,28 +24,30 @@
             <RowDefinition Height="32"/>
             <RowDefinition Height="32"/>
             <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Label Content="Mês de Pagamento" Grid.Row="1" BorderThickness="1 0 0 1"
+                       Style="{StaticResource SmallLabel}"/>
+        <UserControls:MonthDateUserControl x:Name="userControlMonth"
+                                      Grid.Column="1" Grid.Row="1"
+                                      BorderBrush="#FF787878"
+                                      KeyDown="ConfirmReturn"
+                                      BorderThickness="1 0 0 1"/>
         <Label x:Name="labelFeedback" Content=""
                Grid.ColumnSpan="4" BorderThickness="1"/>
-        <Label Content="Data de Vencimento" Grid.Row="1" BorderThickness="1 0 0 1"
+        <Label Content="Data de Vencimento" Grid.Row="2" BorderThickness="1 0 0 1"
                        Style="{StaticResource SmallLabel}"/>
-        <UserControls:DateUserControl x:Name="userControlDueDate"
-                                      Grid.Column="1" Grid.Row="1"
+        <UserControls:DayDateUserControl x:Name="userControlDueDate"
+                                      Grid.Column="1" Grid.Row="2"
                                       BorderThickness="1 0 0 1"
                                       BorderBrush="#FF787878"
                                       KeyDown="ConfirmReturn"/>
-        <Label Content="Data do Pagamento" Grid.Row="2" BorderThickness="1 0 0 0"
-                       Style="{StaticResource SmallLabel}" />
-        <UserControls:DateUserControl x:Name="userControlPaymentDate"
-                                      Grid.Column="1" Grid.Row="2"
-                                      BorderThickness="1 0 0 0"
-                                      BorderBrush="#FF787878"
-                                      KeyDown="ConfirmReturn"/>
-        <Label Content="Parcela" Grid.Row="3" BorderThickness="1 1 0 1"
+        <Label Content="Parcela" Grid.Row="3" BorderThickness="1 0 0 1"
                        Style="{StaticResource SmallLabel}" />
         <TextBox x:Name="inputInstallment" MinWidth="100" Grid.Row="3"
-                 Grid.Column="1" BorderThickness="1 1 0 1"
+                 Grid.Column="1" BorderThickness="1 0 0 1"
                  KeyDown="ConfirmReturn"
                  TextChanged="OnTextChange"/>
         <ComboBox x:Name="comboBoxDiscount" Grid.Row="4"
@@ -60,34 +61,51 @@
                  KeyDown="ConfirmReturn"
                  TextChanged="OnTextChange"/>
         <Label Content="Total" Grid.Row="5" Style="{StaticResource SmallLabel}"
-               BorderThickness="1 0 0 1"/>  
+               BorderThickness="1 0 0 0"/>  
         <Label x:Name="labelTotal" Style="{StaticResource SmallLabel}"
                Content="R$ 00,00" FontWeight="SemiBold" Grid.Row="5"
                Grid.Column="1" Foreground="#FF3C3C3C" FontSize="14"
-               HorizontalContentAlignment="Left" BorderThickness="1 0 0 1"
+               HorizontalContentAlignment="Left" BorderThickness="1 0 0 0"
                Padding="12 4" Background="#dcdcdc"/>
-        <Label Content="Valor Pago" Grid.Row="6" BorderThickness="1 0 0 1"
+        <Label Grid.Row="6" Grid.ColumnSpan="2" BorderThickness="1 1 0 1"/>
+        <CheckBox x:Name="checkBoxIsPaid" Grid.Row="6" Grid.ColumnSpan="2"
+                  Content="Está pago?" Checked="OnCheckBoxCheck"
+                  Unchecked="OnCheckBoxUncheck" KeyDown="CheckBoxReturn"/>
+        <Label Content="Data do Pagamento" Grid.Row="7" BorderThickness="1 0 0 0"
+                       Style="{StaticResource SmallLabel}" />
+        <UserControls:DayDateUserControl x:Name="userControlPaidDate"
+                                      Grid.Column="1" Grid.Row="7"
+                                      BorderThickness="1 0 0 0"
+                                      BorderBrush="#FF787878"
+                                      KeyDown="ConfirmReturn"
+                                      IsEnabled="False"/>
+        <Label Content="Valor Pago" Grid.Row="8" BorderThickness="1 1 0 1"
                Style="{StaticResource SmallLabel}" />
-        <TextBox x:Name="inputPaidValue" MinWidth="100" Grid.Row="6"
-                 Grid.Column="1" BorderThickness="1 0 0 1"
-                 KeyDown="ConfirmReturn"/>
+        <TextBox x:Name="inputPaidValue" MinWidth="100" Grid.Row="8"
+                 Grid.Column="1" BorderThickness="1 1 0 1"
+                 KeyDown="ConfirmReturn" IsEnabled="False"/>
+        <Label x:Name="labelBlockPaymentInfo" Grid.Row="7" Grid.RowSpan="2"
+               Grid.ColumnSpan="2" Margin="1 0 0 1" BorderBrush="Black"
+               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+               Background="Black" Opacity="0.25"/>
         <Label Grid.Row="1" Content="Observações" Grid.ColumnSpan="2"
                HorizontalAlignment="Stretch" Grid.Column="2"
                HorizontalContentAlignment="Center" BorderThickness="1 0 1 1"
                Style="{StaticResource SmallLabel}"/>
         <TextBox Grid.Row="2" x:Name="inputNote" Padding="4" BorderThickness="1 0 1 1"
-                 Grid.ColumnSpan="2" Grid.Column="2" Grid.RowSpan="5"
+                 Grid.ColumnSpan="2" Grid.Column="2" Grid.RowSpan="7"
                  VerticalContentAlignment="Top" TextWrapping="Wrap"/>
-        <Button x:Name="buttonConfirm" Grid.Row="7" Grid.Column="2"
+        <Button x:Name="buttonConfirm" Grid.Row="9" Grid.Column="2"
                 Grid.ColumnSpan="2" Content="Confirmar" Click="ConfirmClick"
-                HorizontalAlignment="Left" KeyDown="ConfirmReturn"/>
-        <Button x:Name="buttonCancel" Grid.Row="7" Content="Cancelar"
+                HorizontalAlignment="Left" KeyDown="ConfirmReturn"
+                Margin="0 15"/>
+        <Button x:Name="buttonCancel" Grid.Row="9" Content="Cancelar"
                 Click="CancelClick" HorizontalAlignment="Right"
-                KeyDown="CancelReturn"/>
-        <Button x:Name="buttonDelete" Grid.Row="7" Content="Excluir"
+                KeyDown="CancelReturn" Margin="0 15"/>
+        <Button x:Name="buttonDelete" Grid.Row="9" Content="Excluir"
                 Click="DeleteClick" HorizontalAlignment="Center"
                 VerticalAlignment="Center" Grid.Column="1"
                 Visibility="Hidden" IsEnabled="False"
-                KeyDown="DeleteReturn"/>
+                KeyDown="DeleteReturn"  Margin="0 15"/>
     </Grid>
 </Window>

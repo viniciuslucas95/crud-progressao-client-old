@@ -27,11 +27,13 @@ namespace crud_progressao.Scripts {
                 student.Payments[i] = new Payment()
                 {
                     Id = paymentData._id,
+                    Month = paymentData.month.ToObject<int[]>(),
                     DueDate = paymentData.dueDate.ToObject<int[]>(),
-                    PaymentDate = paymentData.paymentDate.ToObject<int[]>(),
                     Installment = paymentData.installment,
                     Discount = paymentData.discount,
                     DiscountType = (DiscountType)paymentData.discountType,
+                    IsPaid = paymentData.isPaid,
+                    PaidDate = paymentData.paidDate.ToObject<int[]>(),
                     PaidValue = paymentData.paidValue,
                     Note = paymentData.note
                 }; ;

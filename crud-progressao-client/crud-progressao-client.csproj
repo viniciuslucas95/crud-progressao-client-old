@@ -25,9 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\UserControls\DateUserControl.xaml.cs">
-      <DependentUpon>Views\UserControls\DateUserControl.xaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\Windows\LoginWindow.xaml.cs">
       <DependentUpon>Views\Windows\LoginWindow.xaml</DependentUpon>
     </Compile>
@@ -50,7 +47,7 @@
     <Page Update="Views\ResourceDictionaries\ComboBoxDictionary.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\UserControls\DateUserControl.xaml">
+    <Page Update="Views\UserControls\DayDateUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Windows\LoginWindow.xaml">

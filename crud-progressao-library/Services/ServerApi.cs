@@ -59,7 +59,7 @@ namespace crud_progressao_library.Services {
                 }
 
                 string id = await res.Content.ReadAsStringAsync();
-                LogWritter.WriteLog($"{typeof(T)} registered");
+                LogWritter.WriteLog($"Data registered");
                 IsProcessingAsyncOperation = false;
                 res.Dispose();
                 return id;

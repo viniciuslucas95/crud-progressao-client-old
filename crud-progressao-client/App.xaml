@@ -134,6 +134,7 @@
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Style.Triggers>
                 <Trigger Property="DataGridCell.IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
                     <Setter Property="Background" Value="#FF006FBB" />
                 </Trigger>
             </Style.Triggers>

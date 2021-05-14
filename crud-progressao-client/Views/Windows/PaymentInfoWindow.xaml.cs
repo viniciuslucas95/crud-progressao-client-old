@@ -8,6 +8,7 @@ using crud_progressao_library.Scripts;
 using System.Windows.Controls;
 using System.ComponentModel;
 using crud_progressao_library.Services;
+using System.Collections.ObjectModel;
 
 namespace crud_progressao.Views.Windows {
     public partial class PaymentInfoWindow : Window {
@@ -28,12 +29,17 @@ namespace crud_progressao.Views.Windows {
                 SetExistentValues();
                 return;
             }
-            
+
             SetDefaultValues();
         }
 
         private async Task Confirm() {
             EnableControls(false);
+
+            if (CheckIfMonthAlreadyExists() || !CheckIfDatesAreValid()) {
+                EnableControls(true);
+                return;
+            }
 
             if (string.IsNullOrEmpty(_payment.Id)) { // Register
                 LabelTextSetter.SetText(labelFeedback, "Registrando novo pagamento...");
@@ -83,27 +89,30 @@ namespace crud_progressao.Views.Windows {
         }
 
         private Payment UpdatedPayment() {
+            _ = int.TryParse(userControlMonth.inputMonth.Text, out int month);
+            _ = int.TryParse(userControlMonth.inputYear.Text, out int year);
             _ = int.TryParse(userControlDueDate.inputDay.Text, out int dueDateDay);
             _ = int.TryParse(userControlDueDate.inputMonth.Text, out int dueDateMonth);
             _ = int.TryParse(userControlDueDate.inputYear.Text, out int dueDateYear);
-            _ = int.TryParse(userControlPaymentDate.inputDay.Text, out int paymentDay);
-            _ = int.TryParse(userControlPaymentDate.inputMonth.Text, out int paymentMonth);
-            _ = int.TryParse(userControlPaymentDate.inputYear.Text, out int paymentYear);
+            _ = int.TryParse(userControlPaidDate.inputDay.Text, out int paidDay);
+            _ = int.TryParse(userControlPaidDate.inputMonth.Text, out int paidMonth);
+            _ = int.TryParse(userControlPaidDate.inputYear.Text, out int paidYear);
             _ = double.TryParse(inputInstallment.Text, out double installment);
             _ = double.TryParse(inputDiscount.Text, out double discount);
             _ = double.TryParse(inputPaidValue.Text, out double paidValue);
 
-            return new Payment()
-            {
+            return new Payment() {
                 Id = _payment.Id,
+                Month = new int[2] { month, year },
                 DueDate = new int[3] { dueDateDay, dueDateMonth, dueDateYear },
-                PaymentDate = new int[3] { paymentDay, paymentMonth, paymentYear },
+                PaidDate = new int[3] { paidDay, paidMonth, paidYear },
                 Installment = installment,
                 Discount = discount,
                 DiscountType = (DiscountType)comboBoxDiscount.SelectedIndex,
                 PaidValue = paidValue,
-                Note = inputNote.Text
-            };            
+                Note = inputNote.Text,
+                IsPaid = checkBoxIsPaid.IsChecked ?? false
+            };
         }
 
         private void RemovePayment() {
@@ -137,7 +146,7 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void InsertPayment(bool updating = false) {
-            if(updating) _paymentWindow.Payments.Remove(_payment);
+            if (updating) _paymentWindow.Payments.Remove(_payment);
 
             _payment = UpdatedPayment();
             Student currentStudent = _paymentWindow.Student;
@@ -162,8 +171,8 @@ namespace crud_progressao.Views.Windows {
         private Payment[] CreatePaymentInTheArray(Student currentStudent) {
             Payment[] currentPayments = currentStudent.Payments;
             Payment[] newPayments = new Payment[currentPayments.Length + 1];
-            
-            currentPayments.CopyTo(newPayments, 0);            
+
+            currentPayments.CopyTo(newPayments, 0);
 
             newPayments[currentPayments.Length] = _payment;
             return newPayments;
@@ -179,6 +188,49 @@ namespace crud_progressao.Views.Windows {
             }
 
             return newPayments;
+        }
+
+        private bool CheckIfMonthAlreadyExists() {
+            ObservableCollection<Payment> payments = _paymentWindow.Payments;
+
+            if (payments.Count == 0) return false;
+
+            Payment updatedPayment = UpdatedPayment();
+
+            foreach (Payment payment in payments)
+                if (payment.Month[0] == updatedPayment.Month[0] && payment.Month[1] == updatedPayment.Month[1]) {
+                    LabelTextSetter.SetText(labelFeedback, "Mês de pagamento já registrado!", true);
+                    return true;
+                }
+
+            return false;
+        }
+
+        private bool CheckIfDatesAreValid() {
+            string month = $"{1}/{userControlMonth.inputMonth.Text}/{userControlMonth.inputYear.Text}";
+            string dueDate = $"{userControlDueDate.inputDay.Text}/{userControlDueDate.inputMonth.Text}/{userControlDueDate.inputYear.Text}";
+            string paidDate = $"{userControlPaidDate.inputDay.Text}/{userControlPaidDate.inputMonth.Text}/{userControlPaidDate.inputYear.Text}";
+            bool[] results = new bool[3];
+            results[0] = DateTime.TryParse(month, out DateTime _);
+            results[1] = DateTime.TryParse(dueDate, out DateTime _);
+            results[2] = DateTime.TryParse(paidDate, out DateTime _);
+
+            if (results[0] == false) {
+                LabelTextSetter.SetText(labelFeedback, "Data do mês inválida!", true);
+                return false;
+            }
+            
+            if (results[1] == false) {
+                LabelTextSetter.SetText(labelFeedback, "Data de vencimento inválida!", true);
+                return false;
+            }
+            
+            if (results[2] == false) {
+                LabelTextSetter.SetText(labelFeedback, "Data de pagamento inválida!", true);
+                return false;
+            }
+
+            return true;
         }
 
         private void UpdateTotal() {
@@ -199,58 +251,70 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void SetExistentValues() {
+            EnablePaymentInputs(_payment.IsPaid);
             buttonDelete.Visibility = Visibility.Visible;
             buttonDelete.IsEnabled = true;
             Title = "Editar pagamento";
             buttonConfirm.Content = "Editar";
 
+            userControlMonth.inputMonth.Text = _payment.Month[0].ToString();
+            userControlMonth.inputYear.Text = _payment.Month[1].ToString();
             userControlDueDate.inputDay.Text = _payment.DueDate[0].ToString();
             userControlDueDate.inputMonth.Text = _payment.DueDate[1].ToString();
             userControlDueDate.inputYear.Text = _payment.DueDate[2].ToString();
-            userControlPaymentDate.inputDay.Text = _payment.PaymentDate[0].ToString();
-            userControlPaymentDate.inputMonth.Text = _payment.PaymentDate[1].ToString();
-            userControlPaymentDate.inputYear.Text = _payment.PaymentDate[2].ToString();
+            userControlPaidDate.inputDay.Text = _payment.IsPaid ? _payment.PaidDate[0].ToString() : DateTime.Now.Day.ToString();
+            userControlPaidDate.inputMonth.Text = _payment.IsPaid ? _payment.PaidDate[1].ToString() : DateTime.Now.Month.ToString();
+            userControlPaidDate.inputYear.Text = _payment.IsPaid ? _payment.PaidDate[2].ToString() : DateTime.Now.Year.ToString();
             inputInstallment.Text = _payment.Installment.ToString();
             inputDiscount.Text = _payment.Discount.ToString();
             comboBoxDiscount.SelectedIndex = (int)_payment.DiscountType;
             labelTotal.Content = _payment.TotalString;
-            inputPaidValue.Text = _payment.PaidValue.ToString();
+            inputPaidValue.Text = _payment.IsPaid ? _payment.PaidValue.ToString() : _payment.Total.ToString();
             inputNote.Text = _payment.Note;
+            checkBoxIsPaid.IsChecked = _payment.IsPaid;
         }
 
         private void SetDefaultValues() {
             Student student = _paymentWindow.Student;
-
+            userControlMonth.inputMonth.Text = DateTime.Now.Month.ToString();
+            userControlMonth.inputYear.Text = DateTime.Now.Year.ToString();
             userControlDueDate.inputDay.Text = student.DueDate.ToString();
             userControlDueDate.inputMonth.Text = DateTime.Now.Month.ToString();
             userControlDueDate.inputYear.Text = DateTime.Now.Year.ToString();
-            userControlPaymentDate.inputDay.Text = DateTime.Now.Day.ToString();
-            userControlPaymentDate.inputMonth.Text = DateTime.Now.Month.ToString();
-            userControlPaymentDate.inputYear.Text = DateTime.Now.Year.ToString();
             inputInstallment.Text = student.Installment.ToString();
             inputDiscount.Text = student.Discount.ToString();
             comboBoxDiscount.SelectedIndex = (int)student.DiscountType;
             labelTotal.Content = student.TotalString;
+            userControlPaidDate.inputDay.Text = DateTime.Now.Day.ToString();
+            userControlPaidDate.inputMonth.Text = DateTime.Now.Month.ToString();
+            userControlPaidDate.inputYear.Text = DateTime.Now.Year.ToString();
             inputPaidValue.Text = student.Total.ToString();
         }
 
         private void EnableControls(bool value) {
-            userControlDueDate.inputDay.IsEnabled = value;
-            userControlDueDate.inputMonth.IsEnabled = value;
-            userControlDueDate.inputYear.IsEnabled = value;
-            userControlPaymentDate.inputDay.IsEnabled = value;
-            userControlPaymentDate.inputMonth.IsEnabled = value;
-            userControlPaymentDate.inputYear.IsEnabled = value;
+            userControlMonth.IsEnabled = value;
+            userControlDueDate.IsEnabled = value;
             inputInstallment.IsEnabled = value;
             comboBoxDiscount.IsEnabled = value;
             inputDiscount.IsEnabled = value;
-            inputPaidValue.IsEnabled = value;
             inputNote.IsEnabled = value;
+            checkBoxIsPaid.IsEnabled = value;
             buttonCancel.IsEnabled = value;
             buttonConfirm.IsEnabled = value;
 
+            if ((bool)checkBoxIsPaid.IsChecked) {
+                EnablePaymentInputs(value);
+            }
+
             if (!string.IsNullOrEmpty(_payment.Id))
                 buttonDelete.IsEnabled = value;
+        }
+
+        private void EnablePaymentInputs(bool value) {
+            userControlPaidDate.IsEnabled = value;
+            inputPaidValue.IsEnabled = value;
+            labelBlockPaymentInfo.IsEnabled = !value;
+            labelBlockPaymentInfo.Visibility = value ? Visibility.Hidden : Visibility.Visible;
         }
 
         private bool IsControlsEnabled() {
@@ -258,6 +322,20 @@ namespace crud_progressao.Views.Windows {
         }
 
         #region UI Interaction Events
+        private void OnCheckBoxCheck(object sender, RoutedEventArgs e) {
+            EnablePaymentInputs(true);
+        }
+
+        private void OnCheckBoxUncheck(object sender, RoutedEventArgs e) {
+            EnablePaymentInputs(false);
+        }
+
+        private void CheckBoxReturn(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+
+            checkBoxIsPaid.IsChecked = !checkBoxIsPaid.IsChecked;
+        }
+
         private void OnTextChange(object sender, TextChangedEventArgs e) {
             UpdateTotal();
         }
@@ -305,6 +383,6 @@ namespace crud_progressao.Views.Windows {
         private void OnWindowClose(object sender, CancelEventArgs e) {
             LogWritter.WriteLog("Payment info window closed");
         }
-#endregion
+        #endregion
     }
 }
