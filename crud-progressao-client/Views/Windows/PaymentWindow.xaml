@@ -3,10 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:crud_progressao.Converters"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" Closing="OnWindowClose"
-        Style="{StaticResource WindowStyle}" Width="600" Height="460" MinHeight="460"
-        Title="Pagamentos de {nome} - Vencimento dia {dia}" MinWidth="600">
-    <Grid> 
+        Style="{StaticResource WindowStyle}" Width="750" Height="460" MinHeight="460"
+        Title="Pagamentos de {nome} - Vencimento dia {dia}" MinWidth="500">
+    <Window.Resources>
+        <converters:DateTimeWithMonthAndYearOnly x:Key="DateTimeWithMonthAndYearOnly"/>
+    </Window.Resources>
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32"/>
             <RowDefinition Height="*"/>
@@ -24,14 +29,17 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" MinWidth="50" Visibility="Hidden"
                                     Binding="{Binding Id}" Width="*"/>
-                <DataGridTextColumn Header="Mês" MinWidth="50"
-                                    Binding="{Binding MonthString}" Width="*"/>
+                <DataGridTextColumn Header="Mês" MinWidth="50" Width="*"
+                                    Binding="{Binding MonthDateTime,
+                    Converter={StaticResource DateTimeWithMonthAndYearOnly}}"/>
                 <DataGridTextColumn Header="Vencimento" MinWidth="50"
                                     Binding="{Binding DueDateString}" Width="*"/>
                 <DataGridTextColumn Header="Pagamento" MinWidth="50"
-                                    Binding="{Binding PaymentDateString}" Width="*"/>
+                                    Binding="{Binding PaymentDateString}" Width="*">
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="Valor Pago" MinWidth="50"
-                                    Binding="{Binding PaidValueString}" Width="*"/>
+                                    Binding="{Binding PaidValueString}" Width="*">
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="Parcela" Width="0.75*" MinWidth="50"
                                     Binding="{Binding InstallmentString}"/>
                 <DataGridTextColumn Header="Desconto" Width="0.75*" MinWidth="50"

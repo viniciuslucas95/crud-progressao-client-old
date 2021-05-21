@@ -1,4 +1,5 @@
-﻿using System.Windows.Media.Imaging;
+﻿using System.Collections.Generic;
+using System.Windows.Media.Imaging;
 using crud_progressao.DataTypes;
 using crud_progressao.Scripts;
 
@@ -16,7 +17,7 @@ namespace crud_progressao.Models {
         public int DueDate { get; set; }
         public string Note { get; set; }
         public BitmapImage Picture { get; set; }
-        public Payment[] Payments { get; set; }
+        public List<Payment> Payments { get; set; }
 
         public double Total {
             get {
@@ -36,6 +37,16 @@ namespace crud_progressao.Models {
         public string TotalString {
             get {
                 return MoneyTextConverter.GetTotalString(DiscountType, Installment, Discount);
+            }
+        }
+        public string PaymentStatusString {
+            get {
+                return IsOwing ? "Devendo" : "Em dia";
+            }
+        }
+        public bool IsOwing {
+            get {
+                return PaymentStatusChecker.CheckIsOwing(this, out _);
             }
         }
     }

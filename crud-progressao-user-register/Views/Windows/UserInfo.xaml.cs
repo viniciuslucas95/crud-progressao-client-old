@@ -11,7 +11,7 @@ namespace crud_progressao_user_register.Views.Windows {
         private readonly MainWindow _mainWindow;
         private readonly string _url;
 
-        public UserInfoWindow(MainWindow mainWindow, User user = new User()) {
+        internal UserInfoWindow(MainWindow mainWindow, User user = new User()) {
             InitializeComponent();
 
             _mainWindow = mainWindow;

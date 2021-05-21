@@ -11,9 +11,9 @@ using crud_progressao_library.Services;
 
 namespace crud_progressao.Views.Windows {
     public partial class MainWindow : Window {
-        public ObservableCollection<Student> Students { get; private set; }
+        internal ObservableCollection<Student> Students { get; private set; }
 
-        public MainWindow() {
+        internal MainWindow() {
             InitializeComponent();
             LogWritter.WriteLog("Main window opened");
             SetDataGritItemsSource(new ObservableCollection<Student>());
@@ -116,6 +116,22 @@ namespace crud_progressao.Views.Windows {
             new PaymentWindow(this, student).ShowDialog();
         }
 
+        private void Report() {
+            if(Students.Count == 0) {
+                LabelTextSetter.SetText(labelFeedback, "Faça uma busca antes para poder gerar um relatório!", true);
+                return;
+            }
+
+            LabelTextSetter.SetText(labelFeedback, "Gerando relatório...");
+
+            if (ReportGenerator.Generate(Students)) {
+                LabelTextSetter.SetText(labelFeedback, "Relatório gerado");
+                return;
+            }
+
+            LabelTextSetter.SetText(labelFeedback, "Erro ao tentar sobrescrever relatório existente!", true);
+        }
+
         private bool IsControlsEnabled() {
             return buttonRegister.IsEnabled;
         }
@@ -201,13 +217,13 @@ namespace crud_progressao.Views.Windows {
         private void ReportReturn(object sender, KeyEventArgs e) {
             if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
-
+            Report();
         }
 
         private void ReportClick(object sender, RoutedEventArgs e) {
             if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
 
-
+            Report();
         }
 
         private void OpenClick(object sender, RoutedEventArgs e) {

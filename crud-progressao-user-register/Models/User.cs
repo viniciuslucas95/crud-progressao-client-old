@@ -1,11 +1,11 @@
 ﻿namespace crud_progressao_user_register.Models {
     public struct User {
-        public string Id { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public bool Privilege { get; set; }
+        internal string Id { get; set; }
+        internal string Username { get; set; }
+        internal string Password { get; set; }
+        internal bool Privilege { get; set; }
 
-        public string PrivilegeString {
+        internal string PrivilegeString {
             get {
                 if (Privilege) return "Sim";
 

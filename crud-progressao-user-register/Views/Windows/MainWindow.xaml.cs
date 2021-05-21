@@ -11,9 +11,9 @@ using crud_progressao_user_register.Scripts;
 
 namespace crud_progressao_user_register.Views.Windows {
     public partial class MainWindow : Window {
-        public ObservableCollection<User> Users { get; private set; }
+        internal ObservableCollection<User> Users { get; private set; }
 
-        public MainWindow() {
+        internal MainWindow() {
             InitializeComponent();
             SetDataGritItemsSource(new ObservableCollection<User>());
             _ = GetUsers();

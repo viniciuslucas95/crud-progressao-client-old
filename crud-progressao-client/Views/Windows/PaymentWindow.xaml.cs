@@ -9,11 +9,11 @@ using System.ComponentModel;
 
 namespace crud_progressao.Views.Windows {
     public partial class PaymentWindow : Window {
-        public ObservableCollection<Payment> Payments { get; private set; }
-        public MainWindow MainWindow { get; private set; }
-        public Student Student { get; set; }
+        internal ObservableCollection<Payment> Payments { get; private set; }
+        internal MainWindow MainWindow { get; private set; }
+        internal Student Student { get; set; }
 
-        public PaymentWindow(MainWindow mainWindow, Student student) {
+        internal PaymentWindow(MainWindow mainWindow, Student student) {
             InitializeComponent();
             LogWritter.WriteLog("Payment window opened");
             MainWindow = mainWindow;
@@ -28,17 +28,33 @@ namespace crud_progressao.Views.Windows {
             SetPayments();
         }
 
-        public void SetPayments() {
+        internal void UpdatePayments(Student student) {
+            Payments.Clear();
+            Student = student;
+            AddPayments();
+        }
+
+        private void SetPayments() {
             LabelTextSetter.SetText(labelFeedback, "Procurando pagamentos...");
             Payments = new ObservableCollection<Payment>();
+            AddPayments();
+            string plural = Student.Payments.Count != 1 ? "s" : "";
+            LabelTextSetter.SetText(labelFeedback, $"{Student.Payments.Count} pagamento{plural} encontrado{plural}");
+        }
 
-            for (int i = 0; i < Student.Payments.Length; i++) {
+        private void AddPayments() {
+            for (int i = 0; i < Student.Payments.Count; i++) {
                 Payments.Add(Student.Payments[i]);
             }
 
             dataGridPayments.ItemsSource = Payments;
-            string plural = Student.Payments.Length != 1 ? "s" : "";
-            LabelTextSetter.SetText(labelFeedback, $"{Student.Payments.Length} pagamento{plural} encontrado{plural}");
+            SortDataGrid();
+        }
+
+        private void SortDataGrid() {
+            dataGridPayments.Items.SortDescriptions.Clear();
+            dataGridPayments.Items.SortDescriptions.Add(new SortDescription("MonthDateTime", ListSortDirection.Descending));
+            dataGridPayments.Items.Refresh();
         }
 
         private bool IsProcessingAsyncOperation() {
@@ -52,27 +68,27 @@ namespace crud_progressao.Views.Windows {
         private void PaymentReturn(object sender, KeyEventArgs e) {
             if (e.Key != Key.Return || IsProcessingAsyncOperation()) return;
 
-            new PaymentInfoWindow(this).ShowDialog();
+            new PaymentInfoWindow(this, new Payment(), false).ShowDialog();
         }
 
         private void PaymentClick(object sender, RoutedEventArgs e) {
             if (IsProcessingAsyncOperation()) return;
 
-            new PaymentInfoWindow(this).ShowDialog();
+            new PaymentInfoWindow(this, new Payment(), false).ShowDialog();
         }
 
         private void EditReturn(object sender, KeyEventArgs e) {
             if (e.Key != Key.Return || IsProcessingAsyncOperation()) return;
 
             Payment payment = (Payment)(sender as Button).DataContext;
-            new PaymentInfoWindow(this, payment).ShowDialog();
+            new PaymentInfoWindow(this, payment, true).ShowDialog();
         }
 
         private void EditClick(object sender, RoutedEventArgs e) {
             if (IsProcessingAsyncOperation()) return;
 
             Payment payment = (Payment)(sender as Button).DataContext;
-            new PaymentInfoWindow(this, payment).ShowDialog();
+            new PaymentInfoWindow(this, payment, true).ShowDialog();
         }
 
         private void ReportReturn(object sender, KeyEventArgs e) {

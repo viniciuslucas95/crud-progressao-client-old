@@ -60,6 +60,9 @@
                 <DataGridTextColumn Header="Endereço"
                                     Binding="{Binding Address}" Width="*"
                                     MinWidth="50"/>
+                <DataGridTextColumn Header="Pagamentos"
+                                    Binding="{Binding PaymentStatusString}" Width="*"
+                                    MinWidth="50"/>
             </DataGrid.Columns>
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
@@ -135,6 +138,7 @@
                     <RowDefinition Height="32"/>
                     <RowDefinition Height="32"/>
                     <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
                 </Grid.RowDefinitions>
                 <Label Style="{StaticResource SmallLabel}" Content="Nome"/>
                 <TextBox x:Name="inputFirstName" Grid.Column="1"
@@ -161,6 +165,10 @@
                 <TextBox x:Name="inputAddress" Grid.Column="1" Grid.Row="5"
                          BorderThickness="1 1 0 0" Background="Transparent"
                          KeyDown="SearchReturn"/>
+                <Label Grid.Row="6" Grid.ColumnSpan="2" BorderThickness="0 1 0 0"
+                       Background="Transparent"/>
+                <CheckBox x:Name="checkBoxIsOwingOnly" Grid.Row="6" Grid.ColumnSpan="2"
+                          Content="Apenas quem está devendo?"/>
             </Grid>
         </Border>
         <Button x:Name="buttonSearch" Content="Procurar"

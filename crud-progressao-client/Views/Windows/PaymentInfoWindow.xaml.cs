@@ -9,6 +9,8 @@ using System.Windows.Controls;
 using System.ComponentModel;
 using crud_progressao_library.Services;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using crud_progressao.Scripts;
 
 namespace crud_progressao.Views.Windows {
     public partial class PaymentInfoWindow : Window {
@@ -17,12 +19,19 @@ namespace crud_progressao.Views.Windows {
         private readonly string _param;
         private readonly string _url = "students/payments";
 
-        public PaymentInfoWindow(PaymentWindow paymentWindow, Payment payment = new Payment()) {
+        internal PaymentInfoWindow(PaymentWindow paymentWindow, Payment payment, bool isUpdating) {
             InitializeComponent();
             LogWritter.WriteLog("Payment info window opened");
             _paymentWindow = paymentWindow;
             _payment = payment;
             _param = _paymentWindow.Student.Id;
+
+            if (isUpdating) {
+                buttonDelete.Visibility = Visibility.Visible;
+                buttonDelete.IsEnabled = true;
+                Title = "Editar pagamento";
+                buttonConfirm.Content = "Editar";
+            }
 
             // The payment is new when its id is null or empty
             if (!string.IsNullOrEmpty(_payment.Id)) {
@@ -43,7 +52,7 @@ namespace crud_progressao.Views.Windows {
 
             if (string.IsNullOrEmpty(_payment.Id)) { // Register
                 LabelTextSetter.SetText(labelFeedback, "Registrando novo pagamento...");
-                string id = await ServerApi.RegisterAsync(_url, _param, UpdatedPayment());
+                string id = await ServerApi.RegisterAsync(_url, _param, GetUpdatedPaymentValues());
 
                 if (!string.IsNullOrEmpty(id)) {
                     LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento registrado com sucesso!");
@@ -56,7 +65,7 @@ namespace crud_progressao.Views.Windows {
                 LabelTextSetter.SetText(labelFeedback, "Erro ao tentar registrar o pagamento!", true);
             } else { // Update
                 LabelTextSetter.SetText(labelFeedback, "Atualizando pagamento...");
-                bool result = await ServerApi.UpdateAsync(_url, _param, UpdatedPayment());
+                bool result = await ServerApi.UpdateAsync(_url, _param, GetUpdatedPaymentValues());
 
                 if (result) {
                     LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento atualizado com sucesso!");
@@ -72,23 +81,29 @@ namespace crud_progressao.Views.Windows {
         }
 
         private async Task Delete() {
-            LabelTextSetter.SetText(labelFeedback, "Deletando pagamento...");
-            EnableControls(false);
-            string query = $"paymentId={_payment.Id}";
-            bool result = await ServerApi.DeleteAsync(_url, _param, query);
+            if (!string.IsNullOrEmpty(_payment.Id)) {
+                LabelTextSetter.SetText(labelFeedback, "Deletando pagamento...");
+                EnableControls(false);
+                string query = $"paymentId={_payment.Id}";
+                bool result = await ServerApi.DeleteAsync(_url, _param, query);
 
-            if (result) {
-                LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento deletado com sucesso!");
-                RemovePayment();
-                Close();
+                if (result) {
+                    LabelTextSetter.SetText(_paymentWindow.labelFeedback, "Pagamento deletado com sucesso!");
+                    RemovePayment();
+                    Close();
+                    return;
+                }
+
+                LabelTextSetter.SetText(labelFeedback, "Erro ao tentar deletar o pagamento!", true);
+                EnableControls(true);
                 return;
             }
 
-            LabelTextSetter.SetText(labelFeedback, "Erro ao tentar deletar o pagamento!", true);
-            EnableControls(true);
+            RemovePayment();
+            Close();
         }
 
-        private Payment UpdatedPayment() {
+        private Payment GetUpdatedPaymentValues() {
             _ = int.TryParse(userControlMonth.inputMonth.Text, out int month);
             _ = int.TryParse(userControlMonth.inputYear.Text, out int year);
             _ = int.TryParse(userControlDueDate.inputDay.Text, out int dueDateDay);
@@ -117,77 +132,23 @@ namespace crud_progressao.Views.Windows {
 
         private void RemovePayment() {
             _paymentWindow.Payments.Remove(_payment);
-
-            Student currentStudent = _paymentWindow.Student;
-            Student newStudent = currentStudent;
-
-            Payment[] currentPayments = currentStudent.Payments;
-            Payment[] newPayments = new Payment[currentPayments.Length - 1];
-
-            if (newPayments.Length > 0) {
-                int skipped = 0;
-
-                for (int i = 0; i < currentPayments.Length; i++) {
-                    if (_payment.Id == currentPayments[i].Id) {
-                        skipped = 1;
-                        continue;
-                    }
-
-                    newPayments[i - skipped] = currentPayments[i];
-                }
-            }
-
-            newStudent.Payments = newPayments;
-            int index = _paymentWindow.MainWindow.Students.IndexOf(currentStudent);
-            _paymentWindow.MainWindow.Students.Remove(currentStudent);
-            _paymentWindow.MainWindow.Students.Insert(index, newStudent);
-            _paymentWindow.MainWindow.dataGridStudents.SelectedItem = newStudent;
-            _paymentWindow.Student = newStudent;
+            _paymentWindow.Student.Payments.Remove(_payment);
+            _paymentWindow.MainWindow.dataGridStudents.Items.Refresh();
         }
 
         private void InsertPayment(bool updating = false) {
-            if (updating) _paymentWindow.Payments.Remove(_payment);
+            Student updatedStudent = _paymentWindow.Student;
+            _paymentWindow.MainWindow.Students.Remove(_paymentWindow.Student);
 
-            _payment = UpdatedPayment();
-            Student currentStudent = _paymentWindow.Student;
-            Student newStudent = currentStudent;
+            if (updating) 
+                updatedStudent.Payments.Remove(_payment);
 
-            Payment[] newPayments =
-                updating
-                ? UpdatePaymentInTheArray(currentStudent)
-                : CreatePaymentInTheArray(currentStudent);
-
-            newStudent.Payments = newPayments;
-            int index = _paymentWindow.MainWindow.Students.IndexOf(currentStudent);
-            _paymentWindow.MainWindow.Students.Remove(currentStudent);
-            _paymentWindow.MainWindow.Students.Insert(index, newStudent);
-            _paymentWindow.MainWindow.dataGridStudents.SelectedItem = newStudent;
-            _paymentWindow.Student = newStudent;
-            _paymentWindow.Payments.Insert(0, _payment);
-            _paymentWindow.dataGridPayments.SelectedItem = _payment;
-            _paymentWindow.dataGridPayments.ScrollIntoView(_payment);
-        }
-
-        private Payment[] CreatePaymentInTheArray(Student currentStudent) {
-            Payment[] currentPayments = currentStudent.Payments;
-            Payment[] newPayments = new Payment[currentPayments.Length + 1];
-
-            currentPayments.CopyTo(newPayments, 0);
-
-            newPayments[currentPayments.Length] = _payment;
-            return newPayments;
-        }
-
-        private Payment[] UpdatePaymentInTheArray(Student currentStudent) {
-            Payment[] newPayments = currentStudent.Payments;
-
-            for (int i = 0; i < newPayments.Length; i++) {
-                if (newPayments[i].Id != _payment.Id) continue;
-
-                newPayments[i] = _payment;
-            }
-
-            return newPayments;
+            updatedStudent.Payments.Add(GetUpdatedPaymentValues());
+            _paymentWindow.MainWindow.Students.Insert(0, updatedStudent);
+            _paymentWindow.UpdatePayments(updatedStudent);
+            _paymentWindow.MainWindow.dataGridStudents.Items.Refresh();
+            _paymentWindow.MainWindow.dataGridStudents.SelectedItem = updatedStudent;
+            _paymentWindow.MainWindow.dataGridStudents.ScrollIntoView(updatedStudent);
         }
 
         private bool CheckIfMonthAlreadyExists() {
@@ -195,10 +156,12 @@ namespace crud_progressao.Views.Windows {
 
             if (payments.Count == 0) return false;
 
-            Payment updatedPayment = UpdatedPayment();
+            Payment updatedPayment = GetUpdatedPaymentValues();
 
             foreach (Payment payment in payments)
-                if (payment.Month[0] == updatedPayment.Month[0] && payment.Month[1] == updatedPayment.Month[1]) {
+                if (payment.Month[0] == updatedPayment.Month[0]
+                    && payment.Month[1] == updatedPayment.Month[1]
+                    && payment.Id != updatedPayment.Id) {
                     LabelTextSetter.SetText(labelFeedback, "Mês de pagamento já registrado!", true);
                     return true;
                 }
@@ -210,22 +173,18 @@ namespace crud_progressao.Views.Windows {
             string month = $"{1}/{userControlMonth.inputMonth.Text}/{userControlMonth.inputYear.Text}";
             string dueDate = $"{userControlDueDate.inputDay.Text}/{userControlDueDate.inputMonth.Text}/{userControlDueDate.inputYear.Text}";
             string paidDate = $"{userControlPaidDate.inputDay.Text}/{userControlPaidDate.inputMonth.Text}/{userControlPaidDate.inputYear.Text}";
-            bool[] results = new bool[3];
-            results[0] = DateTime.TryParse(month, out DateTime _);
-            results[1] = DateTime.TryParse(dueDate, out DateTime _);
-            results[2] = DateTime.TryParse(paidDate, out DateTime _);
 
-            if (results[0] == false) {
+            if (!DateTime.TryParse(month, out DateTime _)) {
                 LabelTextSetter.SetText(labelFeedback, "Data do mês inválida!", true);
                 return false;
             }
-            
-            if (results[1] == false) {
+
+            if (!DateTime.TryParse(dueDate, out DateTime _)) {
                 LabelTextSetter.SetText(labelFeedback, "Data de vencimento inválida!", true);
                 return false;
             }
-            
-            if (results[2] == false) {
+
+            if (!DateTime.TryParse(paidDate, out DateTime _)) {
                 LabelTextSetter.SetText(labelFeedback, "Data de pagamento inválida!", true);
                 return false;
             }
@@ -252,11 +211,6 @@ namespace crud_progressao.Views.Windows {
 
         private void SetExistentValues() {
             EnablePaymentInputs(_payment.IsPaid);
-            buttonDelete.Visibility = Visibility.Visible;
-            buttonDelete.IsEnabled = true;
-            Title = "Editar pagamento";
-            buttonConfirm.Content = "Editar";
-
             userControlMonth.inputMonth.Text = _payment.Month[0].ToString();
             userControlMonth.inputYear.Text = _payment.Month[1].ToString();
             userControlDueDate.inputDay.Text = _payment.DueDate[0].ToString();
@@ -275,12 +229,23 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void SetDefaultValues() {
+            List<DateTime> paymentDates = new ();
+            DateTime nextAvaliableMonth = new (DateTime.Today.Year, DateTime.Today.Month, 1);
+
+            if (_paymentWindow.Student.Payments.Count != 0) {
+                foreach (Payment payment in _paymentWindow.Student.Payments)
+                    paymentDates.Add(payment.MonthDateTime);
+
+                while (paymentDates.Contains(nextAvaliableMonth))
+                    nextAvaliableMonth = MonthInfoGetter.GetNextMonth(nextAvaliableMonth);
+            }
+
             Student student = _paymentWindow.Student;
-            userControlMonth.inputMonth.Text = DateTime.Now.Month.ToString();
-            userControlMonth.inputYear.Text = DateTime.Now.Year.ToString();
+            userControlMonth.inputMonth.Text = nextAvaliableMonth.Month.ToString();
+            userControlMonth.inputYear.Text = nextAvaliableMonth.Year.ToString();
             userControlDueDate.inputDay.Text = student.DueDate.ToString();
-            userControlDueDate.inputMonth.Text = DateTime.Now.Month.ToString();
-            userControlDueDate.inputYear.Text = DateTime.Now.Year.ToString();
+            userControlDueDate.inputMonth.Text = nextAvaliableMonth.Month.ToString();
+            userControlDueDate.inputYear.Text = nextAvaliableMonth.Year.ToString();
             inputInstallment.Text = student.Installment.ToString();
             inputDiscount.Text = student.Discount.ToString();
             comboBoxDiscount.SelectedIndex = (int)student.DiscountType;

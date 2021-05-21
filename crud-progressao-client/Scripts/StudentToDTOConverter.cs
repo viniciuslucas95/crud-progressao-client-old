@@ -1,8 +1,8 @@
 ﻿using crud_progressao.Models;
 
 namespace crud_progressao.Scripts {
-    public static class StudentToDynamicConverter {
-        public static dynamic Convert(Student student) {
+    public static class StudentToDTOConverter {
+        public static object Convert(Student student) {
             return new {
                 student.Id,
                 student.FirstName,
@@ -12,11 +12,11 @@ namespace crud_progressao.Scripts {
                 student.Address,
                 student.Installment,
                 student.Discount,
-                DiscountType = (int)student.DiscountType,
+                student.DiscountType,
                 student.DueDate,
                 student.Note,
                 Picture = ImageConverter.BitmapImageToString(student.Picture),
-                student.Payments
+                Payments = student.Payments.ToArray()
             };
         }
     }

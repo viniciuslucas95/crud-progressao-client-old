@@ -5,13 +5,13 @@ using System;
 namespace crud_progressao.Models {
     public struct Payment {
         public string Id { get; set; }
-        public int[] Month { get; set; }
-        public int[] DueDate { get; set; }
+        public int[] Month { get; set; } // Month [0] and Year [1]
+        public int[] DueDate { get; set; } // Day [0], Month [1] and Year [2]
         public double Installment { get; set; }
         public double Discount { get; set; }
         public DiscountType DiscountType { get; set; }
         public bool IsPaid { get; set; }
-        public int[] PaidDate { get; set; }
+        public int[] PaidDate { get; set; } // Day [0], Month [1] and Year [2]
         public double PaidValue { get; set; }
         public string Note { get; set; }
 
@@ -20,9 +20,9 @@ namespace crud_progressao.Models {
                 return MoneyTextConverter.GetTotal(DiscountType, Installment, Discount);
             }
         }
-        public string MonthString {
+        public DateTime MonthDateTime {
             get {
-                return $"{MonthNameGetter.GetMonthName(Month[0])} de {Month[1]}";
+                return DateTime.Parse($"1/{Month[0]}/{Month[1]}");
             }
         }
         public string DueDateString {
@@ -35,7 +35,7 @@ namespace crud_progressao.Models {
                 if(IsPaid)
                     return $"{PaidDate[0]} / {PaidDate[1]} / {PaidDate[2]}";
 
-                return "NÃO PAGO";
+                return "Não pago";
             }
         }
         public string PaidValueString {
@@ -43,7 +43,7 @@ namespace crud_progressao.Models {
                 if (IsPaid)
                     return $"R$ { Math.Round(PaidValue, 2)}";
 
-                return "NÃO PAGO";
+                return "Não pago";
             }
         }
         public string InstallmentString {

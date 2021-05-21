@@ -2,8 +2,8 @@
 using crud_progressao.DataTypes;
 
 namespace crud_progressao.Scripts {
-    public static class MoneyTextConverter {
-        public static double GetTotal(DiscountType discountType, double installment, double discount) {
+    internal static class MoneyTextConverter {
+        internal static double GetTotal(DiscountType discountType, double installment, double discount) {
             if (discountType == DiscountType.Fixed) {
                 return Round(installment - discount);
             } else {
@@ -11,7 +11,7 @@ namespace crud_progressao.Scripts {
             }
         }
 
-        public static string GetTotalString(DiscountType discountType, double installment, double discount) {
+        internal static string GetTotalString(DiscountType discountType, double installment, double discount) {
             if (discountType == DiscountType.Fixed) {
                 return $"R$ {Round(installment - discount)}";
             } else {
@@ -19,7 +19,7 @@ namespace crud_progressao.Scripts {
             }
         }
 
-        public static string GetDiscountString(DiscountType discountType, double installment, double discount) {
+        internal static string GetDiscountString(DiscountType discountType, double installment, double discount) {
             if (discountType == DiscountType.Fixed) {
                 return $"R$ {Round(discount)} ({Round(discount / installment * 100)} %)";
             } else {
@@ -27,11 +27,11 @@ namespace crud_progressao.Scripts {
             }
         }
 
-        public static string GetInstallmentString(double installment) {
+        internal static string GetInstallmentString(double installment) {
             return $"R$ {Round(installment)}";
         }
 
-        public static double Round(double value) {
+        internal static double Round(double value) {
             if (double.IsNaN(value)) return 0;
             else if (double.IsInfinity(value)) return 0;
             else return Math.Round(value, 2);

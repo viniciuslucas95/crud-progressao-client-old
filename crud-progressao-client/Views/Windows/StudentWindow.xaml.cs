@@ -5,6 +5,7 @@ using crud_progressao_library.Scripts;
 using crud_progressao_library.Services;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +19,7 @@ namespace crud_progressao.Views.Windows {
         private readonly MainWindow _mainWindow;
         private readonly string _url = "students";
 
-        public StudentWindow(MainWindow mainWindow, Student student = new Student()) {
+        internal StudentWindow(MainWindow mainWindow, Student student = new Student()) {
             InitializeComponent();
             LogWritter.WriteLog("Student window opened");
             _mainWindow = mainWindow;
@@ -35,7 +36,7 @@ namespace crud_progressao.Views.Windows {
 
             if (string.IsNullOrEmpty(_student.Id)) { // Register
                 LabelTextSetter.SetText(labelFeedback, "Registrando novo aluno...");
-                string id = await ServerApi.RegisterAsync(_url, _param, ConvertedStudent());
+                string id = await ServerApi.RegisterAsync(_url, _param, GetStudentDTO());
 
                 if (!string.IsNullOrEmpty(id)) {
                     LabelTextSetter.SetText(_mainWindow.labelFeedback, "Aluno registrado com sucesso!");
@@ -48,7 +49,7 @@ namespace crud_progressao.Views.Windows {
                 LabelTextSetter.SetText(labelFeedback, "Erro ao tentar registrar o aluno!", true);
             } else { // Update
                 LabelTextSetter.SetText(labelFeedback, "Atualizando informações do aluno...");
-                bool result = await ServerApi.UpdateAsync(_url, _param, ConvertedStudent());
+                bool result = await ServerApi.UpdateAsync(_url, _param, GetStudentDTO());
 
                 if (result) {
                     LabelTextSetter.SetText(_mainWindow.labelFeedback, "Informações do aluno atualizada!");
@@ -80,13 +81,14 @@ namespace crud_progressao.Views.Windows {
             EnableControls(true);
         }
 
-        private Student UpdatedStudent() {
+        private Student GetUpdatedStudentValues() {
             _ = double.TryParse(inputInstallment.Text, out double installment);
             _ = double.TryParse(inputDiscount.Text, out double discount);
             _ = int.TryParse(inputDueDate.Text, out int dueDate);
 
-            return new Student()
-            {
+            dueDate = dueDate < 1 ? 1 : (dueDate > 31 ? 31 : dueDate);
+
+            return new Student() {
                 Id = _student.Id ?? "",
                 FirstName = inputFirstName.Text,
                 LastName = inputLastName.Text,
@@ -99,19 +101,19 @@ namespace crud_progressao.Views.Windows {
                 DueDate = dueDate,
                 Note = inputNote.Text,
                 Picture = (BitmapImage)imagePicture.Source,
-                Payments = _student.Payments ?? Array.Empty<Payment>()
+                Payments = _student.Payments ?? new List<Payment>()
             };
         }
 
-        private dynamic ConvertedStudent() {
-            return StudentToDynamicConverter.Convert(UpdatedStudent());
+        private dynamic GetStudentDTO() {
+            return StudentToDTOConverter.Convert(GetUpdatedStudentValues());
         }
 
         private void InsertStudent() {
-            _student = UpdatedStudent();
-            _mainWindow.Students.Insert(0, _student);
-            _mainWindow.dataGridStudents.SelectedItem = _student;
-            _mainWindow.dataGridStudents.ScrollIntoView(_student);
+            Student student = GetUpdatedStudentValues();
+            _mainWindow.Students.Insert(0, student);
+            _mainWindow.dataGridStudents.SelectedItem = student;
+            _mainWindow.dataGridStudents.ScrollIntoView(student);
         }
 
         private void SetExistentValues() {

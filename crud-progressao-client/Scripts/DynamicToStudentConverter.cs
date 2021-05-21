@@ -1,6 +1,7 @@
 ﻿using crud_progressao.DataTypes;
 using crud_progressao.Models;
 using crud_progressao_library.DataTypes;
+using System.Collections.Generic;
 
 namespace crud_progressao.Scripts {
     public class DynamicToStudentConverter : IDynamicConverter<Student> {
@@ -19,13 +20,12 @@ namespace crud_progressao.Scripts {
                 DueDate = studentData.dueDate,
                 Note = studentData.note,
                 Picture = ImageConverter.StringToBitmapImage((string)studentData.picture),
-                Payments = new Payment[studentData.payments.Count]
+                Payments = new List<Payment>()
             };
 
             for (int i = 0; i < studentData.payments.Count; i++) {
                 dynamic paymentData = studentData.payments[i];
-                student.Payments[i] = new Payment()
-                {
+                student.Payments.Add(new Payment() {
                     Id = paymentData._id,
                     Month = paymentData.month.ToObject<int[]>(),
                     DueDate = paymentData.dueDate.ToObject<int[]>(),
@@ -36,7 +36,7 @@ namespace crud_progressao.Scripts {
                     PaidDate = paymentData.paidDate.ToObject<int[]>(),
                     PaidValue = paymentData.paidValue,
                     Note = paymentData.note
-                }; ;
+                });
             }
 
             return student;

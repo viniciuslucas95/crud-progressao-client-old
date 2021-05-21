@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace crud_progressao.Scripts {
-    internal static class MonthNameGetter {
+    internal static class MonthInfoGetter {
         internal static string GetMonthName(int month) {
             return month switch {
                 1 => "Janeiro",
@@ -18,6 +18,20 @@ namespace crud_progressao.Scripts {
                 12 => "Dezembro",
                 _ => "[MÊS INVÁLIDO}",
             };
+        }
+
+        internal static DateTime GetPreviousMonth(DateTime dateTime) {
+            if (dateTime.Month == 1)
+                return new DateTime(dateTime.Year - 1, 12, 1);
+
+            return new DateTime(dateTime.Year, dateTime.Month - 1, 1);
+        }
+
+        internal static DateTime GetNextMonth(DateTime dateTime) {
+            if (dateTime.Month == 12)
+                return new DateTime(dateTime.Year + 1, 1, 1);
+
+            return new DateTime(dateTime.Year, dateTime.Month + 1, 1);
         }
     }
 }

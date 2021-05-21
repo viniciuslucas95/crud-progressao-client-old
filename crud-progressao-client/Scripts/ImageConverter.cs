@@ -4,8 +4,8 @@ using System.IO;
 using System.Windows.Media.Imaging;
 
 namespace crud_progressao.Scripts {
-    public static class ImageConverter {
-        public static BitmapImage StringToBitmapImage(string value) {
+    internal static class ImageConverter {
+        internal static BitmapImage StringToBitmapImage(string value) {
             if (string.IsNullOrEmpty(value)) return null;
 
             LogWritter.WriteLog("Trying to convert a string into a bitmap image");
@@ -27,7 +27,7 @@ namespace crud_progressao.Scripts {
             }
         }
 
-        public static string BitmapImageToString(BitmapImage img) {
+        internal static string BitmapImageToString(BitmapImage img) {
             if (img == null) return "";
 
             LogWritter.WriteLog("Trying to convert a bitmap image into a string");
