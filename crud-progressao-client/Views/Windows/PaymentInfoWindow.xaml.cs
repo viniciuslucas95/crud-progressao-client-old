@@ -134,6 +134,7 @@ namespace crud_progressao.Views.Windows {
             _paymentWindow.Payments.Remove(_payment);
             _paymentWindow.Student.Payments.Remove(_payment);
             _paymentWindow.MainWindow.dataGridStudents.Items.Refresh();
+            _paymentWindow.MainWindow.SetFeedbackValues();
         }
 
         private void InsertPayment(bool updating = false) {
@@ -149,6 +150,7 @@ namespace crud_progressao.Views.Windows {
             _paymentWindow.MainWindow.dataGridStudents.Items.Refresh();
             _paymentWindow.MainWindow.dataGridStudents.SelectedItem = updatedStudent;
             _paymentWindow.MainWindow.dataGridStudents.ScrollIntoView(updatedStudent);
+            _paymentWindow.MainWindow.SetFeedbackValues();
         }
 
         private bool CheckIfMonthAlreadyExists() {

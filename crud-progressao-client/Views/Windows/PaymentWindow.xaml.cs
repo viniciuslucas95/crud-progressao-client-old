@@ -20,10 +20,10 @@ namespace crud_progressao.Views.Windows {
             Student = student;
             Title = $"Pagamentos de {student.FirstName} {student.LastName} / Vencimento dia {student.DueDate}";
 
-            if (ServerApi.HasPrivilege) {
+            /*if (ServerApi.HasPrivilege) {
                 buttonReport.Visibility = Visibility.Visible;
                 buttonReport.IsEnabled = true;
-            }
+            }*/
 
             SetPayments();
         }

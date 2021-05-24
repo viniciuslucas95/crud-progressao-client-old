@@ -183,19 +183,33 @@
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 Click="CloseClick" Visibility="Hidden"
                 KeyDown="CloseReturn"/>
+        <DockPanel Grid.Row="2" Grid.ColumnSpan="6">
+            
+        </DockPanel>
         <Grid Grid.Row="2" Grid.ColumnSpan="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0.5*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
             <Label x:Name="labelFeedback" Content="" FontSize="16"
-                   Grid.ColumnSpan="3"/>
-            <Label x:Name="labelFeedbackTotal" Grid.Column="1" Content=""
-                   BorderThickness="1 1 0 1" FontSize="16"
-                   Visibility="Hidden"/>
-            <Button x:Name="buttonReport" Grid.Column="2" FontSize="16"
-                    Content="Gerar Relatório" Visibility="Hidden"
+                   Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="1 1 0 1"/>
+            <Label x:Name="labelFeedbackTotal" Content=""
+                   BorderThickness="1 1 0 0" FontSize="14"
+                   Visibility="Collapsed"/>
+            <Label x:Name="labelFeedbackAverage" Content=""
+                   BorderThickness="1 1 0 0" FontSize="14"
+                   Visibility="Collapsed" Grid.Column="1"/>
+            <Label x:Name="labelFeedbackPaidSum" Content=""
+                   BorderThickness="1 1 0 0" FontSize="14"
+                   Visibility="Collapsed" Grid.Column="2" Grid.ColumnSpan="2"/>
+            <Button x:Name="buttonReport" Grid.Row="1" Grid.Column="3" FontSize="16"
+                    Content="Gerar Relatório" Visibility="Collapsed"
                     IsEnabled="False" Click="ReportClick"
                     KeyDown="ReportReturn"/>
         </Grid>

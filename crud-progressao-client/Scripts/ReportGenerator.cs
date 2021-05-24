@@ -13,7 +13,7 @@ namespace crud_progressao.Scripts {
             LogWritter.WriteLog("Gerando relatório dos alunos...");
 
             FlowDocument document = new() { Name = "Relatório" };
-            document.ColumnWidth = document.MaxPageWidth;
+            //document.ColumnWidth = document.MaxPageWidth;
 
             Paragraph title = new();
             title.Inlines.Add(new Bold(new Run("RELATÓRIO DOS ALUNOS")));
@@ -27,51 +27,32 @@ namespace crud_progressao.Scripts {
                 Paragraph info = new();
                 info.FontSize = 10;
 
-                info.Inlines.Add(new Run("ALUNO"));
-                info.Inlines.Add(new Run(" "));
-                info.Inlines.Add(new Bold(new Run($"{students[i].FirstName.ToUpper()} {students[i].LastName.ToUpper()}")));
-                info.Inlines.Add(new Run(" / "));
-                info.Inlines.Add(new Run("TURMA"));
-                info.Inlines.Add(new Run(" "));
-                info.Inlines.Add(new Bold(new Run($"{students[i].ClassName.ToUpper()}")));
-                info.Inlines.Add(new Run(" / "));
-                info.Inlines.Add(new Run("RESPONSÁVEL"));
-                info.Inlines.Add(new Run(" "));
-                info.Inlines.Add(new Bold(new Run($"{students[i].Responsible.ToUpper()}")));
-                info.Inlines.Add(new Run(" / "));
-                info.Inlines.Add(new Run("VENCIMENTO"));
-                info.Inlines.Add(new Run(" "));
-                info.Inlines.Add(new Bold(new Run($"{students[i].DueDate}")));
+                DocumentTextEditor.AddBoldText(info, "Aluno ");
+                DocumentTextEditor.AddText(info, $"{students[i].FirstName} {students[i].LastName} | ", true);
+                DocumentTextEditor.AddBoldText(info, "Turma ");
+                DocumentTextEditor.AddText(info, $"{students[i].ClassName} | ", true);
+
+                if (!string.IsNullOrEmpty(students[i].Responsible)) {
+                    DocumentTextEditor.AddBoldText(info, "Responsável ");
+                    DocumentTextEditor.AddText(info, $"{students[i].Responsible} | ", true);
+                }
+
+                DocumentTextEditor.AddBoldText(info, "Vencimento ");
+                DocumentTextEditor.AddText(info, $"{students[i].DueDate}", true);
                 info.Inlines.Add(new LineBreak());
 
                 if (!students[i].IsOwing) {
-                    info.Inlines.Add(new Italic(new Run("PAGAMENTOS EM DIA!")));
+                    DocumentTextEditor.AddText(info, "Pagamentos em dia!");
                 } else {
-                    if (students[i].Payments.Count == 0) {
-                        info.Inlines.Add(new Italic(new Run("NENHUM PAGAMENTO REALIZADO!")));
-                    } else {
-                        List<string> monthsNotPaid = new();
+                    PaymentStatusChecker.CheckIsOwing(students[i], out List<DateTime> notPaidMonths);
+                    DocumentTextEditor.AddBoldText(info, "Pagamentos atrasados: ");
 
-                        foreach (Payment payment in students[i].Payments) {
-                            if (payment.IsPaid) continue;
+                    for(int a = 0; a < notPaidMonths.Count; a++) {
+                        string monthName = MonthInfoGetter.GetMonthName(notPaidMonths[a].Month);
+                        DocumentTextEditor.AddText(info, $"{monthName} de {notPaidMonths[a].Year}");
 
-                            string monthName = MonthInfoGetter.GetMonthName(payment.Month[0]).ToUpper();
-                            monthsNotPaid.Add($"{monthName} DE {payment.Month[1]}");
-                        }
-
-                        if (monthsNotPaid.Count == 0) {
-                            info.Inlines.Add(new Italic(new Run("PAGAMENTOS EM DIA!")));
-                        } else {
-                            info.Inlines.Add(new Italic(new Run($"{monthsNotPaid.Count} PAGAMENTOS NÃO REALIZADOS: ")));
-
-                            for (int a = 0; a < monthsNotPaid.Count; a++) {
-                                info.Inlines.Add(new Bold(new Run($"{monthsNotPaid[a]}")));
-
-                                if (a >= monthsNotPaid.Count - 1) continue;
-
-                                info.Inlines.Add(new Bold(new Run($" / ")));
-                            }
-                        }
+                        if(a < notPaidMonths.Count - 1)
+                            DocumentTextEditor.AddText(info, ", ");
                     }
                 }
 
@@ -81,7 +62,6 @@ namespace crud_progressao.Scripts {
             }
 
             document.Blocks.Add(studentList);
-
             PrintDialog printDialog = new();
             IDocumentPaginatorSource docSource = document;
 

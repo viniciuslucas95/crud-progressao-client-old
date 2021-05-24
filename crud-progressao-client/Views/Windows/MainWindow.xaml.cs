@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,9 +21,34 @@ namespace crud_progressao.Views.Windows {
 
             if (ServerApi.HasPrivilege) {
                 labelFeedbackTotal.Visibility = Visibility.Visible;
+                labelFeedbackAverage.Visibility = Visibility.Visible;
+                labelFeedbackPaidSum.Visibility = Visibility.Visible;
                 buttonReport.Visibility = Visibility.Visible;
                 buttonReport.IsEnabled = true;
             }
+        }
+
+        public void SetFeedbackValues() {
+            if (Students.Count == 0) return;
+
+            double total = 0;
+            double paymentsDone = 0;
+
+            foreach (Student student in Students) {
+                total += student.Total;
+
+                if (student.Payments.Count > 0)
+                    foreach (Payment payment in student.Payments) {
+                        DateTime today = DateTime.Today;
+
+                        if (payment.MonthDateTime.Month == today.Month && payment.MonthDateTime.Year == today.Year && payment.IsPaid)
+                            paymentsDone += payment.PaidValue;
+                    }
+            }
+
+            LabelTextSetter.SetText(labelFeedbackTotal, $"Total: R$ {Math.Round(total, 2)}");
+            LabelTextSetter.SetText(labelFeedbackAverage, $"Média: R$ {Math.Round(total / Students.Count, 2)}");
+            LabelTextSetter.SetText(labelFeedbackPaidSum, $"Já pago em {MonthInfoGetter.GetMonthName(DateTime.Today.Month)}: R$ {Math.Round(paymentsDone, 2)}");
         }
 
         private async Task SearchAsync() {
@@ -39,27 +65,20 @@ namespace crud_progressao.Views.Windows {
                 return;
             }
 
+            ObservableCollection<Student> students = DynamicToObservableCollectionConverter.Convert<Student>(result, new DynamicToStudentConverter());
+
+            if ((bool)checkBoxIsOwingOnly.IsChecked) students = ListHelper.FilterOwingOnly(students);
+
             EnablePanel(false);
-            SetDataGritItemsSource(DynamicToObservableCollectionConverter.Convert<Student>(result, new DynamicToStudentConverter()));
+            SetDataGritItemsSource(students);
             string plural = Students.Count != 1 ? "s" : "";
             LabelTextSetter.SetText(labelFeedback, $"{Students.Count} registro{plural} encontrado{plural}");
-            CalculateTotal();
+            SetFeedbackValues();
         }
 
         private void SetDataGritItemsSource(ObservableCollection<Student> students) {
             Students = students;
             dataGridStudents.ItemsSource = students;
-        }
-
-        private void CalculateTotal() {
-            if (Students.Count == 0) return;
-
-            double total = 0;
-
-            foreach (Student student in Students)
-                total += student.Total;
-
-            LabelTextSetter.SetText(labelFeedbackTotal, $"Valor total: R$ {total}");
         }
 
         private void EnableControls(bool value) {
@@ -99,6 +118,7 @@ namespace crud_progressao.Views.Windows {
                     inputDiscount.Text = "";
                     inputResponsible.Text = "";
                     inputAddress.Text = "";
+                    checkBoxIsOwingOnly.IsChecked = false;
                     break;
             }
         }

@@ -73,6 +73,7 @@ namespace crud_progressao.Views.Windows {
             if (result) {
                 LabelTextSetter.SetText(_mainWindow.labelFeedback, "Aluno deletado com sucesso!");
                 _mainWindow.Students.Remove(_student);
+                _mainWindow.SetFeedbackValues();
                 Close();
                 return;
             }
@@ -114,6 +115,7 @@ namespace crud_progressao.Views.Windows {
             _mainWindow.Students.Insert(0, student);
             _mainWindow.dataGridStudents.SelectedItem = student;
             _mainWindow.dataGridStudents.ScrollIntoView(student);
+            _mainWindow.SetFeedbackValues();
         }
 
         private void SetExistentValues() {
