@@ -13,7 +13,7 @@ namespace crud_progressao.Scripts {
             LogWritter.WriteLog("Gerando relatório dos alunos...");
 
             FlowDocument document = new() { Name = "Relatório" };
-            //document.ColumnWidth = document.MaxPageWidth;
+            document.ColumnWidth = document.MaxPageWidth;
 
             Paragraph title = new();
             title.Inlines.Add(new Bold(new Run("RELATÓRIO DOS ALUNOS")));
@@ -37,8 +37,26 @@ namespace crud_progressao.Scripts {
                     DocumentTextEditor.AddText(info, $"{students[i].Responsible} | ", true);
                 }
 
+                if (!string.IsNullOrEmpty(students[i].Email)) {
+                    DocumentTextEditor.AddBoldText(info, "Email ");
+                    DocumentTextEditor.AddText(info, $"{students[i].Email} | ", true);
+                }
+
+                if(students[i].Landline != 0) {
+                    DocumentTextEditor.AddBoldText(info, "Telefone ");
+                    DocumentTextEditor.AddText(info, $"{students[i].LandlineString} | ", true);
+                }
+
+                if (students[i].CellPhone != 0) {
+                    DocumentTextEditor.AddBoldText(info, "Celular ");
+                    DocumentTextEditor.AddText(info, $"{students[i].CellPhoneString} | ", true);
+                }
+
+                DocumentTextEditor.AddBoldText(info, "Valor ");
+                DocumentTextEditor.AddText(info, $"{students[i].InstallmentString} - {students[i].DiscountString} = {students[i].TotalString} | ", true);
                 DocumentTextEditor.AddBoldText(info, "Vencimento ");
                 DocumentTextEditor.AddText(info, $"{students[i].DueDate}", true);
+
                 info.Inlines.Add(new LineBreak());
 
                 if (!students[i].IsOwing) {
