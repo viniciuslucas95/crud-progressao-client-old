@@ -86,6 +86,13 @@ namespace crud_progressao.Views.Windows {
             _ = double.TryParse(inputInstallment.Text, out double installment);
             _ = double.TryParse(inputDiscount.Text, out double discount);
             _ = int.TryParse(inputDueDate.Text, out int dueDate);
+            _ = long.TryParse(inputZipCode.Text, out long zipCode);
+            _ = long.TryParse(inputLandline.Text, out long landline);
+            _ = long.TryParse(inputCellPhone.Text, out long cellPhone);
+            _ = long.TryParse(inputRg.Text, out long rg);
+            _ = long.TryParse(inputCpf.Text, out long cpf);
+            _ = long.TryParse(inputRgResponsible.Text, out long rgResponsible);
+            _ = long.TryParse(inputCpfResponsible.Text, out long cpfResponsible);
 
             dueDate = dueDate < 1 ? 1 : (dueDate > 31 ? 31 : dueDate);
 
@@ -102,7 +109,15 @@ namespace crud_progressao.Views.Windows {
                 DueDate = dueDate,
                 Note = inputNote.Text,
                 Picture = (BitmapImage)imagePicture.Source,
-                Payments = _student.Payments ?? new List<Payment>()
+                Payments = _student.Payments ?? new List<Payment>(),
+                ZipCode = zipCode,
+                Landline = landline,
+                CellPhone = cellPhone,
+                Email = inputEmail.Text,
+                Rg = rg,
+                Cpf = cpf,
+                RgResponsible = rgResponsible,
+                CpfResponsible = cpfResponsible
             };
         }
 
@@ -135,6 +150,14 @@ namespace crud_progressao.Views.Windows {
             inputDueDate.Text = _student.DueDate.ToString();
             inputNote.Text = _student.Note;
             imagePicture.Source = _student.Picture;
+            inputZipCode.Text = _student.ZipCode.ToString();
+            inputLandline.Text = _student.Landline.ToString();
+            inputCellPhone.Text = _student.CellPhone.ToString();
+            inputEmail.Text = _student.Email;
+            inputRg.Text = _student.Rg.ToString();
+            inputCpf.Text = _student.Cpf.ToString();
+            inputRgResponsible.Text = _student.RgResponsible.ToString();
+            inputCpfResponsible.Text = _student.CpfResponsible.ToString();
 
             if (imagePicture.Source != null)
                 buttonPicture.Content = "Alterar foto";
@@ -176,6 +199,14 @@ namespace crud_progressao.Views.Windows {
             inputDiscount.IsEnabled = value;
             inputDueDate.IsEnabled = value;
             inputNote.IsEnabled = value;
+            inputZipCode.IsEnabled = value;
+            inputLandline.IsEnabled = value;
+            inputCellPhone.IsEnabled = value;
+            inputEmail.IsEnabled = value;
+            inputRg.IsEnabled = value;
+            inputCpf.IsEnabled = value;
+            inputRgResponsible.IsEnabled = value;
+            inputCpfResponsible.IsEnabled = value;
             buttonConfirm.IsEnabled = value;
             buttonPicture.IsEnabled = value;
             buttonCancel.IsEnabled = value;

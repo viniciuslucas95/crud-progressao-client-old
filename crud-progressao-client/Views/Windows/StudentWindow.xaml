@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Style="{StaticResource WindowStyle}" ResizeMode="NoResize" MinHeight="460"
-        Title="Registrar novo aluno" Width="450" Height="460" MinWidth="450" Closing="OnWindowClose">
+        Style="{StaticResource WindowStyle}" ResizeMode="NoResize" Closing="OnWindowClose"
+        Title="Registrar novo aluno" SizeToContent="WidthAndHeight">
     <Window.Resources>
         <ResourceDictionary Source="../ResourceDictionaries/ComboBoxDictionary.xaml"/>
     </Window.Resources>
@@ -24,15 +24,19 @@
         </Grid.RowDefinitions>
         <Label x:Name="labelFeedback" Grid.Column="1" Grid.ColumnSpan="3"
                Content=""/>
-        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan= "3">
+        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="135"/>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="135"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="32"/>
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="32"/>
@@ -86,48 +90,87 @@
             <TextBox x:Name="inputResponsible" MinWidth="100" Grid.Row="2"
                          Grid.Column="3" KeyDown="ConfirmReturn"
                          BorderThickness="1 0"/>
-            <Label Content="Endereço" Grid.Row="3" BorderThickness="1 1 0 1"
-                       Style="{StaticResource SmallLabel}"/>
-            <TextBox x:Name="inputAddress" MinWidth="100" Grid.Row="3"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
-                         BorderThickness="1"/>
-            <Label Content="Parcela" Grid.Row="3" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 1"/>
+            <Label Content="Parcela" Grid.Row="3" Grid.Column="0"
+                       Style="{StaticResource SmallLabel}" BorderThickness="1 1 0 1"/>
             <TextBox x:Name="inputInstallment" MinWidth="100" Grid.Row="3"
-                         Grid.Column="3" TextChanged="OnTextChange"
+                         Grid.Column="1" TextChanged="OnTextChange"
                          KeyDown="ConfirmReturn" BorderThickness="1"/>
-            <ComboBox x:Name="comboBoxDiscount" Grid.Row="4"
+            <ComboBox x:Name="comboBoxDiscount" Grid.Row="3" Grid.Column="2" BorderThickness="0 1"
                           SelectionChanged="OnComboBoxSelectionChange"
                           Template="{StaticResource ComboBoxTemplate}">
                 <ComboBoxItem IsSelected="True" Content="Desconto R$"/>
                 <ComboBoxItem Content="Desconto %"/>
             </ComboBox>
-            <TextBox x:Name="inputDiscount" Grid.Row="4" Grid.Column="1"
+            <TextBox x:Name="inputDiscount" Grid.Row="3" Grid.Column="3"
                          TextChanged="OnTextChange" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
-            <Label Content="Total" Grid.Row="4" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+                         BorderThickness="1 1 1 1"/>
+            <Label Content="Total" Grid.Row="4" Grid.Column="0"
+                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
             <Label x:Name="labelTotal" Style="{StaticResource SmallLabel}"
                        Content="R$ 00,00" FontWeight="SemiBold" Grid.Row="4"
-                       Grid.Column="3" Foreground="#FF282828" FontSize="14"
+                       Grid.Column="1" Foreground="#FF282828" FontSize="14"
                        HorizontalContentAlignment="Left" BorderThickness="1 0 1 1"
                        Padding="12 4" Background="#dcdcdc"/>
-            <Label Content="Vencimento" Grid.Row="5"
-                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
-            <TextBox x:Name="inputDueDate" MinWidth="100" Grid.Row="5"
+            <Label Content="Vencimento" Grid.Row="4" Grid.Column="2"
+                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox x:Name="inputDueDate" MinWidth="100" Grid.Row="4"
+                         Grid.Column="3" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Content="Endereço" Grid.Row="5" BorderThickness="1 0 0 1"
+                       Style="{StaticResource SmallLabel}"/>
+            <TextBox x:Name="inputAddress" MinWidth="100" Grid.Row="5"
                          Grid.Column="1" KeyDown="ConfirmReturn"
                          BorderThickness="1 0 1 1"/>
-            <Label Content="" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 1 1"/>
+            <Label Content="CEP" Grid.Row="5" Grid.Column="2"
+                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox x:Name="inputZipCode" MinWidth="100" Grid.Row="5"
+                         Grid.Column="3" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Content="Telefone" Grid.Row="6"
+                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <TextBox x:Name="inputLandline" MinWidth="100" Grid.Row="6"
+                         Grid.Column="1" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Content="Celular" Grid.Row="6" Grid.Column="2"
+                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox x:Name="inputCellPhone" MinWidth="100" Grid.Row="6"
+                         Grid.Column="3" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Content="RG" Grid.Row="7"
+                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <TextBox x:Name="inputRg" MinWidth="100" Grid.Row="7"
+                         Grid.Column="1" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Content="CPF" Grid.Row="7" Grid.Column="2"
+                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox x:Name="inputCpf" MinWidth="100" Grid.Row="7"
+                         Grid.Column="3" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Content="RG Responsável" Grid.Row="8"
+                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <TextBox x:Name="inputRgResponsible" MinWidth="100" Grid.Row="8"
+                         Grid.Column="1" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Content="CPF Responsável" Grid.Row="8" Grid.Column="2"
+                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox x:Name="inputCpfResponsible" MinWidth="100" Grid.Row="8"
+                         Grid.Column="3" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Content="Email" Grid.Row="9"
+                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <TextBox x:Name="inputEmail" MinWidth="100" Grid.Row="9"
+                         Grid.Column="1" KeyDown="ConfirmReturn"
+                         BorderThickness="1 0 1 1"/>
+            <Label Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2" BorderThickness="0 0 1 1"/>
         </Grid>
         <Button x:Name="buttonConfirm" Grid.Row="2" Grid.Column="3"
                 Content="Registrar" HorizontalAlignment="Left" Click="ConfirmClick"
-                 KeyDown="ConfirmReturn"/>
+                 KeyDown="ConfirmReturn" Margin="0 10"/>
         <Button x:Name="buttonCancel" Grid.Row="2" Grid.Column="1"
                 Content="Cancelar" HorizontalAlignment="Right" Click="CancelClick"
-                KeyDown="CancelReturn"/>
+                KeyDown="CancelReturn" Margin="0 10"/>
         <Button x:Name="buttonDelete" Grid.Row="2" Grid.Column="2"
-                Content="Deletar Aluno" HorizontalAlignment="Center"
+                Content="Deletar Aluno" HorizontalAlignment="Center" Margin="0 10"
                 Visibility="Hidden" KeyDown="DeleteReturn" Click="DeleteClick"/>
     </Grid>
 </Window>

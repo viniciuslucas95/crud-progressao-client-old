@@ -20,7 +20,15 @@ namespace crud_progressao.Scripts {
                 DueDate = studentData.dueDate,
                 Note = studentData.note,
                 Picture = ImageConverter.StringToBitmapImage((string)studentData.picture),
-                Payments = new List<Payment>()
+                Payments = new List<Payment>(),
+                ZipCode = studentData.zipCode,
+                Landline = studentData.landline,
+                CellPhone = studentData.cellPhone,
+                Email = studentData.email,
+                Rg = studentData.rg,
+                Cpf = studentData.cpf,
+                RgResponsible = studentData.rgResponsible,
+                CpfResponsible = studentData.cpfResponsible
             };
 
             for (int i = 0; i < studentData.payments.Count; i++) {

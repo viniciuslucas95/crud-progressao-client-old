@@ -16,7 +16,15 @@ namespace crud_progressao.Scripts {
                 student.DueDate,
                 student.Note,
                 Picture = ImageConverter.BitmapImageToString(student.Picture),
-                Payments = student.Payments.ToArray()
+                Payments = student.Payments.ToArray(),
+                student.ZipCode,
+                student.Landline,
+                student.CellPhone,
+                student.Email,
+                student.Rg,
+                student.Cpf,
+                student.RgResponsible,
+                student.CpfResponsible
             };
         }
     }

@@ -18,7 +18,50 @@ namespace crud_progressao.Models {
         public string Note { get; set; }
         public BitmapImage Picture { get; set; }
         public List<Payment> Payments { get; set; }
+        public long ZipCode { get; set; }
+        public long Landline { get; set; }
+        public long CellPhone { get; set; }
+        public string Email { get; set; }
+        public long Rg { get; set; }
+        public long Cpf { get; set; }
+        public long RgResponsible { get; set; }
+        public long CpfResponsible { get; set; }
 
+        public string ZipCodeString {
+            get {
+                return ZipCode.ToString();
+            }
+        }
+        public string LandlineString {
+            get {
+                return Landline.ToString();
+            }
+        }
+        public string CellPhoneString {
+            get {
+                return CellPhone.ToString();
+            }
+        }
+        public string RgString {
+            get {
+                return Rg.ToString();
+            }
+        }
+        public string CpfString {
+            get {
+                return Cpf.ToString();
+            }
+        }
+        public string RgResponsibleString {
+            get {
+                return RgResponsible.ToString();
+            }
+        }
+        public string CpfResponsibleString {
+            get {
+                return CpfResponsible.ToString();
+            }
+        }
         public double Total {
             get {
                 return MoneyTextConverter.GetTotal(DiscountType, Installment, Discount);

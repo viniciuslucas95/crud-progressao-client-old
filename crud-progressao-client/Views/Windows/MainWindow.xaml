@@ -42,6 +42,9 @@
                 <DataGridTextColumn Header="Turma"
                                     Binding="{Binding ClassName}" Width="*"
                                     MinWidth="50"/>
+                <DataGridTextColumn Header="Responsável"
+                                    Binding="{Binding Responsible}"
+                                    Width="*" MinWidth="50"/>
                 <DataGridTextColumn Header="Parcela"
                                     Binding="{Binding InstallmentString}"
                                     Width="*" MinWidth="50"/>
@@ -54,12 +57,6 @@
                 <DataGridTextColumn Header="Vencimento"
                                     Binding="{Binding DueDate}"
                                     Width="*" MinWidth="50"/>
-                <DataGridTextColumn Header="Responsável"
-                                    Binding="{Binding Responsible}"
-                                    Width="*" MinWidth="50"/>
-                <DataGridTextColumn Header="Endereço"
-                                    Binding="{Binding Address}" Width="*"
-                                    MinWidth="50"/>
                 <DataGridTextColumn Header="Pagamentos"
                                     Binding="{Binding PaymentStatusString}" Width="*"
                                     MinWidth="50"/>
@@ -73,34 +70,103 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="148"/>
-                            <RowDefinition Height="52" />
+                            <RowDefinition Height="158"/>
+                            <RowDefinition Height="42" />
                         </Grid.RowDefinitions>
                         <Border Grid.RowSpan="2" Grid.ColumnSpan="3" Background="Transparent"
                                 BorderThickness="0 0 1 1" BorderBrush="#FF787878"/>
                         <Image Grid.RowSpan="2" Source="{Binding Picture}"
                                RenderOptions.BitmapScalingMode="HighQuality"
                                Height="200"/>
-                        <TextBlock Text="{Binding Note}" Grid.Column="1"
-                            Foreground="#FF282828" Grid.ColumnSpan="2"
-                            TextWrapping="Wrap"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            Padding="8 4" TextAlignment="Center"/>
+                        <Grid Grid.Column="1" Grid.ColumnSpan="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Endereço"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding Address}"
+                                   Grid.Column="1"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="CEP" Grid.Column="2"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding ZipCodeString}"
+                                   Grid.Column="3"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Telefone" Grid.Row="1"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding LandlineString}"
+                                   Grid.Column="1" Grid.Row="1"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Celular" Grid.Column="2"
+                                   Grid.Row="1"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding CellPhoneString}"
+                                   Grid.Column="3" Grid.Row="1"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Rg" Grid.Row="2"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding RgString}"
+                                   Grid.Column="1" Grid.Row="2"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Cpf" Grid.Column="2"
+                                   Grid.Row="2"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding CpfString}"
+                                   Grid.Column="3" Grid.Row="2"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Rg Responsável" Grid.Row="3"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding RgResponsibleString}"
+                                   Grid.Column="1" Grid.Row="3"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Cpf Responsável" Grid.Column="2"
+                                   Grid.Row="3"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding CpfResponsibleString}"
+                                   Grid.Column="3" Grid.Row="3"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Email" Grid.Row="4"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding Email}"
+                                   Grid.Column="1" Grid.Row="4"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="" Grid.Row="4" Grid.Column="2"
+                                   Grid.ColumnSpan="2"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Observações" Grid.Row="5"/>
+                            <Border Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"
+                                    BorderThickness="0 0 1 1" BorderBrush="#FF787878">
+                                <TextBlock Text="{Binding Note}" TextWrapping="Wrap"
+                                        Foreground="#FF3C3C3C" Padding="3 1"
+                                        FontSize="11" FontWeight="SemiBold"/>
+                            </Border>
+                        </Grid>
                         <Button Grid.Row= "1" Grid.Column="1"
                                 Click="EditClick"
                                 KeyDown="EditReturn"
                                 Content="Editar Informações"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
-                                Margin="0 10"/>
+                                Margin="0 5"/>
                         <Button Grid.Row= "1" Grid.Column="2"
                                 Click="PaymentsClick"
                                 KeyDown="PaymentsReturn"
                                 Content="Ver pagamentos"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
-                                Margin="0 10"/>
+                                Margin="0 5"/>
                     </Grid>
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>
