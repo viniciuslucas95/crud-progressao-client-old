@@ -70,14 +70,14 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="158"/>
+                            <RowDefinition Height="198"/>
                             <RowDefinition Height="42" />
                         </Grid.RowDefinitions>
                         <Border Grid.RowSpan="2" Grid.ColumnSpan="3" Background="Transparent"
                                 BorderThickness="0 0 1 1" BorderBrush="#FF787878"/>
                         <Image Grid.RowSpan="2" Source="{Binding Picture}"
                                RenderOptions.BitmapScalingMode="HighQuality"
-                               Height="200"/>
+                               Height="240"/>
                         <Grid Grid.Column="1" Grid.ColumnSpan="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
@@ -91,62 +91,64 @@
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Label Style="{StaticResource DataGridLabel}"
-                                   Content="Endereço"/>
-                            <Label Style="{StaticResource DataGridText}"
-                                   Content="{Binding Address}"
-                                   Grid.Column="1"/>
-                            <Label Style="{StaticResource DataGridLabel}"
-                                   Content="CEP" Grid.Column="2"/>
-                            <Label Style="{StaticResource DataGridText}"
-                                   Content="{Binding ZipCodeString}"
-                                   Grid.Column="3"/>
-                            <Label Style="{StaticResource DataGridLabel}"
-                                   Content="Telefone" Grid.Row="1"/>
+                                   Content="Telefone" Grid.Row="0"/>
                             <Label Style="{StaticResource DataGridText}"
                                    Content="{Binding LandlineString}"
-                                   Grid.Column="1" Grid.Row="1"/>
+                                   Grid.Column="1" Grid.Row="0"/>
                             <Label Style="{StaticResource DataGridLabel}"
                                    Content="Celular" Grid.Column="2"
-                                   Grid.Row="1"/>
+                                   Grid.Row="0"/>
                             <Label Style="{StaticResource DataGridText}"
                                    Content="{Binding CellPhoneString}"
-                                   Grid.Column="3" Grid.Row="1"/>
+                                   Grid.Column="3" Grid.Row="0"/>
                             <Label Style="{StaticResource DataGridLabel}"
-                                   Content="Rg" Grid.Row="2"/>
+                                   Content="RG" Grid.Row="1"/>
                             <Label Style="{StaticResource DataGridText}"
                                    Content="{Binding RgString}"
-                                   Grid.Column="1" Grid.Row="2"/>
+                                   Grid.Column="1" Grid.Row="1"/>
                             <Label Style="{StaticResource DataGridLabel}"
-                                   Content="Cpf" Grid.Column="2"
-                                   Grid.Row="2"/>
+                                   Content="CPF" Grid.Column="2"
+                                   Grid.Row="1"/>
                             <Label Style="{StaticResource DataGridText}"
                                    Content="{Binding CpfString}"
-                                   Grid.Column="3" Grid.Row="2"/>
+                                   Grid.Column="3" Grid.Row="1"/>
                             <Label Style="{StaticResource DataGridLabel}"
-                                   Content="Rg Responsável" Grid.Row="3"/>
+                                   Content="RG Responsável" Grid.Row="2"/>
                             <Label Style="{StaticResource DataGridText}"
                                    Content="{Binding RgResponsibleString}"
-                                   Grid.Column="1" Grid.Row="3"/>
+                                   Grid.Column="1" Grid.Row="2"/>
                             <Label Style="{StaticResource DataGridLabel}"
-                                   Content="Cpf Responsável" Grid.Column="2"
-                                   Grid.Row="3"/>
+                                   Content="CPF Responsável" Grid.Column="2"
+                                   Grid.Row="2"/>
                             <Label Style="{StaticResource DataGridText}"
                                    Content="{Binding CpfResponsibleString}"
-                                   Grid.Column="3" Grid.Row="3"/>
+                                   Grid.Column="3" Grid.Row="2"/>
                             <Label Style="{StaticResource DataGridLabel}"
-                                   Content="Email" Grid.Row="4"/>
+                                   Content="CEP" Grid.Column="0" Grid.Row="3"/>
                             <Label Style="{StaticResource DataGridText}"
-                                   Content="{Binding Email}"
-                                   Grid.Column="1" Grid.Row="4"/>
+                                   Content="{Binding ZipCodeString}"
+                                   Grid.Row="3" Grid.Column="1"/>
                             <Label Style="{StaticResource DataGridLabel}"
-                                   Content="" Grid.Row="4" Grid.Column="2"
+                                   Content="" Grid.Row="3" Grid.Column="2"
                                    Grid.ColumnSpan="2"/>
                             <Label Style="{StaticResource DataGridLabel}"
-                                   Content="Observações" Grid.Row="5"/>
-                            <Border Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"
+                                   Content="Endereço" Grid.Row="4"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding Address}"
+                                   Grid.Row="4"
+                                   Grid.Column="1" Grid.ColumnSpan="3"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Email" Grid.Row="5"/>
+                            <Label Style="{StaticResource DataGridText}"
+                                   Content="{Binding Email}"
+                                   Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3"/>
+                            <Label Style="{StaticResource DataGridLabel}"
+                                   Content="Observações" Grid.Row="6"/>
+                            <Border Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3"
                                     BorderThickness="0 0 1 1" BorderBrush="#FF787878">
                                 <TextBlock Text="{Binding Note}" TextWrapping="Wrap"
                                         Foreground="#FF3C3C3C" Padding="3 1"
