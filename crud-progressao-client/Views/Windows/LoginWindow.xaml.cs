@@ -7,6 +7,8 @@ using System.Windows.Input;
 
 namespace crud_progressao.Views.Windows {
     public partial class LoginWindow : Window {
+        private const string VERSION = "2.9";
+
         public LoginWindow() {
             InitializeComponent();
             LogWritter.WriteLog("Login window opened");
@@ -18,7 +20,7 @@ namespace crud_progressao.Views.Windows {
             LabelTextSetter.SetText(labelFeedback, "Logando...");
             string username = inputUsername.Text;
             string password = inputPassword.Password;
-            string query = $"username={username}&password={password}";
+            string query = $"username={username}&password={password}&version={VERSION}";
             string url = "login";
             dynamic result = await ServerApi.GetAsync(url, query);
 
