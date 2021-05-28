@@ -26,6 +26,7 @@ namespace crud_progressao.Models {
         public long Cpf { get; set; }
         public long RgResponsible { get; set; }
         public long CpfResponsible { get; set; }
+        public bool IsDeactivated { get; set; }
 
         public string ZipCodeString {
             get {
@@ -84,7 +85,7 @@ namespace crud_progressao.Models {
         }
         public string PaymentStatusString {
             get {
-                return IsOwing ? "Devendo" : "Em dia";
+                return IsDeactivated ? "Desativado" : IsOwing ? "Devendo" : "Em dia";
             }
         }
         public bool IsOwing {

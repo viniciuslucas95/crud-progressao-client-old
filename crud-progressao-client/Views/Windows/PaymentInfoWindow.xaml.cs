@@ -27,8 +27,6 @@ namespace crud_progressao.Views.Windows {
             _param = _paymentWindow.Student.Id;
 
             if (isUpdating) {
-                buttonDelete.Visibility = Visibility.Visible;
-                buttonDelete.IsEnabled = true;
                 Title = "Editar pagamento";
                 buttonConfirm.Content = "Editar";
             }
@@ -228,6 +226,15 @@ namespace crud_progressao.Views.Windows {
             inputPaidValue.Text = _payment.IsPaid ? _payment.PaidValue.ToString() : _payment.Total.ToString();
             inputNote.Text = _payment.Note;
             checkBoxIsPaid.IsChecked = _payment.IsPaid;
+
+            if (ServerApi.HasPrivilege) {
+                buttonDelete.Visibility = Visibility.Visible;
+                buttonDelete.IsEnabled = true;
+                return;
+            }
+
+            buttonDelete.Visibility = Visibility.Collapsed;
+            buttonDelete.IsEnabled = false;
         }
 
         private void SetDefaultValues() {
@@ -273,7 +280,7 @@ namespace crud_progressao.Views.Windows {
                 EnablePaymentInputs(value);
             }
 
-            if (!string.IsNullOrEmpty(_payment.Id))
+            if (!string.IsNullOrEmpty(_payment.Id) && ServerApi.HasPrivilege)
                 buttonDelete.IsEnabled = value;
         }
 

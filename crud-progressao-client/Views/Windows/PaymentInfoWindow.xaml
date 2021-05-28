@@ -95,17 +95,24 @@
         <TextBox Grid.Row="2" x:Name="inputNote" Padding="4" BorderThickness="1 0 1 1"
                  Grid.ColumnSpan="2" Grid.Column="2" Grid.RowSpan="7"
                  VerticalContentAlignment="Top" TextWrapping="Wrap"/>
-        <Button x:Name="buttonConfirm" Grid.Row="9" Grid.Column="2"
+        <Grid Grid.Row="9" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="buttonConfirm" Grid.Column="2"
                 Grid.ColumnSpan="2" Content="Confirmar" Click="ConfirmClick"
                 HorizontalAlignment="Left" KeyDown="ConfirmReturn"
-                Margin="0 15"/>
-        <Button x:Name="buttonCancel" Grid.Row="9" Content="Cancelar"
+                Margin="30 10"/>
+            <Button x:Name="buttonCancel" Content="Fechar"
                 Click="CancelClick" HorizontalAlignment="Right"
-                KeyDown="CancelReturn" Margin="0 15"/>
-        <Button x:Name="buttonDelete" Grid.Row="9" Content="Excluir"
+                KeyDown="CancelReturn" Margin="30 10"/>
+            <Button x:Name="buttonDelete" Grid.Row="9" Content="Excluir"
                 Click="DeleteClick" HorizontalAlignment="Center"
                 VerticalAlignment="Center" Grid.Column="1"
-                Visibility="Hidden" IsEnabled="False"
-                KeyDown="DeleteReturn"  Margin="0 15"/>
+                Visibility="Collapsed" d:Visibility="Visible" IsEnabled="False"
+                KeyDown="DeleteReturn"  Margin="30 10"/>
+        </Grid>
     </Grid>
 </Window>

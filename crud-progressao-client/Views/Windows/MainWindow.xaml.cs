@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,9 +34,13 @@ namespace crud_progressao.Views.Windows {
 
             double total = 0;
             double paymentsDone = 0;
+            int studentsCount = 0;
 
             foreach (Student student in Students) {
+                if (student.IsDeactivated) continue;
+
                 total += student.Total;
+                studentsCount++;
 
                 if (student.Payments.Count > 0)
                     foreach (Payment payment in student.Payments) {
@@ -47,7 +52,7 @@ namespace crud_progressao.Views.Windows {
             }
 
             LabelTextSetter.SetText(labelFeedbackTotal, $"Total: R$ {Math.Round(total, 2)}");
-            LabelTextSetter.SetText(labelFeedbackAverage, $"Média: R$ {Math.Round(total / Students.Count, 2)}");
+            LabelTextSetter.SetText(labelFeedbackAverage, $"Média: R$ {Math.Round(total / studentsCount, 2)}");
             LabelTextSetter.SetText(labelFeedbackPaidSum, $"Já pago em {MonthInfoGetter.GetMonthName(DateTime.Today.Month)}: R$ {Math.Round(paymentsDone, 2)}");
         }
 
@@ -66,6 +71,8 @@ namespace crud_progressao.Views.Windows {
             }
 
             ObservableCollection<Student> students = DynamicToObservableCollectionConverter.Convert<Student>(result, new DynamicToStudentConverter());
+
+            if (!(bool)checkBoxIsShowingDeactivated.IsChecked) students = ListHelper.RemoveDeactivated(students);
 
             if ((bool)checkBoxIsOwingOnly.IsChecked) students = ListHelper.FilterOwingOnly(students);
 
@@ -119,6 +126,7 @@ namespace crud_progressao.Views.Windows {
                     inputResponsible.Text = "";
                     inputAddress.Text = "";
                     checkBoxIsOwingOnly.IsChecked = false;
+                    checkBoxIsShowingDeactivated.IsChecked = false;
                     break;
             }
         }

@@ -29,6 +29,71 @@
                    StrokeThickness="1" StrokeDashArray="0 0 1 0"/>
         <DataGrid x:Name="dataGridStudents" Grid.Row="1" Grid.ColumnSpan="6"
                   PreviewMouseDown="BackgroundClick">
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Padding" Value="8 4"/>
+                    <Setter Property="BorderThickness" Value="0 0 1 1"/>
+                    <Setter Property="BorderBrush" Value="#FF787878"/>
+                    <Setter Property="SnapsToDevicePixels" Value="True"/>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding PaymentStatusString}" Value="Em dia"/>
+                                <Condition Binding="{Binding RelativeSource={x:Static RelativeSource.Self},
+                                    Path=IsSelected}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding PaymentStatusString}" Value="Em dia"/>
+                                <Condition Binding="{Binding RelativeSource={x:Static RelativeSource.Self},
+                                    Path=IsSelected}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="#FF006FBB"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding PaymentStatusString}" Value="Devendo"/>
+                                <Condition Binding="{Binding RelativeSource={x:Static RelativeSource.Self},
+                                    Path=IsSelected}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="#ffafaf"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding PaymentStatusString}" Value="Devendo"/>
+                                <Condition Binding="{Binding RelativeSource={x:Static RelativeSource.Self},
+                                    Path=IsSelected}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="#4b0000"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding PaymentStatusString}" Value="Desativado"/>
+                                <Condition Binding="{Binding RelativeSource={x:Static RelativeSource.Self},
+                                    Path=IsSelected}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="#c8c8c8"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding PaymentStatusString}" Value="Desativado"/>
+                                <Condition Binding="{Binding RelativeSource={x:Static RelativeSource.Self},
+                                    Path=IsSelected}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="#1e1e1e"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"
                                     Binding="{Binding Id}" Width="*"
@@ -158,14 +223,14 @@
                         <Button Grid.Row= "1" Grid.Column="1"
                                 Click="EditClick"
                                 KeyDown="EditReturn"
-                                Content="Editar Informações"
+                                Content="Informações"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Margin="0 5"/>
                         <Button Grid.Row= "1" Grid.Column="2"
                                 Click="PaymentsClick"
                                 KeyDown="PaymentsReturn"
-                                Content="Ver pagamentos"
+                                Content="Pagamentos"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Margin="0 5"/>
@@ -191,7 +256,7 @@
             </Grid>
         </Border>
         <Border x:Name="panelFilter" Grid.RowSpan="2" Grid.ColumnSpan="2"
-                Visibility="Hidden" HorizontalAlignment="Stretch"
+                Visibility="Hidden" d:Visibility="Visible" HorizontalAlignment="Stretch"
                 VerticalAlignment="Top" Margin="0 22 0 0" Grid.Column="2"
                 CornerRadius="0 0 10 10" BorderThickness="1">
             <Grid>
@@ -200,6 +265,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
                     <RowDefinition Height="32"/>
                     <RowDefinition Height="32"/>
                     <RowDefinition Height="32"/>
@@ -233,10 +299,12 @@
                 <TextBox x:Name="inputAddress" Grid.Column="1" Grid.Row="5"
                          BorderThickness="1 1 0 0" Background="Transparent"
                          KeyDown="SearchReturn"/>
-                <Label Grid.Row="6" Grid.ColumnSpan="2" BorderThickness="0 1 0 0"
+                <Label Grid.Row="6" Grid.ColumnSpan="2" BorderThickness="0 1"
                        Background="Transparent"/>
                 <CheckBox x:Name="checkBoxIsOwingOnly" Grid.Row="6" Grid.ColumnSpan="2"
-                          Content="Apenas quem está devendo?"/>
+                          Content="Apenas quem está devendo?" KeyDown="SearchReturn"/>
+                <CheckBox x:Name="checkBoxIsShowingDeactivated" Grid.Row="7" Grid.ColumnSpan="2"
+                          Content="Exibir desativados" KeyDown="SearchReturn"/>
             </Grid>
         </Border>
         <Button x:Name="buttonSearch" Content="Procurar"

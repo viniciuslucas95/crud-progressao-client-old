@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using crud_progressao_library.Scripts;
-using crud_progressao_library.Services;
 using System.ComponentModel;
 
 namespace crud_progressao.Views.Windows {

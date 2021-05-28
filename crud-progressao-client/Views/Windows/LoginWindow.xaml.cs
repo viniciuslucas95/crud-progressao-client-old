@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace crud_progressao.Views.Windows {
     public partial class LoginWindow : Window {
-        private const string VERSION = "2.9";
+        private const string VERSION = "2.91";
 
         public LoginWindow() {
             InitializeComponent();

@@ -28,7 +28,8 @@ namespace crud_progressao.Scripts {
                 Rg = studentData.rg,
                 Cpf = studentData.cpf,
                 RgResponsible = studentData.rgResponsible,
-                CpfResponsible = studentData.cpfResponsible
+                CpfResponsible = studentData.cpfResponsible,
+                IsDeactivated = studentData.isDeactivated
             };
 
             for (int i = 0; i < studentData.payments.Count; i++) {

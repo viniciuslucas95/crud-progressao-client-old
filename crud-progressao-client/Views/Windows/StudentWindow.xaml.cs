@@ -117,7 +117,8 @@ namespace crud_progressao.Views.Windows {
                 Rg = rg,
                 Cpf = cpf,
                 RgResponsible = rgResponsible,
-                CpfResponsible = cpfResponsible
+                CpfResponsible = cpfResponsible,
+                IsDeactivated = (bool)checkBoxDeactivated.IsChecked
             };
         }
 
@@ -134,8 +135,13 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void SetExistentValues() {
-            buttonDelete.Visibility = Visibility.Visible;
-            buttonDelete.IsEnabled = true;
+            if (ServerApi.HasPrivilege) {
+                buttonDelete.Visibility = Visibility.Visible;
+                buttonDelete.IsEnabled = true;
+                checkBoxDeactivated.Visibility = Visibility.Visible;
+                checkBoxDeactivated.IsEnabled = true;
+            }
+            
             Title = "Atualizar informações do aluno";
             buttonConfirm.Content = "Atualizar";
 
@@ -158,6 +164,15 @@ namespace crud_progressao.Views.Windows {
             inputCpf.Text = _student.Cpf.ToString();
             inputRgResponsible.Text = _student.RgResponsible.ToString();
             inputCpfResponsible.Text = _student.CpfResponsible.ToString();
+            checkBoxDeactivated.IsChecked = _student.IsDeactivated;
+
+            if (_student.IsDeactivated && !ServerApi.HasPrivilege) {
+                Title = "Ver informações do aluno cancelado";
+                buttonConfirm.Visibility = Visibility.Collapsed;
+                buttonConfirm.IsEnabled = false;
+                EnableControls(false);
+                buttonCancel.IsEnabled = true;
+            }
 
             if (imagePicture.Source != null)
                 buttonPicture.Content = "Alterar foto";
@@ -211,9 +226,8 @@ namespace crud_progressao.Views.Windows {
             buttonPicture.IsEnabled = value;
             buttonCancel.IsEnabled = value;
 
-            if (!string.IsNullOrEmpty(_student.Id)) {
+            if (ServerApi.HasPrivilege && !string.IsNullOrEmpty(_student.Id))
                 buttonDelete.IsEnabled = value;
-            }
         }
 
         private void UpdateTotal() {
@@ -235,6 +249,16 @@ namespace crud_progressao.Views.Windows {
 
         private bool IsControlsEnabled() {
             return buttonConfirm.IsEnabled;
+        }
+
+        private bool CanEdit() {
+            if (_student.IsDeactivated) {
+                if (ServerApi.HasPrivilege) return true;
+
+                return false;
+            }
+
+            return true;
         }
 
         #region UI Interaction Events
@@ -283,13 +307,13 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void CancelReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+            if (e.Key != Key.Return || !buttonCancel.IsEnabled) return;
 
             Close();
         }
 
         private void CancelClick(object sender, RoutedEventArgs e) {
-            if(!IsControlsEnabled()) return;
+            if(!buttonCancel.IsEnabled) return;
 
             Close();
         }

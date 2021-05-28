@@ -159,18 +159,28 @@
             <Label Content="Email" Grid.Row="9"
                        Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
             <TextBox x:Name="inputEmail" MinWidth="100" Grid.Row="9"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
+                         Grid.Column="1" Grid.ColumnSpan="3" KeyDown="ConfirmReturn"
                          BorderThickness="1 0 1 1"/>
-            <Label Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2" BorderThickness="0 0 1 1"/>
+            <CheckBox x:Name="checkBoxDeactivated" Content="Desativado?"
+                      Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2"
+                      Visibility="Hidden" IsEnabled="False"/>
         </Grid>
-        <Button x:Name="buttonConfirm" Grid.Row="2" Grid.Column="3"
-                Content="Registrar" HorizontalAlignment="Left" Click="ConfirmClick"
-                 KeyDown="ConfirmReturn" Margin="0 10"/>
-        <Button x:Name="buttonCancel" Grid.Row="2" Grid.Column="1"
-                Content="Cancelar" HorizontalAlignment="Right" Click="CancelClick"
-                KeyDown="CancelReturn" Margin="0 10"/>
-        <Button x:Name="buttonDelete" Grid.Row="2" Grid.Column="2"
-                Content="Deletar Aluno" HorizontalAlignment="Center" Margin="0 10"
-                Visibility="Hidden" KeyDown="DeleteReturn" Click="DeleteClick"/>
+        <Grid Grid.Row="2" Grid.ColumnSpan="5" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="buttonConfirm" Grid.Column="2"
+                Content="Registrar" HorizontalAlignment="Center" Click="ConfirmClick"
+                 KeyDown="ConfirmReturn" Margin="50 10"/>
+            <Button x:Name="buttonCancel" Grid.Column="0"
+                Content="Fechar" HorizontalAlignment="Center" Click="CancelClick"
+                KeyDown="CancelReturn" Margin="50 10"/>
+            <Button x:Name="buttonDelete" Grid.Column="1"
+                Content="Deletar" HorizontalAlignment="Center" Margin="50 10"
+                Visibility="Collapsed" KeyDown="DeleteReturn" Click="DeleteClick"
+                IsEnabled="False"/>
+        </Grid>
     </Grid>
 </Window>

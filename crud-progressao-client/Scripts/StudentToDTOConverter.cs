@@ -24,7 +24,8 @@ namespace crud_progressao.Scripts {
                 student.Rg,
                 student.Cpf,
                 student.RgResponsible,
-                student.CpfResponsible
+                student.CpfResponsible,
+                student.IsDeactivated
             };
         }
     }
