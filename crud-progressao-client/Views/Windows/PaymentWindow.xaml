@@ -73,18 +73,19 @@
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>
         </DataGrid>
-        <Button x:Name="buttonReport" Grid.Row="2" Grid.Column="1"
-                Content="Gerar Relatório" Click="ReportClick"
-                HorizontalAlignment="Center" Margin="0 10"
-                Visibility="Hidden" IsEnabled="False"
-                KeyDown="ReportReturn"/>
-        <Button x:Name="buttonNewPayment" Grid.Row="2" Grid.Column="2"
+        <Grid Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="buttonNewPayment" Grid.Column="1"
                 Content="Novo Pagamento" HorizontalAlignment="Left"
-                Click="PaymentClick" Margin="0 10"
+                Click="PaymentClick" Margin="30 10"
                 KeyDown="PaymentReturn"/>
-        <Button x:Name="buttonClose" Grid.Row="2"
+            <Button x:Name="buttonClose"
                 Content="Fechar Janela" HorizontalAlignment="Right"
-                Click="CloseClick" Margin="0 10"
+                Click="CloseClick" Margin="30 10"
                 KeyDown="CloseReturn"/>
+        </Grid>
     </Grid>
 </Window>

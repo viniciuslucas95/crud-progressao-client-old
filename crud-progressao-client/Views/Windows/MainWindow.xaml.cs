@@ -157,7 +157,7 @@ namespace crud_progressao.Views.Windows {
                 return;
             }
 
-            LabelTextSetter.SetText(labelFeedback, "Erro ao tentar sobrescrever relatório existente!", true);
+            LabelTextSetter.SetText(labelFeedback, "Não foi possível gerar o relatório!", true);
         }
 
         private bool IsControlsEnabled() {

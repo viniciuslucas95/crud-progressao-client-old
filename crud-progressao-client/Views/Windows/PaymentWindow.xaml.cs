@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using crud_progressao_library.Scripts;
 using System.ComponentModel;
+using crud_progressao_library.Services;
 
 namespace crud_progressao.Views.Windows {
     public partial class PaymentWindow : Window {
@@ -19,18 +20,27 @@ namespace crud_progressao.Views.Windows {
             Student = student;
             Title = $"Pagamentos de {student.FirstName} {student.LastName} / Vencimento dia {student.DueDate}";
 
-            /*if (ServerApi.HasPrivilege) {
-                buttonReport.Visibility = Visibility.Visible;
-                buttonReport.IsEnabled = true;
-            }*/
-
             SetPayments();
+
+            if(student.IsDeactivated)
+                DisableControls();
         }
 
         internal void UpdatePayments(Student student) {
             Payments.Clear();
             Student = student;
             AddPayments();
+        }
+
+        private void DisableControls() {
+            if (Student.IsDeactivated && !ServerApi.HasPrivilege) {
+                buttonNewPayment.Visibility = Visibility.Collapsed;
+                buttonNewPayment.IsEnabled = false;
+            }
+        }
+
+        private bool IsControlsEnabled() {
+            return buttonNewPayment.IsEnabled;
         }
 
         private void SetPayments() {
@@ -65,51 +75,39 @@ namespace crud_progressao.Views.Windows {
 
         #region UI Interaction Event
         private void PaymentReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || IsProcessingAsyncOperation()) return;
+            if (e.Key != Key.Return || IsProcessingAsyncOperation() || !IsControlsEnabled()) return;
 
-            new PaymentInfoWindow(this, new Payment(), false).ShowDialog();
+            new PaymentInfoWindow(this, new Payment()).ShowDialog();
         }
 
         private void PaymentClick(object sender, RoutedEventArgs e) {
-            if (IsProcessingAsyncOperation()) return;
+            if (IsProcessingAsyncOperation() || !IsControlsEnabled()) return;
 
-            new PaymentInfoWindow(this, new Payment(), false).ShowDialog();
+            new PaymentInfoWindow(this, new Payment()).ShowDialog();
         }
 
         private void EditReturn(object sender, KeyEventArgs e) {
             if (e.Key != Key.Return || IsProcessingAsyncOperation()) return;
 
             Payment payment = (Payment)(sender as Button).DataContext;
-            new PaymentInfoWindow(this, payment, true).ShowDialog();
+            new PaymentInfoWindow(this, payment).ShowDialog();
         }
 
         private void EditClick(object sender, RoutedEventArgs e) {
             if (IsProcessingAsyncOperation()) return;
 
             Payment payment = (Payment)(sender as Button).DataContext;
-            new PaymentInfoWindow(this, payment, true).ShowDialog();
-        }
-
-        private void ReportReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || IsProcessingAsyncOperation()) return;
-
-
-        }
-
-        private void ReportClick(object sender, RoutedEventArgs e) {
-            if (IsProcessingAsyncOperation()) return;
-
-
+            new PaymentInfoWindow(this, payment).ShowDialog();
         }
 
         private void CloseReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || IsProcessingAsyncOperation()) return;
+            if (e.Key != Key.Return || IsProcessingAsyncOperation() || !buttonClose.IsEnabled) return;
 
             Close();
         }
 
         private void CloseClick(object sender, RoutedEventArgs e) {
-            if (IsProcessingAsyncOperation()) return;
+            if (IsProcessingAsyncOperation() || !buttonClose.IsEnabled) return;
 
             Close();
         }

@@ -159,11 +159,13 @@
             <Label Content="Email" Grid.Row="9"
                        Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
             <TextBox x:Name="inputEmail" MinWidth="100" Grid.Row="9"
-                         Grid.Column="1" Grid.ColumnSpan="3" KeyDown="ConfirmReturn"
+                         Grid.Column="1" KeyDown="ConfirmReturn"
                          BorderThickness="1 0 1 1"/>
+            <Label Content="" Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2"
+                   BorderThickness="0 0 1 1"/>
             <CheckBox x:Name="checkBoxDeactivated" Content="Desativado?"
                       Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2"
-                      Visibility="Hidden" IsEnabled="False"/>
+                      Visibility="Hidden" IsEnabled="False" d:Visibility="Visible"/>
         </Grid>
         <Grid Grid.Row="2" Grid.ColumnSpan="5" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
@@ -173,14 +175,14 @@
             </Grid.ColumnDefinitions>
             <Button x:Name="buttonConfirm" Grid.Column="2"
                 Content="Registrar" HorizontalAlignment="Center" Click="ConfirmClick"
-                 KeyDown="ConfirmReturn" Margin="50 10"/>
+                 KeyDown="ConfirmReturn" Margin="30 10"/>
             <Button x:Name="buttonCancel" Grid.Column="0"
                 Content="Fechar" HorizontalAlignment="Center" Click="CancelClick"
-                KeyDown="CancelReturn" Margin="50 10"/>
+                KeyDown="CancelReturn" Margin="30 10"/>
             <Button x:Name="buttonDelete" Grid.Column="1"
-                Content="Deletar" HorizontalAlignment="Center" Margin="50 10"
+                Content="Deletar" HorizontalAlignment="Center" Margin="30 10"
                 Visibility="Collapsed" KeyDown="DeleteReturn" Click="DeleteClick"
-                IsEnabled="False"/>
+                IsEnabled="False" d:Visibility="Visible"/>
         </Grid>
     </Grid>
 </Window>

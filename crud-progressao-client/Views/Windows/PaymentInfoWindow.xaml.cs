@@ -19,17 +19,12 @@ namespace crud_progressao.Views.Windows {
         private readonly string _param;
         private readonly string _url = "students/payments";
 
-        internal PaymentInfoWindow(PaymentWindow paymentWindow, Payment payment, bool isUpdating) {
+        internal PaymentInfoWindow(PaymentWindow paymentWindow, Payment payment) {
             InitializeComponent();
             LogWritter.WriteLog("Payment info window opened");
             _paymentWindow = paymentWindow;
             _payment = payment;
             _param = _paymentWindow.Student.Id;
-
-            if (isUpdating) {
-                Title = "Editar pagamento";
-                buttonConfirm.Content = "Editar";
-            }
 
             // The payment is new when its id is null or empty
             if (!string.IsNullOrEmpty(_payment.Id)) {
@@ -210,6 +205,9 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void SetExistentValues() {
+            Title = "Editar pagamento";
+            buttonConfirm.Content = "Editar";
+
             EnablePaymentInputs(_payment.IsPaid);
             userControlMonth.inputMonth.Text = _payment.Month[0].ToString();
             userControlMonth.inputYear.Text = _payment.Month[1].ToString();
@@ -233,8 +231,13 @@ namespace crud_progressao.Views.Windows {
                 return;
             }
 
-            buttonDelete.Visibility = Visibility.Collapsed;
-            buttonDelete.IsEnabled = false;
+            if (_paymentWindow.Student.IsDeactivated && !ServerApi.HasPrivilege) {
+                Title = "Ver pagamento";
+                buttonConfirm.Visibility = Visibility.Collapsed;
+                buttonConfirm.IsEnabled = false;
+                EnableControls(false);
+                buttonCancel.IsEnabled = true;
+            }
         }
 
         private void SetDefaultValues() {
@@ -343,13 +346,13 @@ namespace crud_progressao.Views.Windows {
         }
 
         private void CancelClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled()) return;
+            if (!buttonCancel.IsEnabled) return;
 
             Close();
         }
 
         private void CancelReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+            if (e.Key != Key.Return || !buttonCancel.IsEnabled) return;
 
             Close();
         }

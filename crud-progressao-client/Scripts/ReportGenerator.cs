@@ -82,15 +82,18 @@ namespace crud_progressao.Scripts {
             document.Blocks.Add(studentList);
             PrintDialog printDialog = new();
             IDocumentPaginatorSource docSource = document;
-
-            try {
-                printDialog.PrintDocument(docSource.DocumentPaginator, "Relatório dos Alunos");
-            } catch (Exception e) {
-                LogWritter.WriteError(e.Message);
-                return false;
+            
+            if(printDialog.ShowDialog() == true) {
+                try {
+                    printDialog.PrintDocument(docSource.DocumentPaginator, "Relatório dos Alunos");
+                    return true;
+                } catch (Exception e) {
+                    LogWritter.WriteError(e.Message);
+                    return false;
+                }
             }
 
-            return true;
+            return false;
         }
     }
 }
