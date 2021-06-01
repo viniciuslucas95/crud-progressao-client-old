@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="#FF3C3C3C"/>
+        <Setter Property="Padding" Value="8 4"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="BorderBrush" Value="#FF787878"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+    </Style>
+</ResourceDictionary>

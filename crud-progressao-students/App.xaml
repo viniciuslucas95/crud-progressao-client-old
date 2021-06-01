@@ -1,0 +1,20 @@
+﻿<Application x:Class="crud_progressao_students.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="Views/Windows/LoginWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/ComboBoxDictionary.xaml"/>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/ButtonDictionary.xaml"/>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/WindowDictionary.xaml"/>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/LabelDictionary.xaml"/>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/CheckBoxDictionary.xaml"/>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/TextBoxDictionary.xaml"/>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/PasswordBoxDictionary.xaml"/>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/BorderDictionary.xaml"/>
+                <ResourceDictionary Source="/crud-progressao-library;component/Views/ResourceDictionaries/DataGridDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

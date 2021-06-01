@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <Style TargetType="DataGrid">
+        <Setter Property="BorderThickness" Value="1 0 0 0"/>
+        <Setter Property="BorderBrush" Value="#FF787878"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+    </Style>
+    <Style TargetType="DataGridColumnHeader">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Padding" Value="8 4"/>
+        <Setter Property="BorderThickness" Value="0 0 1 1"/>
+        <Setter Property="BorderBrush" Value="#FF787878"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+    </Style>
+    <Style TargetType="DataGridCell">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="8 4"/>
+        <Setter Property="BorderThickness" Value="0 0 1 1"/>
+        <Setter Property="BorderBrush" Value="#FF787878"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Style.Triggers>
+            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="#FF006FBB" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>
