@@ -1,94 +1,43 @@
-﻿using crud_progressao_library.Scripts;
-using crud_progressao_library.Services;
-using crud_progressao_users.Models;
-using crud_progressao_users.Scripts;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using crud_progressao_users.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace crud_progressao_users.Views.Windows {
     public partial class MainWindow : Window {
-        public ObservableCollection<User> Users { get; private set; }
+        private readonly MainWindowViewModel _dataContext;
 
         public MainWindow() {
             InitializeComponent();
-
-            SetDataGritItemsSource(new ObservableCollection<User>());
-            _ = GetUsers();
+            _dataContext = new MainWindowViewModel {
+                SelectAndScrollToUserInDataGrid = SelectAndScrollToItemInDataGrid
+            };
+            DataContext = _dataContext;
         }
 
-        private async Task GetUsers() {
-            LabelTextSetter.SetText(labelFeedback, $"Procurando usuários...");
-            EnableControls(false);
-            dynamic result = await ServerApi.GetAsync("users", "");
-            EnableControls(true);
+        private void RegisterKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
 
-            if (result == null) {
-                LabelTextSetter.SetText(labelFeedback, $"Não foi possível acessar o banco de dados!", true);
-                return;
-            }
-
-            SetDataGritItemsSource(DynamicToObservableCollectionConverter.Convert<User>(result, new DynamicToUserConverter()));
-            string plural = Users.Count != 1 ? "s" : "";
-            LabelTextSetter.SetText(labelFeedback, $"{Users.Count} registro{plural} encontrado{plural}");
-        }
-
-        private void SetDataGritItemsSource(ObservableCollection<User> users) {
-            Users = users;
-            dataGridUsers.ItemsSource = users;
-        }
-
-        private void EnableControls(bool value) {
-            buttonRegister.IsEnabled = value;
-        }
-
-        private bool IsControlsEnabled() {
-            return buttonRegister.IsEnabled;
-        }
-
-        private void Register() {
-            new UserInfoWindow(this).ShowDialog();
-        }
-
-        private void Edit(User user) {
-            new UserInfoWindow(this, user).ShowDialog();
-        }
-
-        private bool IsProcessingAsyncOperation() {
-            if (AsyncOperationChecker.Check(labelFeedback))
-                return true;
-
-            return false;
-        }
-
-        #region UI Interaction Event
-        private void RegisterReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
-
-            Register();
+            _dataContext.RegisterCommand();
         }
 
         private void RegisterClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
-
-            Register();
+            _dataContext.RegisterCommand();
         }
 
-        private void EditReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled() || IsProcessingAsyncOperation()) return;
+        private void EditKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
 
-            User user = (User)(sender as Button).DataContext;
-            Edit(user);
+            _dataContext.EditCommand((sender as Button).DataContext);
         }
 
         private void EditClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled() || IsProcessingAsyncOperation()) return;
-
-            User user = (User)(sender as Button).DataContext;
-            Edit(user);
+            _dataContext.EditCommand((sender as Button).DataContext);
         }
-        #endregion
+
+        private void SelectAndScrollToItemInDataGrid<T>(T item) {
+            dataGridUsers.SelectedItem = item;
+            dataGridUsers.ScrollIntoView(item);
+        }
     }
 }
