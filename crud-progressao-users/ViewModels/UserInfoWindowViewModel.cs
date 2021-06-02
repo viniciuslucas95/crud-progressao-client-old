@@ -1,4 +1,5 @@
 ﻿using crud_progressao_library.Services;
+using crud_progressao_library.ViewModels;
 using crud_progressao_users.Models;
 using System;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ using System.Windows;
 namespace crud_progressao_users.ViewModels {
     public class UserInfoWindowViewModel : BaseViewModel {
         private const string URL = "users";
+
+        internal Action CloseWindow;
 
         private readonly MainWindowViewModel _mainWindowViewModel;
         private User _user;
@@ -66,8 +69,6 @@ namespace crud_progressao_users.ViewModels {
         private string _windowTitle = "Registrar Usuário", _confirmButtonText = "Registrar", _username, _password;
         private bool _hasPrivilege, _isConfirmButtonEnabled;
         #endregion
-
-        internal Action CloseWindow;
 
         public UserInfoWindowViewModel(MainWindowViewModel mainWindowViewModel, User user = new User()) {
             _mainWindowViewModel = mainWindowViewModel;

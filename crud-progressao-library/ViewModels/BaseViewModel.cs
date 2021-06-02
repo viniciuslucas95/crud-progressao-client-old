@@ -3,7 +3,7 @@ using crud_progressao_library.Services;
 using System.ComponentModel;
 using System.Windows.Media;
 
-namespace crud_progressao_users.ViewModels {
+namespace crud_progressao_library.ViewModels {
     public class BaseViewModel : INotifyPropertyChanged {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -35,7 +35,7 @@ namespace crud_progressao_users.ViewModels {
         private Brush _labelFeedbackColor = BrushColors.Black;
         #endregion
 
-        internal void SetFeedbackContent(string text, bool error = false) {
+        public void SetFeedbackContent(string text, bool error = false) {
             LabelFeedbackText = text;
             LabelFeedbackColor = error ? BrushColors.Red : BrushColors.Black;
         }

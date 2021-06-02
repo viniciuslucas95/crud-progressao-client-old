@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Style="{StaticResource WindowStyle}" Closing="OnWindowClose"
+        xmlns:viewmodels="clr-namespace:crud_progressao_students.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:LoginWindowViewModel}"
+        mc:Ignorable="d" Style="{StaticResource WindowStyle}"
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Title="Login"
         Width="250" Height="175" MinWidth="250" MinHeight="175">
     <Grid>
@@ -17,19 +19,25 @@
             <RowDefinition Height="32"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label x:Name="labelFeedback" Grid.ColumnSpan="2" Content=""/>
+        <Label Grid.ColumnSpan="2" Content="{Binding Path=LabelFeedbackText, UpdateSourceTrigger=PropertyChanged}"
+               Foreground="{Binding Path=LabelFeedbackColor, UpdateSourceTrigger=PropertyChanged}"
+               d:Content="Feedback"/>
         <Label Style="{StaticResource SmallLabel}" Content="Usuário"
                Grid.Row="1" BorderThickness="1 0 0 1"/>
         <TextBox x:Name="inputUsername" Grid.Column="1" Grid.Row="1"
-                 KeyDown="ConfirmButton" BorderThickness="1 0 1 1"
-                 TextChanged="OnUsernameChange"/>
+                 KeyDown="ConfirmKeyDown" BorderThickness="1 0 1 1"
+                 TextChanged="OnInputTextChange" IsEnabled="{Binding Path=IsControlsEnabled,
+                 UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=UsernameText,
+                 UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
         <Label Content="Senha" Grid.Row="2" Style="{StaticResource SmallLabel}"
                BorderThickness="1 0 0 1"/>
         <PasswordBox x:Name="inputPassword" Grid.Row="2" Grid.Column="1"
-                     KeyDown="ConfirmButton" BorderThickness="1 0 1 1"
-                     PasswordChanged="OnPasswordChange"/>
+                     KeyDown="ConfirmKeyDown" BorderThickness="1 0 1 1"
+                     PasswordChanged="OnInputTextChange" IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"/>
         <Button x:Name="buttonLogin" Grid.Row="3" Grid.ColumnSpan="2"
-                Content="Logar" Click="ConfirmClick" IsEnabled="False"
-                HorizontalAlignment="Center" KeyDown="ConfirmButton" />
+                Content="Logar" Click="ConfirmClick" IsEnabled="{Binding Path=IsConfirmButtonEnabled,
+                UpdateSourceTrigger=PropertyChanged}"
+                HorizontalAlignment="Center" KeyDown="ConfirmKeyDown" />
     </Grid>
 </Window>

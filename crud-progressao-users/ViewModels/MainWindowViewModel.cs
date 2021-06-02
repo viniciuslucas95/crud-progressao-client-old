@@ -1,5 +1,6 @@
 ﻿using crud_progressao_library.Scripts;
 using crud_progressao_library.Services;
+using crud_progressao_library.ViewModels;
 using crud_progressao_users.Models;
 using crud_progressao_users.Scripts;
 using crud_progressao_users.Views.Windows;
