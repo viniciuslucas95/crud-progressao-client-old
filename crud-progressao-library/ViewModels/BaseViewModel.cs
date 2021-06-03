@@ -29,9 +29,23 @@ namespace crud_progressao_library.ViewModels {
                 OnPropertyChange(nameof(LabelFeedbackColor));
             }
         }
+        public bool HasPrivilege {
+            get => _hasPrivilege;
+            set {
+                _hasPrivilege = value;
+                OnPropertyChange(nameof(HasPrivilege));
+            }
+        }
+        public string WindowTitle {
+            get => _windowTitle;
+            set {
+                _windowTitle = value;
+                OnPropertyChange(nameof(WindowTitle));
+            }
+        }
 
-        private bool _isControlsEnabled = true;
-        private string _labelFeedbackText;
+        private bool _isControlsEnabled = true, _hasPrivilege;
+        private string _labelFeedbackText, _windowTitle;
         private Brush _labelFeedbackColor = BrushColors.Black;
         #endregion
 

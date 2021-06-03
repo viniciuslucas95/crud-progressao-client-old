@@ -1,4 +1,5 @@
-﻿using crud_progressao_library.Services;
+﻿using crud_progressao_library.Scripts;
+using crud_progressao_library.Services;
 using crud_progressao_library.ViewModels;
 using crud_progressao_users.Models;
 using System;
@@ -169,7 +170,7 @@ namespace crud_progressao_users.ViewModels {
         private void InsertUser() {
             _user = UpdatedUser();
             _mainWindowViewModel.Users.Insert(0, _user);
-            _mainWindowViewModel.SelectAndScrollToUserInDataGrid?.Invoke(_user);
+            DataGridController.SelectAndScrollToItemInDataGrid(_mainWindowViewModel.DataGrid, _user);
         }
 
         private void SetExistentValues() {

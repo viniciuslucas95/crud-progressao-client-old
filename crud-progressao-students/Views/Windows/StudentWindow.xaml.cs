@@ -1,326 +1,65 @@
-﻿using crud_progressao_students.DataTypes;
-using crud_progressao_students.Models;
-using crud_progressao_students.Scripts;
-using crud_progressao_library.Scripts;
-using crud_progressao_library.Services;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
+using crud_progressao_students.ViewModels;
 
 namespace crud_progressao_students.Views.Windows {
     public partial class StudentWindow : Window {
-        private Student _student;
-        private readonly string _param;
-        private readonly MainWindow _mainWindow;
-        private readonly string _url = "students";
 
-        public StudentWindow(MainWindow mainWindow, Student student = new Student()) {
+
+        private readonly StudentWindowViewModel _dataContext;
+
+        public StudentWindow(StudentWindowViewModel dataContext) {
             InitializeComponent();
-            LogWritter.WriteLog("Student window opened");
-            _mainWindow = mainWindow;
-            _student = student;
-            _param = _student.Id;
-
-            // The student is new when its id is null or empty
-            if (!string.IsNullOrEmpty(_student.Id))
-                SetExistentValues();
-        }        
-
-        private async Task Confirm() {
-            EnableControls(false);
-
-            if (string.IsNullOrEmpty(_student.Id)) { // Register
-                LabelTextSetter.SetText(labelFeedback, "Registrando novo aluno...");
-                string id = await ServerApi.RegisterAsync(_url, _param, GetStudentDTO());
-
-                if (!string.IsNullOrEmpty(id)) {
-                    LabelTextSetter.SetText(_mainWindow.labelFeedback, "Aluno registrado com sucesso!");
-                    _student.Id = id;
-                    InsertStudent();
-                    Close();
-                    return;
-                }
-
-                LabelTextSetter.SetText(labelFeedback, "Erro ao tentar registrar o aluno!", true);
-            } else { // Update
-                LabelTextSetter.SetText(labelFeedback, "Atualizando informações do aluno...");
-                bool result = await ServerApi.UpdateAsync(_url, _param, GetStudentDTO());
-
-                if (result) {
-                    LabelTextSetter.SetText(_mainWindow.labelFeedback, "Informações do aluno atualizada!");
-                    _mainWindow.Students.Remove(_student);
-                    InsertStudent();
-                    Close();
-                    return;
-                }
-
-                LabelTextSetter.SetText(labelFeedback, "Erro ao tentar atualizar as informações!", true);
-            }
-
-            EnableControls(true);
+            _dataContext = dataContext;
+            _dataContext.Close = Close;
+            DataContext = dataContext;
         }
 
-        private async Task Delete() {
-            LabelTextSetter.SetText(labelFeedback, "Deletando aluno...");
-            EnableControls(false);
-            bool result = await ServerApi.DeleteAsync(_url, _student.Id, "");
-
-            if (result) {
-                LabelTextSetter.SetText(_mainWindow.labelFeedback, "Aluno deletado com sucesso!");
-                _mainWindow.Students.Remove(_student);
-                _mainWindow.SetFeedbackValues();
-                Close();
-                return;
-            }
-
-            LabelTextSetter.SetText(labelFeedback, "Erro ao tentar deletar o aluno!", true);
-            EnableControls(true);
-        }
-
-        private Student GetUpdatedStudentValues() {
-            _ = double.TryParse(inputInstallment.Text, out double installment);
-            _ = double.TryParse(inputDiscount.Text, out double discount);
-            _ = int.TryParse(inputDueDate.Text, out int dueDate);
-            _ = long.TryParse(inputZipCode.Text, out long zipCode);
-            _ = long.TryParse(inputLandline.Text, out long landline);
-            _ = long.TryParse(inputCellPhone.Text, out long cellPhone);
-            _ = long.TryParse(inputRg.Text, out long rg);
-            _ = long.TryParse(inputCpf.Text, out long cpf);
-            _ = long.TryParse(inputRgResponsible.Text, out long rgResponsible);
-            _ = long.TryParse(inputCpfResponsible.Text, out long cpfResponsible);
-
-            dueDate = dueDate < 1 ? 1 : (dueDate > 31 ? 31 : dueDate);
-
-            return new Student() {
-                Id = _student.Id ?? "",
-                FirstName = inputFirstName.Text,
-                LastName = inputLastName.Text,
-                ClassName = inputClassName.Text,
-                Responsible = inputResponsible.Text,
-                Address = inputAddress.Text,
-                Installment = installment,
-                Discount = discount,
-                DiscountType = (DiscountType)comboBoxDiscount.SelectedIndex,
-                DueDate = dueDate,
-                Note = inputNote.Text,
-                Picture = (BitmapImage)imagePicture.Source,
-                Payments = _student.Payments ?? new List<Payment>(),
-                ZipCode = zipCode,
-                Landline = landline,
-                CellPhone = cellPhone,
-                Email = inputEmail.Text,
-                Rg = rg,
-                Cpf = cpf,
-                RgResponsible = rgResponsible,
-                CpfResponsible = cpfResponsible,
-                IsDeactivated = (bool)checkBoxDeactivated.IsChecked
-            };
-        }
-
-        private dynamic GetStudentDTO() {
-            return StudentToDTOConverter.Convert(GetUpdatedStudentValues());
-        }
-
-        private void InsertStudent() {
-            Student student = GetUpdatedStudentValues();
-            _mainWindow.Students.Insert(0, student);
-            _mainWindow.dataGridStudents.SelectedItem = student;
-            _mainWindow.dataGridStudents.ScrollIntoView(student);
-            _mainWindow.SetFeedbackValues();
-        }
-
-        private void SetExistentValues() {
-            if (ServerApi.HasPrivilege) {
-                buttonDelete.Visibility = Visibility.Visible;
-                buttonDelete.IsEnabled = true;
-                checkBoxDeactivated.Visibility = Visibility.Visible;
-                checkBoxDeactivated.IsEnabled = true;
-            }
-            
-            Title = "Atualizar informações do aluno";
-            buttonConfirm.Content = "Atualizar";
-
-            inputFirstName.Text = _student.FirstName;
-            inputLastName.Text = _student.LastName;
-            inputClassName.Text = _student.ClassName;
-            inputResponsible.Text = _student.Responsible;
-            inputAddress.Text = _student.Address;
-            inputInstallment.Text = _student.Installment.ToString();
-            inputDiscount.Text = _student.Discount.ToString();
-            comboBoxDiscount.SelectedIndex = (int)_student.DiscountType;
-            inputDueDate.Text = _student.DueDate.ToString();
-            inputNote.Text = _student.Note;
-            imagePicture.Source = _student.Picture;
-            inputZipCode.Text = _student.ZipCode.ToString();
-            inputLandline.Text = _student.Landline.ToString();
-            inputCellPhone.Text = _student.CellPhone.ToString();
-            inputEmail.Text = _student.Email;
-            inputRg.Text = _student.Rg.ToString();
-            inputCpf.Text = _student.Cpf.ToString();
-            inputRgResponsible.Text = _student.RgResponsible.ToString();
-            inputCpfResponsible.Text = _student.CpfResponsible.ToString();
-            checkBoxDeactivated.IsChecked = _student.IsDeactivated;
-
-            if (_student.IsDeactivated && !ServerApi.HasPrivilege) {
-                Title = "Ver informações do aluno cancelado";
-                buttonConfirm.Visibility = Visibility.Collapsed;
-                buttonConfirm.IsEnabled = false;
-                EnableControls(false);
-                buttonCancel.IsEnabled = true;
-            }
-
-            if (imagePicture.Source != null)
-                buttonPicture.Content = "Alterar foto";
-        }
-
-        private void FindPicture() {
-            OpenFileDialog pictureDialog = new()
-            {
-                Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png"
-            };
-
-            if (pictureDialog.ShowDialog() == true) {
-                SetPicture(pictureDialog.FileName);
-            }
-        }
-
-        private void SetPicture(string fileName) {
-            LogWritter.WriteLog("Trying to set the student picture in the student window");
-
-            try {
-                BitmapImage img = new(new Uri(fileName));
-                imagePicture.Source = img;
-                buttonPicture.Content = "Alterar foto";
-                LogWritter.WriteLog("Picture set");
-            } catch (Exception ex) {
-                imagePicture.Source = null;
-                LogWritter.WriteError(ex.Message);
-            }
-        }
-
-        private void EnableControls(bool value) {
-            inputFirstName.IsEnabled = value;
-            inputLastName.IsEnabled = value;
-            inputClassName.IsEnabled = value;
-            inputResponsible.IsEnabled = value;
-            inputAddress.IsEnabled = value;
-            inputInstallment.IsEnabled = value;
-            comboBoxDiscount.IsEnabled = value;
-            inputDiscount.IsEnabled = value;
-            inputDueDate.IsEnabled = value;
-            inputNote.IsEnabled = value;
-            inputZipCode.IsEnabled = value;
-            inputLandline.IsEnabled = value;
-            inputCellPhone.IsEnabled = value;
-            inputEmail.IsEnabled = value;
-            inputRg.IsEnabled = value;
-            inputCpf.IsEnabled = value;
-            inputRgResponsible.IsEnabled = value;
-            inputCpfResponsible.IsEnabled = value;
-            buttonConfirm.IsEnabled = value;
-            buttonPicture.IsEnabled = value;
-            buttonCancel.IsEnabled = value;
-
-            if (ServerApi.HasPrivilege && !string.IsNullOrEmpty(_student.Id))
-                buttonDelete.IsEnabled = value;
-        }
-
-        private void UpdateTotal() {
-            if (inputInstallment == null || inputDiscount == null || labelTotal == null) return;
-
-            DiscountType discountType = (DiscountType)comboBoxDiscount.SelectedIndex;
-
-            _ = double.TryParse(inputInstallment.Text, out double installment);
-            _ = double.TryParse(inputDiscount.Text, out double discount);
-
-            string value = discountType == DiscountType.Fixed
-                ? (installment - discount).ToString()
-                : (installment - installment * discount / 100).ToString();
-
-            _ = double.TryParse(value, out double total);
-
-            labelTotal.Content = "R$ " + Math.Round(total, 2);
-        }
-
-        private bool IsControlsEnabled() {
-            return buttonConfirm.IsEnabled;
-        }
-
-        private bool CanEdit() {
-            if (_student.IsDeactivated) {
-                if (ServerApi.HasPrivilege) return true;
-
-                return false;
-            }
-
-            return true;
-        }
-
-        #region UI Interaction Events
-        private void OnTextChange(object sender, TextChangedEventArgs e) {
-            UpdateTotal();
+        private void OnPaymentValuesChange(object sender, TextChangedEventArgs e) {
+            _dataContext.UpdateTotalValueCommand();
         }
 
         private void OnComboBoxSelectionChange(object sender, SelectionChangedEventArgs e) {
-            UpdateTotal();
+            _dataContext.UpdateTotalValueCommand();
         }
 
-        private void PictureReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+        private void PictureKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
 
-            FindPicture();
+            _dataContext.FindPictureCommand();
         }
 
         private void PictureClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled()) return;
-
-            FindPicture();
+            _dataContext.FindPictureCommand();
         }
 
-        private void DeleteReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
-
-            _ = Delete();
+        private void DeleteKeyDown(object sender, KeyEventArgs e) {
+            _dataContext.DeleteCommand();
         }
 
         private void DeleteClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled()) return;
-
-            _ = Delete();
+            _dataContext.DeleteCommand();
         }
 
-        private void ConfirmReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !IsControlsEnabled()) return;
+        private void ConfirmKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
 
-            _ = Confirm();
+            _dataContext.ConfirmCommand();
         }
 
         private void ConfirmClick(object sender, RoutedEventArgs e) {
-            if (!IsControlsEnabled()) return;
-
-            _ = Confirm();
+            _dataContext.ConfirmCommand();
         }
 
-        private void CancelReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || !buttonCancel.IsEnabled) return;
+        private void CancelKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
 
             Close();
         }
 
         private void CancelClick(object sender, RoutedEventArgs e) {
-            if(!buttonCancel.IsEnabled) return;
-
             Close();
         }
-
-        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs e) {
-            LogWritter.WriteLog("Student window closed");
-        }
-        #endregion
     }
 }

@@ -7,10 +7,13 @@ using crud_progressao_users.Views.Windows;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace crud_progressao_users.ViewModels {
     public class MainWindowViewModel : BaseViewModel {
         private const string URL = "users";
+
+        internal DataGrid DataGrid { get; private set; }
 
         #region UI Bindings
         public ObservableCollection<User> Users {
@@ -24,9 +27,9 @@ namespace crud_progressao_users.ViewModels {
         private ObservableCollection<User> _users = new();
         #endregion
 
-        internal Action<User> SelectAndScrollToUserInDataGrid;
+        public MainWindowViewModel(DataGrid dataGrid) {
+            DataGrid = dataGrid;
 
-        public MainWindowViewModel() {
             _ = GetUsers();
         }
 

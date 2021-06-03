@@ -1,12 +1,20 @@
-﻿<Window x:Class="crud_progressao_students.Views.Windows.MainWindow"
+﻿<Window x:Class="crud_progressao_students.Views.Windows.StudentListWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:crud_progressao_library.Converters;assembly=crud-progressao-library"
+        xmlns:viewmodels="clr-namespace:crud_progressao_students.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:StudentListWindowViewModel}"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Style="{StaticResource WindowStyle}" Closing="OnWindowClose"
-        Title="Sistema de Gerenciamento de Alunos" MinWidth="800" MinHeight="600"
-        Width="800" Height="600">
+        Style="{StaticResource WindowStyle}" MinWidth="800" MinHeight="600"
+        Title="Sistema de Gerenciamento de Alunos" Width="800" Height="600">
+    <Window.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
+        <converters:BooleanToVisibilityCollapsedConverter x:Key="BooleanToVisibilityCollapsedConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -21,14 +29,16 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Image HorizontalAlignment="Left" Margin="5" x:Name="imageLogo"
+        <Image HorizontalAlignment="Left" Margin="5"
                Source="/Resources/Images/Curso Progressão Logo.png"
                RenderOptions.BitmapScalingMode="HighQuality"/>
-        <Rectangle x:Name="rectangleNavbar" Grid.ColumnSpan="6" Fill="Transparent"
+        <Rectangle Grid.ColumnSpan="6" Fill="Transparent"
                    MouseDown="BackgroundClick" Stroke="#FF787878"
-                   StrokeThickness="1" StrokeDashArray="0 0 1 0"/>
+                   StrokeThickness="1" StrokeDashArray="0 0 1 0"
+                   IsEnabled="{Binding Path=IsControlEnabled}"/>
         <DataGrid x:Name="dataGridStudents" Grid.Row="1" Grid.ColumnSpan="6"
-                  PreviewMouseDown="BackgroundClick">
+                  PreviewMouseDown="BackgroundClick" ItemsSource="{Binding Path=Students}"
+                  IsEnabled="{Binding Path=IsControlsEnabled}">
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="FontWeight" Value="SemiBold"/>
@@ -222,14 +232,14 @@
                         </Grid>
                         <Button Grid.Row= "1" Grid.Column="1"
                                 Click="EditClick"
-                                KeyDown="EditReturn"
+                                KeyDown="EditKeyDown"
                                 Content="Informações"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Margin="0 5"/>
                         <Button Grid.Row= "1" Grid.Column="2"
                                 Click="PaymentsClick"
-                                KeyDown="PaymentsReturn"
+                                KeyDown="PaymentsKeyDown"
                                 Content="Pagamentos"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
@@ -238,10 +248,14 @@
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>
         </DataGrid>
-        <Border x:Name="buttonFilter" Height="32" Grid.Column="2"
+        <Border Height="32" Grid.Column="2"
                 VerticalAlignment="Center" MouseDown="OpenClick"
                 CornerRadius="0 0 10 10" BorderThickness="1"
-                Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
+                Grid.ColumnSpan="2" HorizontalAlignment="Stretch"
+                IsEnabled="{Binding Path=IsPanelOpen,
+                Converter={StaticResource InverseBooleanConverter}}"
+                Visibility="{Binding Path=IsPanelOpen,
+                Converter={StaticResource BooleanToInverseVisibilityConverter}}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="90"/>
@@ -255,10 +269,13 @@
                        Cursor="IBeam" Background="Transparent"/>
             </Grid>
         </Border>
-        <Border x:Name="panelFilter" Grid.RowSpan="2" Grid.ColumnSpan="2"
-                Visibility="Hidden" d:Visibility="Visible" HorizontalAlignment="Stretch"
+        <Border Grid.RowSpan="2" Grid.ColumnSpan="2"
+                d:Visibility="Visible" HorizontalAlignment="Stretch"
                 VerticalAlignment="Top" Margin="0 22 0 0" Grid.Column="2"
-                CornerRadius="0 0 10 10" BorderThickness="1">
+                CornerRadius="0 0 10 10" BorderThickness="1"
+                IsEnabled="{Binding Path=IsPanelOpen}"
+                Visibility="{Binding Path=IsPanelOpen,
+                Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="90"/>
@@ -276,52 +293,53 @@
                 </Grid.RowDefinitions>
                 <Label Style="{StaticResource SmallLabel}" Content="Nome"/>
                 <TextBox x:Name="inputFirstName" Grid.Column="1"
-                         KeyDown="SearchReturn"/>
+                         IsEnabled="{Binding Path=IsControlsEnabled}"
+                         KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Sobrenome"
                        Grid.Row="1" BorderThickness="0 1"/>
-                <TextBox x:Name="inputLastName" Grid.Column="1" Grid.Row="1"
-                         BorderThickness="1 1 0 1" KeyDown="SearchReturn"/>
+                <TextBox Grid.Column="1" Grid.Row="1" IsEnabled="{Binding Path=IsControlsEnabled}"
+                         BorderThickness="1 1 0 1" KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Turma"
                        Grid.Row="2"/>
-                <TextBox x:Name="inputClassName" Grid.Column="1" Grid.Row="2"
-                         KeyDown="SearchReturn"/>
+                <TextBox Grid.Column="1" Grid.Row="2" IsEnabled="{Binding Path=IsControlsEnabled}"
+                         KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Desconto %"
                        Grid.Row="3" BorderThickness="0 1"/>
-                <TextBox x:Name="inputDiscount" Grid.Column="1" Grid.Row="3"
-                         BorderThickness="1 1 0 1" KeyDown="SearchReturn"/>
+                <TextBox Grid.Column="1" Grid.Row="3" IsEnabled="{Binding Path=IsControlsEnabled}"
+                         BorderThickness="1 1 0 1" KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Responsável"
                        Grid.Row="4"/>
-                <TextBox x:Name="inputResponsible" Grid.Column="1" Grid.Row="4"
-                         KeyDown="SearchReturn"/>
+                <TextBox Grid.Column="1" Grid.Row="4" IsEnabled="{Binding Path=IsControlsEnabled}"
+                         KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Endereço"
                        Grid.Row="5" BorderThickness="0 1 0 0"
                        Background="Transparent"/>
-                <TextBox x:Name="inputAddress" Grid.Column="1" Grid.Row="5"
+                <TextBox Grid.Column="1" Grid.Row="5" IsEnabled="{Binding Path=IsControlsEnabled}"
                          BorderThickness="1 1 0 0" Background="Transparent"
-                         KeyDown="SearchReturn"/>
+                         KeyDown="SearchKeyDown"/>
                 <Label Grid.Row="6" Grid.ColumnSpan="2" BorderThickness="0 1"
                        Background="Transparent"/>
                 <CheckBox x:Name="checkBoxIsOwingOnly" Grid.Row="6" Grid.ColumnSpan="2"
-                          Content="Apenas quem está devendo?" KeyDown="SearchReturn"/>
+                          Content="Apenas quem está devendo?" KeyDown="SearchKeyDown"/>
                 <CheckBox x:Name="checkBoxIsShowingDeactivated" Grid.Row="7" Grid.ColumnSpan="2"
-                          Content="Exibir desativados" KeyDown="SearchReturn"/>
+                          Content="Exibir desativados" KeyDown="SearchKeyDown"/>
             </Grid>
         </Border>
-        <Button x:Name="buttonSearch" Content="Procurar"
+        <Button Content="Procurar" IsEnabled="{Binding Path=IsPanelOpen}"
+                Visibility="{Binding Path=IsPanelOpen,
+                Converter={StaticResource BooleanToVisibilityConverter}}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
-                Grid.Column="4" Click="SearchClick" Visibility="Hidden"
-                KeyDown="SearchReturn"/>
-        <Button x:Name="buttonRegister" Content="Registrar Aluno"
+                Grid.Column="4" Click="SearchClick"
+                KeyDown="SearchKeyDown"/>
+        <Button Content="Registrar Aluno" IsEnabled="{Binding Path=IsControlEnabled}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 Grid.Column="5" Click="RegisterClick"
-                KeyDown="RegisterReturn"/>
-        <Button x:Name="buttonCancel" Content="Cancelar" Grid.Column="1"
+                KeyDown="RegisterKeyDown"/>
+        <Button Content="Cancelar" Grid.Column="1" IsEnabled="{Binding Path=IsPanelOpen}"
+                Visibility="{Binding Path=IsPanelOpen,
+                Converter={StaticResource BooleanToVisibilityConverter}}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
-                Click="CloseClick" Visibility="Hidden"
-                KeyDown="CloseReturn"/>
-        <DockPanel Grid.Row="2" Grid.ColumnSpan="6">
-            
-        </DockPanel>
+                Click="CloseClick" KeyDown="CloseKeyDown"/>
         <Grid Grid.Row="2" Grid.ColumnSpan="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -333,21 +351,41 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <Label x:Name="labelFeedback" Content="" FontSize="16"
-                   Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="1 1 0 1"/>
-            <Label x:Name="labelFeedbackTotal" Content=""
+            <Label x:Name="labelFeedback" d:Content="Feedback" FontSize="16"
+                   Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="1 1 0 1"
+                   Content="{Binding Path=LabelFeedbackText, UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="{Binding Path=LabelFeedbackColor, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label d:Content="Total" Content="{Binding Path=LabelFeedbackTotalText,
+                   UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="{Binding Path=LabelFeedbackTotalColor,
+                   UpdateSourceTrigger=PropertyChanged}"
                    BorderThickness="1 1 0 0" FontSize="14"
-                   Visibility="Collapsed"/>
-            <Label x:Name="labelFeedbackAverage" Content=""
+                   IsEnabled="{Binding Path=HasPrivilege}"
+                   Visibility="{Binding Path=HasPrivilege,
+                   Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"/>
+            <Label d:Content="Average" Content="{Binding Path=LabelFeedbackAverageText,
+                   UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="{Binding Path=LabelFeedbackAverageColor,
+                   UpdateSourceTrigger=PropertyChanged}"
                    BorderThickness="1 1 0 0" FontSize="14"
-                   Visibility="Collapsed" Grid.Column="1"/>
-            <Label x:Name="labelFeedbackPaidSum" Content=""
+                   IsEnabled="{Binding Path=HasPrivilege}"
+                   Visibility="{Binding Path=HasPrivilege,
+                   Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"
+                   Grid.Column="1"/>
+            <Label d:Content="Sum" Content="{Binding Path=LabelFeedbackSumText,
+                   UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="{Binding Path=LabelFeedbackSumColor,
+                   UpdateSourceTrigger=PropertyChanged}"
                    BorderThickness="1 1 0 0" FontSize="14"
-                   Visibility="Collapsed" Grid.Column="2" Grid.ColumnSpan="2"/>
+                   Visibility="{Binding Path=HasPrivilege,
+                   Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"
+                   IsEnabled="{Binding Path=HasPrivilege}"
+                   Grid.Column="2" Grid.ColumnSpan="2"/>
             <Button x:Name="buttonReport" Grid.Row="1" Grid.Column="3" FontSize="16"
-                    Content="Gerar Relatório" Visibility="Collapsed"
-                    IsEnabled="False" Click="ReportClick"
-                    KeyDown="ReportReturn"/>
+                    Content="Gerar Relatório" Visibility="{Binding Path=HasPrivilege,
+                    Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"
+                    IsEnabled="{Binding Path=IsControlsEnabled}" Click="ReportClick"
+                    KeyDown="ReportKeyDown"/>
         </Grid>
     </Grid>
 </Window>

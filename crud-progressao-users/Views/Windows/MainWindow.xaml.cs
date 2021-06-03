@@ -9,9 +9,7 @@ namespace crud_progressao_users.Views.Windows {
 
         public MainWindow() {
             InitializeComponent();
-            _dataContext = new MainWindowViewModel {
-                SelectAndScrollToUserInDataGrid = SelectAndScrollToItemInDataGrid
-            };
+            _dataContext = new MainWindowViewModel(dataGridUsers);
             DataContext = _dataContext;
         }
 
@@ -33,11 +31,6 @@ namespace crud_progressao_users.Views.Windows {
 
         private void EditClick(object sender, RoutedEventArgs e) {
             _dataContext.EditCommand((sender as Button).DataContext);
-        }
-
-        private void SelectAndScrollToItemInDataGrid<T>(T item) {
-            dataGridUsers.SelectedItem = item;
-            dataGridUsers.ScrollIntoView(item);
         }
     }
 }

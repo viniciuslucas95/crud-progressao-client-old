@@ -48,7 +48,7 @@ namespace crud_progressao_students.ViewModels {
 
                 if ((bool)result.privilege) ServerApi.SetHeader("privilege", "true");
 
-                new MainWindow().Show();
+                new StudentListWindow().Show();
                 CloseWindow?.Invoke();
                 return;
             }

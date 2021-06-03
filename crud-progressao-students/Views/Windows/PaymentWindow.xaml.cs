@@ -10,10 +10,10 @@ using crud_progressao_library.Services;
 namespace crud_progressao_students.Views.Windows {
     public partial class PaymentWindow : Window {
         internal ObservableCollection<Payment> Payments { get; private set; }
-        internal MainWindow MainWindow { get; private set; }
+        internal StudentListWindow MainWindow { get; private set; }
         internal Student Student { get; set; }
 
-        public PaymentWindow(MainWindow mainWindow, Student student) {
+        public PaymentWindow(StudentListWindow mainWindow, Student student) {
             InitializeComponent();
             LogWritter.WriteLog("Payment window opened");
             MainWindow = mainWindow;

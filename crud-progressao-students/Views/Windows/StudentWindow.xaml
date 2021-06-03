@@ -3,9 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:crud_progressao_students.ViewModels"
+        xmlns:converters="clr-namespace:crud_progressao_library.Converters;assembly=crud-progressao-library"
+        d:DataContext="{d:DesignInstance Type=viewmodels:StudentWindowViewModel}"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Style="{StaticResource WindowStyle}" ResizeMode="NoResize" Closing="OnWindowClose"
-        Title="Registrar novo aluno" SizeToContent="WidthAndHeight">
+        Style="{StaticResource WindowStyle}" ResizeMode="NoResize"
+        Title="{Binding Path=WindowTitle,
+        UpdateSourceTrigger=PropertyChanged}" SizeToContent="WidthAndHeight">
+    <Window.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
+        <converters:BooleanToVisibilityCollapsedConverter x:Key="BooleanToVisibilityCollapsedConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -20,7 +30,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Label x:Name="labelFeedback" Grid.Column="1" Grid.ColumnSpan="3"
-               Content=""/>
+               d:Content="Feedback"/>
         <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
@@ -51,7 +61,7 @@
                 </Border>
                 <Button x:Name="buttonPicture" Grid.Row="1"
                             Content="Adicionar foto" Click="PictureClick"
-                            KeyDown="PictureReturn"/>
+                            KeyDown="PictureKeyDown"/>
             </Grid>
             <Grid Grid.Column="2" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
@@ -68,101 +78,194 @@
                            BorderThickness="0 1 1 1"/>
             </Grid>
             <Label Content="Nome" Grid.Row="1" BorderThickness="1 0 0 1"
-                       Style="{StaticResource SmallLabel}"/>
-            <TextBox x:Name="inputFirstName" Grid.Row="1" MinWidth="100"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}"/>
+            <TextBox Grid.Row="1" MinWidth="100"
+                     Grid.Column="1" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=FirstName,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Sobrenome" Grid.Row="1" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
-            <TextBox x:Name="inputLastName" Grid.Row="1" MinWidth="100"
-                         Grid.Column="3" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox Grid.Row="1" MinWidth="100"
+                     Grid.Column="3" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=LastName,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Turma" Grid.Row="2" BorderThickness="1 0 0 0"
-                       Style="{StaticResource SmallLabel}"/>
-            <TextBox x:Name="inputClassName" MinWidth="100" Grid.Row="2"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0"/>
+                   Style="{StaticResource SmallLabel}"/>
+            <TextBox MinWidth="100" Grid.Row="2"
+                     Grid.Column="1" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=ClassName,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Responsável" Grid.Row="2" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}"/>
+                   Style="{StaticResource SmallLabel}"/>
             <TextBox x:Name="inputResponsible" MinWidth="100" Grid.Row="2"
-                         Grid.Column="3" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0"/>
+                     Grid.Column="3" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=Responsible,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Parcela" Grid.Row="3" Grid.Column="0"
-                       Style="{StaticResource SmallLabel}" BorderThickness="1 1 0 1"/>
-            <TextBox x:Name="inputInstallment" MinWidth="100" Grid.Row="3"
-                         Grid.Column="1" TextChanged="OnTextChange"
-                         KeyDown="ConfirmReturn" BorderThickness="1"/>
-            <ComboBox x:Name="comboBoxDiscount" Grid.Row="3" Grid.Column="2" BorderThickness="0 1"
-                          SelectionChanged="OnComboBoxSelectionChange"
-                          Template="{StaticResource ComboBoxTemplate}">
+                   Style="{StaticResource SmallLabel}" BorderThickness="1 1 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="3"
+                     Grid.Column="1" TextChanged="OnPaymentValuesChange"
+                     KeyDown="ConfirmKeyDown" BorderThickness="1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=Installment,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
+            <ComboBox Grid.Row="3" Grid.Column="2" BorderThickness="0 1"
+                      SelectionChanged="OnComboBoxSelectionChange"
+                      Template="{StaticResource ComboBoxTemplate}"
+                      IsEnabled="{Binding Path=IsControlsEnabled,
+                      UpdateSourceTrigger=PropertyChanged}"
+                      SelectedIndex="{Binding Path=DiscountType,
+                      UpdateSourceTrigger=PropertyChanged,
+                      Mode=TwoWay}">
                 <ComboBoxItem IsSelected="True" Content="Desconto R$"/>
                 <ComboBoxItem Content="Desconto %"/>
             </ComboBox>
-            <TextBox x:Name="inputDiscount" Grid.Row="3" Grid.Column="3"
-                         TextChanged="OnTextChange" KeyDown="ConfirmReturn"
-                         BorderThickness="1 1 1 1"/>
+            <TextBox Grid.Row="3" Grid.Column="3"
+                     TextChanged="OnPaymentValuesChange" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 1 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=Discount,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Total" Grid.Row="4" Grid.Column="0"
-                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
-            <Label x:Name="labelTotal" Style="{StaticResource SmallLabel}"
-                       Content="R$ 00,00" FontWeight="SemiBold" Grid.Row="4"
-                       Grid.Column="1" Foreground="#FF282828" FontSize="14"
-                       HorizontalContentAlignment="Left" BorderThickness="1 0 1 1"
-                       Padding="12 4" Background="#dcdcdc"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <Label Style="{StaticResource SmallLabel}"
+                   FontWeight="SemiBold" Grid.Row="4"
+                   Grid.Column="1" Foreground="#FF282828" FontSize="14"
+                   HorizontalContentAlignment="Left" BorderThickness="1 0 1 1"
+                   Padding="12 4" Background="#dcdcdc"
+                   Content="{Binding Path=Total}"/>
             <Label Content="Vencimento" Grid.Row="4" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
-            <TextBox x:Name="inputDueDate" MinWidth="100" Grid.Row="4"
-                         Grid.Column="3" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="4"
+                     Grid.Column="3" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=DueDate,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Endereço" Grid.Row="5" BorderThickness="1 0 0 1"
-                       Style="{StaticResource SmallLabel}"/>
-            <TextBox x:Name="inputAddress" MinWidth="100" Grid.Row="5"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}"/>
+            <TextBox MinWidth="100" Grid.Row="5"
+                     Grid.Column="1" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=Address,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="CEP" Grid.Row="5" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
-            <TextBox x:Name="inputZipCode" MinWidth="100" Grid.Row="5"
-                         Grid.Column="3" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="5"
+                     Grid.Column="3" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=ZipCode,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Telefone" Grid.Row="6"
-                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
-            <TextBox x:Name="inputLandline" MinWidth="100" Grid.Row="6"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="6"
+                     Grid.Column="1" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=Landline,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Celular" Grid.Row="6" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
-            <TextBox x:Name="inputCellPhone" MinWidth="100" Grid.Row="6"
-                         Grid.Column="3" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="6"
+                     Grid.Column="3" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=CellPhone,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="RG" Grid.Row="7"
-                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
-            <TextBox x:Name="inputRg" MinWidth="100" Grid.Row="7"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="7"
+                     Grid.Column="1" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=Rg,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="CPF" Grid.Row="7" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
-            <TextBox x:Name="inputCpf" MinWidth="100" Grid.Row="7"
-                         Grid.Column="3" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="7"
+                     Grid.Column="3" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=Cpf,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="RG Responsável" Grid.Row="8"
-                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
-            <TextBox x:Name="inputRgResponsible" MinWidth="100" Grid.Row="8"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="8"
+                     Grid.Column="1" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=RgResponsible,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="CPF Responsável" Grid.Row="8" Grid.Column="2"
-                       Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
-            <TextBox x:Name="inputCpfResponsible" MinWidth="100" Grid.Row="8"
-                         Grid.Column="3" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="0 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="8"
+                     Grid.Column="3" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=CpfResponsible,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="Email" Grid.Row="9"
-                       Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
-            <TextBox x:Name="inputEmail" MinWidth="100" Grid.Row="9"
-                         Grid.Column="1" KeyDown="ConfirmReturn"
-                         BorderThickness="1 0 1 1"/>
+                   Style="{StaticResource SmallLabel}" BorderThickness="1 0 0 1"/>
+            <TextBox MinWidth="100" Grid.Row="9"
+                     Grid.Column="1" KeyDown="ConfirmKeyDown"
+                     BorderThickness="1 0 1 1"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=Email,
+                     UpdateSourceTrigger=PropertyChanged,
+                     Mode=TwoWay}"/>
             <Label Content="" Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2"
                    BorderThickness="0 0 1 1"/>
             <CheckBox x:Name="checkBoxDeactivated" Content="Desativado?"
                       Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2"
-                      Visibility="Hidden" IsEnabled="False" d:Visibility="Visible"/>
+                      d:Visibility="Visible"
+                      Visibility="{Binding Path=HasPrivilege,
+                      UpdateSourceTrigger=PropertyChanged}"
+                      IsEnabled="{Binding Path=IsControlsEnabled,
+                      UpdateSourceTrigger=PropertyChanged}"
+                      IsChecked="{Binding Path=IsDeactivated,
+                      UpdateSourceTrigger=PropertyChanged,
+                      Mode=TwoWay}"/>
         </Grid>
         <Grid Grid.Row="2" Grid.ColumnSpan="5" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
@@ -170,16 +273,29 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="buttonConfirm" Grid.Column="2"
-                Content="Registrar" HorizontalAlignment="Center" Click="ConfirmClick"
-                 KeyDown="ConfirmReturn" Margin="30 10"/>
-            <Button x:Name="buttonCancel" Grid.Column="0"
-                Content="Fechar" HorizontalAlignment="Center" Click="CancelClick"
-                KeyDown="CancelReturn" Margin="30 10"/>
-            <Button x:Name="buttonDelete" Grid.Column="1"
+            <Button Grid.Column="2"
+                Content="{Binding Path=ConfirmButtonText,
+                UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"
+                KeyDown="ConfirmKeyDown" Margin="30 10" Click="ConfirmClick"
+                IsEnabled="{Binding Path=IsControlsEnabled,
+                UpdateSourceTrigger=PropertyChanged}"
+                Visibility="{Binding Path=CanEdit,
+                UpdateSourceTrigger=PropertyChanged,
+                Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"/>
+            <Button Grid.Column="0"
+                Content="Fechar" HorizontalAlignment="Center"
+                KeyDown="CancelKeyDown" Margin="30 10" Click="CancelClick"
+                IsEnabled="{Binding Path=IsCancelButtonEnabled,
+                UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Grid.Column="1"
                 Content="Deletar" HorizontalAlignment="Center" Margin="30 10"
-                Visibility="Collapsed" KeyDown="DeleteReturn" Click="DeleteClick"
-                IsEnabled="False" d:Visibility="Visible"/>
+                KeyDown="DeleteKeyDown"
+                d:Visibility="Visible" Click="DeleteClick"
+                Visibility="{Binding Path=CanDelete,
+                UpdateSourceTrigger=PropertyChanged,
+                Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"
+                IsEnabled="{Binding Path=IsControlsEnabled,
+                UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
     </Grid>
 </Window>
