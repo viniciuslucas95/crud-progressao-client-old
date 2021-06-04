@@ -1,120 +1,70 @@
-﻿using crud_progressao_students.Models;
-using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
-using crud_progressao_library.Scripts;
-using System.ComponentModel;
-using crud_progressao_library.Services;
+using System.Windows.Controls;
+using crud_progressao_students.ViewModels;
 
 namespace crud_progressao_students.Views.Windows {
     public partial class PaymentWindow : Window {
-        internal ObservableCollection<Payment> Payments { get; private set; }
-        internal StudentListWindow MainWindow { get; private set; }
-        internal Student Student { get; set; }
+        private readonly PaymentWindowViewModel _dataContext;
 
-        public PaymentWindow(StudentListWindow mainWindow, Student student) {
+        public PaymentWindow(PaymentListWindowViewModel paymentListWindowViewModel, object obj) {
+            _dataContext = new(paymentListWindowViewModel, obj) {
+                Close = Close
+            };
             InitializeComponent();
-            LogWritter.WriteLog("Payment window opened");
-            MainWindow = mainWindow;
-            Student = student;
-            Title = $"Pagamentos de {student.FirstName} {student.LastName} / Vencimento dia {student.DueDate}";
-
-            SetPayments();
-
-            if(student.IsDeactivated)
-                DisableControls();
+            DataContext = _dataContext;
         }
 
-        internal void UpdatePayments(Student student) {
-            Payments.Clear();
-            Student = student;
-            AddPayments();
+        private void OnCheckBoxCheck(object sender, RoutedEventArgs e) {
+            _dataContext.SetIsPaid(true);
         }
 
-        private void DisableControls() {
-            if (Student.IsDeactivated && !ServerApi.HasPrivilege) {
-                buttonNewPayment.Visibility = Visibility.Collapsed;
-                buttonNewPayment.IsEnabled = false;
-            }
+        private void OnCheckBoxUncheck(object sender, RoutedEventArgs e) {
+            _dataContext.SetIsPaid(false);
         }
 
-        private bool IsControlsEnabled() {
-            return buttonNewPayment.IsEnabled;
+        private void CheckBoxKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
+            _dataContext.InvertIsPaidValue();
         }
 
-        private void SetPayments() {
-            LabelTextSetter.SetText(labelFeedback, "Procurando pagamentos...");
-            Payments = new ObservableCollection<Payment>();
-            AddPayments();
-            string plural = Student.Payments.Count != 1 ? "s" : "";
-            LabelTextSetter.SetText(labelFeedback, $"{Student.Payments.Count} pagamento{plural} encontrado{plural}");
+        private void OnInputTextChange(object sender, TextChangedEventArgs e) {
+            _dataContext.UpdateTotalValueCommand();
         }
 
-        private void AddPayments() {
-            for (int i = 0; i < Student.Payments.Count; i++) {
-                Payments.Add(Student.Payments[i]);
-            }
-
-            dataGridPayments.ItemsSource = Payments;
-            SortDataGrid();
+        private void OnComboBoxSelectionChange(object sender, SelectionChangedEventArgs e) {
+            _dataContext.UpdateTotalValueCommand();
         }
 
-        private void SortDataGrid() {
-            dataGridPayments.Items.SortDescriptions.Clear();
-            dataGridPayments.Items.SortDescriptions.Add(new SortDescription("MonthDateTime", ListSortDirection.Descending));
-            dataGridPayments.Items.Refresh();
+        private void ConfirmClick(object sender, RoutedEventArgs e) {
+            _dataContext.ConfirmCommand();
         }
 
-        private bool IsProcessingAsyncOperation() {
-            if (AsyncOperationChecker.Check(labelFeedback))
-                return true;
+        private void ConfirmKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
 
-            return false;
+            _dataContext.ConfirmCommand();
         }
 
-        #region UI Interaction Event
-        private void PaymentReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || IsProcessingAsyncOperation() || !IsControlsEnabled()) return;
-
-            new PaymentInfoWindow(this, new Payment()).ShowDialog();
+        private void DeleteClick(object sender, RoutedEventArgs e) {
+            _dataContext.DeleteCommand();
         }
 
-        private void PaymentClick(object sender, RoutedEventArgs e) {
-            if (IsProcessingAsyncOperation() || !IsControlsEnabled()) return;
+        private void DeleteKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
 
-            new PaymentInfoWindow(this, new Payment()).ShowDialog();
+            _dataContext.DeleteCommand();
         }
 
-        private void EditReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || IsProcessingAsyncOperation()) return;
-
-            Payment payment = (Payment)(sender as Button).DataContext;
-            new PaymentInfoWindow(this, payment).ShowDialog();
-        }
-
-        private void EditClick(object sender, RoutedEventArgs e) {
-            if (IsProcessingAsyncOperation()) return;
-
-            Payment payment = (Payment)(sender as Button).DataContext;
-            new PaymentInfoWindow(this, payment).ShowDialog();
-        }
-
-        private void CloseReturn(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Return || IsProcessingAsyncOperation() || !buttonClose.IsEnabled) return;
-
+        private void CancelClick(object sender, RoutedEventArgs e) {
             Close();
         }
 
-        private void CloseClick(object sender, RoutedEventArgs e) {
-            if (IsProcessingAsyncOperation() || !buttonClose.IsEnabled) return;
+        private void CancelKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
 
             Close();
         }
-
-        private void OnWindowClose(object sender, CancelEventArgs e) {
-            LogWritter.WriteLog("Payment window closed");
-        }
-        #endregion
     }
 }

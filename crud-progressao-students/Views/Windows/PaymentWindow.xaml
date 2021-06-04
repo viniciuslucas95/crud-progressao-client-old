@@ -3,89 +3,265 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:converters="clr-namespace:crud_progressao_students.Converters"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
-        mc:Ignorable="d" WindowStartupLocation="CenterScreen" Closing="OnWindowClose"
-        Style="{StaticResource WindowStyle}" Width="750" Height="460" MinHeight="460"
-        Title="Pagamentos de {nome} - Vencimento dia {dia}" MinWidth="500">
+        xmlns:viewmodels="clr-namespace:crud_progressao_students.ViewModels"
+        xmlns:libraryConverters="clr-namespace:crud_progressao_library.Converters;assembly=crud-progressao-library"
+        xmlns:studentsConverters="clr-namespace:crud_progressao_students.Converters"
+        d:DataContext="{d:DesignInstance Type=viewmodels:PaymentWindowViewModel}"
+        Style="{StaticResource WindowStyle}"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Title="{Binding Path=WindowTitle, UpdateSourceTrigger=PropertyChanged}"
+        SizeToContent="WidthAndHeight">
     <Window.Resources>
-        <converters:DateTimeWithMonthAndYearOnly x:Key="DateTimeWithMonthAndYearOnly"/>
+        <libraryConverters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <libraryConverters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <libraryConverters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
+        <libraryConverters:BooleanToVisibilityCollapsedConverter x:Key="BooleanToVisibilityCollapsedConverter" />
+        <studentsConverters:DiscountTypeToIntConverter x:Key="DiscountTypeToIntConverter" />
     </Window.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Label x:Name="labelFeedback" Content=""
-               Grid.ColumnSpan="3" BorderThickness="1"/>
-        <DataGrid x:Name="dataGridPayments" Grid.Row="1"
-                  Grid.ColumnSpan="3" BorderThickness="1 0 0 1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" MinWidth="50" Visibility="Hidden"
-                                    Binding="{Binding Id}" Width="*"/>
-                <DataGridTextColumn Header="Mês" MinWidth="50" Width="*"
-                                    Binding="{Binding MonthDateTime,
-                    Converter={StaticResource DateTimeWithMonthAndYearOnly}}"/>
-                <DataGridTextColumn Header="Vencimento" MinWidth="50"
-                                    Binding="{Binding DueDateString}" Width="*"/>
-                <DataGridTextColumn Header="Pagamento" MinWidth="50"
-                                    Binding="{Binding PaymentDateString}" Width="*">
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="Valor Pago" MinWidth="50"
-                                    Binding="{Binding PaidValueString}" Width="*">
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="Parcela" Width="0.75*" MinWidth="50"
-                                    Binding="{Binding InstallmentString}"/>
-                <DataGridTextColumn Header="Desconto" Width="0.75*" MinWidth="50"
-                                    Binding="{Binding DiscountString}"/>
-                <DataGridTextColumn Header="Total" Width="0.75*" MinWidth="50"
-                                    Binding="{Binding TotalString}"/>
-            </DataGrid.Columns>
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="52"/>
-                            <RowDefinition Height="52" />
-                        </Grid.RowDefinitions>
-                        <Border Grid.RowSpan="2" Background="Transparent"
-                                BorderThickness="0 0 1 1" BorderBrush="#FF787878"/>
-                        <TextBlock Text="{Binding Note}"
-                            Foreground="#FF282828"
-                            TextWrapping="Wrap"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            Padding="8 4" TextAlignment="Center"/>
-                        <Button Grid.Row= "1" Grid.Column="1"
-                                Click="EditClick"
-                                KeyDown="EditReturn"
-                                Content="Editar Pagamento"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"
-                                Margin="0 10"/>
-                    </Grid>
-                </DataTemplate>
-            </DataGrid.RowDetailsTemplate>
-        </DataGrid>
-        <Grid Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+        <Label Content="Mês de Pagamento" Grid.Row="1" BorderThickness="1 0 0 1"
+                       Style="{StaticResource SmallLabel}"/>
+        <Border Grid.Row="1" Grid.Column="1" BorderThickness="1 0 0 1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1.2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox FontSize="14"
+                 BorderThickness="0" Padding="8 0 4 0"
+                 TextAlignment="Center"
+                 Text="{Binding Path=Month,
+                 UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 IsEnabled="{Binding Path=IsControlsEnabled,
+                 UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="/" Grid.Column="1" Padding="0 4"
+               BorderThickness="0" Foreground="#FF787878"
+               FontSize="16"/>
+                <TextBox FontSize="14"
+                 Grid.Column="2" BorderThickness="0"
+                 TextAlignment="Center" Padding="4 0 8 0"
+                 Text="{Binding Path=Year,
+                 UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 IsEnabled="{Binding Path=IsControlsEnabled,
+                 UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </Border>
+        <Label d:Content="Feedback"
+               Content="{Binding Path=LabelFeedbackText,
+               UpdateSourceTrigger=PropertyChanged}"
+               Foreground="{Binding Path=LabelFeedbackColor,
+               UpdateSourceTrigger=PropertyChanged}"
+               Grid.ColumnSpan="4" BorderThickness="1"/>
+        <Label Content="Data de Vencimento" Grid.Row="2" BorderThickness="1 0 0 1"
+                       Style="{StaticResource SmallLabel}"/>
+        <Border Grid.Row="2" Grid.Column="1" BorderThickness="1 0 0 1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1.5*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox Padding="8 0 4 0" FontSize="14"
+                         BorderThickness="0" TextAlignment="Center"
+                         Text="{Binding Path=DueDateDay,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="/" Grid.Column="1" Padding="0 4"
+                       BorderThickness="0" Foreground="#FF787878"
+                       FontSize="16"/>
+                <TextBox Grid.Column="2"
+                         FontSize="14" BorderThickness="0"
+                         TextAlignment="Center" Padding="4 0"
+                         Text="{Binding Path=DueDateMonth,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="/" Grid.Column="3" Padding="0 4"
+                       BorderThickness="0" Foreground="#FF787878"
+                       FontSize="16"/>
+                <TextBox FontSize="14"
+                         Grid.Column="4" BorderThickness="0"
+                         TextAlignment="Center" Padding="4 0 8 0"
+                         Text="{Binding Path=DueDateYear,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </Border>
+        <Label Content="Parcela" Grid.Row="3" BorderThickness="1 0 0 1"
+                       Style="{StaticResource SmallLabel}" />
+        <TextBox MinWidth="100" Grid.Row="3"
+                 Grid.Column="1" BorderThickness="1 0 0 1"
+                 KeyDown="ConfirmKeyDown"
+                 TextChanged="OnInputTextChange"
+                 Text="{Binding Path=Installment,
+                 UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 IsEnabled="{Binding Path=IsControlsEnabled,
+                 UpdateSourceTrigger=PropertyChanged}"/>
+        <ComboBox x:Name="comboBoxDiscount" Grid.Row="4"
+                  Template="{StaticResource ComboBoxTemplate}"
+                  SelectionChanged="OnComboBoxSelectionChange"
+                  SelectedIndex="{Binding Path=DiscountType,
+                  UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
+                  Converter={StaticResource DiscountTypeToIntConverter}}"
+                  IsEnabled="{Binding Path=IsControlsEnabled,
+                  UpdateSourceTrigger=PropertyChanged}">
+            <ComboBoxItem IsSelected="True" Content="Desconto R$"/>
+            <ComboBoxItem Content="Desconto %"/>
+        </ComboBox>
+        <TextBox Grid.Row="4" Grid.Column="1"
+                 BorderThickness="1 0 0 1"
+                 KeyDown="ConfirmKeyDown"
+                 TextChanged="OnInputTextChange"
+                 Text="{Binding Path=Discount,
+                 UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 IsEnabled="{Binding Path=IsControlsEnabled,
+                 UpdateSourceTrigger=PropertyChanged}"/>
+        <Label Content="Total" Grid.Row="5" Style="{StaticResource SmallLabel}"
+               BorderThickness="1 0 0 0"/>
+        <Label Style="{StaticResource SmallLabel}"
+               FontWeight="SemiBold" Grid.Row="5"
+               Grid.Column="1" Foreground="#FF3C3C3C" FontSize="14"
+               HorizontalContentAlignment="Left" BorderThickness="1 0 0 0"
+               Padding="12 4" Background="#dcdcdc"
+               Content="{Binding Path=Total,
+               UpdateSourceTrigger=PropertyChanged}"
+               IsEnabled="{Binding Path=IsControlsEnabled,
+               UpdateSourceTrigger=PropertyChanged}"/>
+        <Label Grid.Row="6" Grid.ColumnSpan="2" BorderThickness="1 1 0 1"/>
+        <CheckBox Grid.Row="6" Grid.ColumnSpan="2"
+                  Content="Está pago?" Checked="OnCheckBoxCheck"
+                  Unchecked="OnCheckBoxUncheck" KeyDown="CheckBoxKeyDown"
+                  IsChecked="{Binding Path=IsPaid,
+                  UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                  IsEnabled="{Binding Path=IsControlsEnabled,
+                  UpdateSourceTrigger=PropertyChanged}"/>
+        <Label Content="Data do Pagamento" Grid.Row="7" BorderThickness="1 0 0 0"
+                       Style="{StaticResource SmallLabel}" />
+        <Border Grid.Row="7" Grid.Column="1" BorderThickness="1 0 0 0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1.5*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox Padding="8 0 4 0" FontSize="14"
+                         BorderThickness="0" TextAlignment="Center"
+                         Text="{Binding Path=PaidDateDay,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         IsEnabled="{Binding Path=IsPaymentInputsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="/" Grid.Column="1" Padding="0 4"
+                       BorderThickness="0" Foreground="#FF787878"
+                       FontSize="16"/>
+                <TextBox Grid.Column="2"
+                         FontSize="14" BorderThickness="0"
+                         TextAlignment="Center" Padding="4 0"
+                         Text="{Binding Path=PaidDateMonth,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         IsEnabled="{Binding Path=IsPaymentInputsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="/" Grid.Column="3" Padding="0 4"
+                       BorderThickness="0" Foreground="#FF787878"
+                       FontSize="16"/>
+                <TextBox FontSize="14"
+                         Grid.Column="4" BorderThickness="0"
+                         TextAlignment="Center" Padding="4 0 8 0"
+                         Text="{Binding Path=PaidDateYear,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         IsEnabled="{Binding Path=IsPaymentInputsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </Border>
+        <Label Content="Valor Pago" Grid.Row="8" BorderThickness="1 1 0 1"
+               Style="{StaticResource SmallLabel}" />
+        <TextBox MinWidth="100" Grid.Row="8"
+                 Grid.Column="1" BorderThickness="1 1 0 1"
+                 KeyDown="ConfirmKeyDown"
+                 Text="{Binding Path=PaidValue,
+                 UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 IsEnabled="{Binding Path=IsPaymentInputsEnabled,
+                 UpdateSourceTrigger=PropertyChanged}"/>
+        <Label Grid.Row="7" Grid.RowSpan="2"
+               Grid.ColumnSpan="2" Margin="1 0 0 1" BorderBrush="Black"
+               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+               Background="Black" Opacity="0.25"
+               Visibility="{Binding Path=IsPaid,
+               UpdateSourceTrigger=PropertyChanged,
+               Converter={StaticResource BooleanToInverseVisibilityConverter}}"/>
+        <Label Grid.Row="1" Content="Observações" Grid.ColumnSpan="2"
+               HorizontalAlignment="Stretch" Grid.Column="2"
+               HorizontalContentAlignment="Center" BorderThickness="1 0 1 1"
+               Style="{StaticResource SmallLabel}"/>
+        <TextBox Grid.Row="2" Padding="4" BorderThickness="1 0 1 1"
+                 Grid.ColumnSpan="2" Grid.Column="2" Grid.RowSpan="7"
+                 VerticalContentAlignment="Top" TextWrapping="Wrap"
+                 Text="{Binding Path=Note,
+                 UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 IsEnabled="{Binding Path=IsControlsEnabled,
+                 UpdateSourceTrigger=PropertyChanged}"/>
+        <Grid Grid.Row="9" Grid.ColumnSpan="3" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="buttonNewPayment" Grid.Column="1"
-                Content="Novo Pagamento" HorizontalAlignment="Left"
-                Click="PaymentClick" Margin="30 10"
-                KeyDown="PaymentReturn"/>
-            <Button x:Name="buttonClose"
-                Content="Fechar Janela" HorizontalAlignment="Right"
-                Click="CloseClick" Margin="30 10"
-                KeyDown="CloseReturn"/>
+            <Button Grid.Column="2" d:Content="Registrar"
+                Grid.ColumnSpan="2" Content="{Binding Path=ConfirmButtonText,
+                UpdateSourceTrigger=PropertyChanged}" Click="ConfirmClick"
+                HorizontalAlignment="Left" KeyDown="ConfirmKeyDown" Margin="30 10"
+                Visibility="{Binding Path=CanEdit,
+                UpdateSourceTrigger=PropertyChanged,
+                Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"
+                IsEnabled="{Binding Path=IsControlsEnabled,
+                UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Fechar"
+                Click="CancelClick" HorizontalAlignment="Right"
+                KeyDown="CancelKeyDown" Margin="30 10"
+                IsEnabled="{Binding Path=IsCancelButtonEnabled,
+                UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Grid.Row="9" Content="Excluir"
+                Click="DeleteClick" HorizontalAlignment="Center"
+                VerticalAlignment="Center" Grid.Column="1"
+                d:Visibility="Visible"
+                KeyDown="DeleteKeyDown"  Margin="30 10"
+                Visibility="{Binding Path=CanDelete,
+                UpdateSourceTrigger=PropertyChanged,
+                Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"
+                IsEnabled="{Binding Path=IsControlsEnabled,
+                UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
     </Grid>
 </Window>

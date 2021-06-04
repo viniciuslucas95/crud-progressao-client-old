@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 
 namespace crud_progressao_students.Converters {
-    internal class DateTimeWithMonthAndYearOnly : IValueConverter {
+    internal class DateTimeWithMonthAndYearOnlyConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             DateTime date = (DateTime)value;
 

@@ -35,7 +35,8 @@
         <Rectangle Grid.ColumnSpan="6" Fill="Transparent"
                    MouseDown="BackgroundClick" Stroke="#FF787878"
                    StrokeThickness="1" StrokeDashArray="0 0 1 0"
-                   IsEnabled="{Binding Path=IsControlEnabled}"/>
+                   IsEnabled="{Binding Path=IsControlsEnabled,
+                   UpdateSourceTrigger=PropertyChanged}"/>
         <DataGrid x:Name="dataGridStudents" Grid.Row="1" Grid.ColumnSpan="6"
                   PreviewMouseDown="BackgroundClick" ItemsSource="{Binding Path=Students}"
                   IsEnabled="{Binding Path=IsControlsEnabled}">
@@ -252,9 +253,9 @@
                 VerticalAlignment="Center" MouseDown="OpenClick"
                 CornerRadius="0 0 10 10" BorderThickness="1"
                 Grid.ColumnSpan="2" HorizontalAlignment="Stretch"
-                IsEnabled="{Binding Path=IsPanelOpen,
-                Converter={StaticResource InverseBooleanConverter}}"
-                Visibility="{Binding Path=IsPanelOpen,
+                IsEnabled="{Binding Path=IsControlsEnabled,
+                UpdateSourceTrigger=PropertyChanged}"
+                Visibility="{Binding Path=IsPanelOpen, UpdateSourceTrigger=PropertyChanged,
                 Converter={StaticResource BooleanToInverseVisibilityConverter}}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -273,8 +274,8 @@
                 d:Visibility="Visible" HorizontalAlignment="Stretch"
                 VerticalAlignment="Top" Margin="0 22 0 0" Grid.Column="2"
                 CornerRadius="0 0 10 10" BorderThickness="1"
-                IsEnabled="{Binding Path=IsPanelOpen}"
-                Visibility="{Binding Path=IsPanelOpen,
+                IsEnabled="{Binding Path=IsControlsEnabled, UpdateSourceTrigger=PropertyChanged}"
+                Visibility="{Binding Path=IsPanelOpen, UpdateSourceTrigger=PropertyChanged,
                 Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -293,49 +294,83 @@
                 </Grid.RowDefinitions>
                 <Label Style="{StaticResource SmallLabel}" Content="Nome"/>
                 <TextBox x:Name="inputFirstName" Grid.Column="1"
-                         IsEnabled="{Binding Path=IsControlsEnabled}"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding Path=FirstNameFilter,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Sobrenome"
                        Grid.Row="1" BorderThickness="0 1"/>
-                <TextBox Grid.Column="1" Grid.Row="1" IsEnabled="{Binding Path=IsControlsEnabled}"
+                <TextBox Grid.Column="1" Grid.Row="1"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding Path=LastNameFilter,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          BorderThickness="1 1 0 1" KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Turma"
                        Grid.Row="2"/>
-                <TextBox Grid.Column="1" Grid.Row="2" IsEnabled="{Binding Path=IsControlsEnabled}"
+                <TextBox Grid.Column="1" Grid.Row="2"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding Path=ClassNameFilter,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Desconto %"
                        Grid.Row="3" BorderThickness="0 1"/>
-                <TextBox Grid.Column="1" Grid.Row="3" IsEnabled="{Binding Path=IsControlsEnabled}"
+                <TextBox Grid.Column="1" Grid.Row="3"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding Path=DiscountFilter,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          BorderThickness="1 1 0 1" KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Responsável"
                        Grid.Row="4"/>
-                <TextBox Grid.Column="1" Grid.Row="4" IsEnabled="{Binding Path=IsControlsEnabled}"
+                <TextBox Grid.Column="1" Grid.Row="4"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding Path=ResponsibleFilter,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          KeyDown="SearchKeyDown"/>
                 <Label Style="{StaticResource SmallLabel}" Content="Endereço"
                        Grid.Row="5" BorderThickness="0 1 0 0"
                        Background="Transparent"/>
-                <TextBox Grid.Column="1" Grid.Row="5" IsEnabled="{Binding Path=IsControlsEnabled}"
+                <TextBox Grid.Column="1" Grid.Row="5"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding Path=AddressFilter,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          BorderThickness="1 1 0 0" Background="Transparent"
                          KeyDown="SearchKeyDown"/>
                 <Label Grid.Row="6" Grid.ColumnSpan="2" BorderThickness="0 1"
                        Background="Transparent"/>
-                <CheckBox x:Name="checkBoxIsOwingOnly" Grid.Row="6" Grid.ColumnSpan="2"
-                          Content="Apenas quem está devendo?" KeyDown="SearchKeyDown"/>
-                <CheckBox x:Name="checkBoxIsShowingDeactivated" Grid.Row="7" Grid.ColumnSpan="2"
-                          Content="Exibir desativados" KeyDown="SearchKeyDown"/>
+                <CheckBox Grid.Row="6" Grid.ColumnSpan="2"
+                          Content="Apenas quem está devendo?" KeyDown="OwingKeyDown"
+                          IsEnabled="{Binding Path=IsControlsEnabled,
+                          UpdateSourceTrigger=PropertyChanged}"
+                          IsChecked="{Binding Path=IsShowingOwingOnlyFilter,
+                          UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <CheckBox Grid.Row="7" Grid.ColumnSpan="2"
+                          Content="Exibir desativados" KeyDown="DeactivatedKeyDown"
+                          IsEnabled="{Binding Path=IsControlsEnabled,
+                          UpdateSourceTrigger=PropertyChanged}"
+                          IsChecked="{Binding Path=IsShowingDeactivatedFilter,
+                          UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
             </Grid>
         </Border>
-        <Button Content="Procurar" IsEnabled="{Binding Path=IsPanelOpen}"
+        <Button Content="Procurar" IsEnabled="{Binding Path=IsControlsEnabled,
+                UpdateSourceTrigger=PropertyChanged}"
                 Visibility="{Binding Path=IsPanelOpen,
                 Converter={StaticResource BooleanToVisibilityConverter}}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 Grid.Column="4" Click="SearchClick"
                 KeyDown="SearchKeyDown"/>
-        <Button Content="Registrar Aluno" IsEnabled="{Binding Path=IsControlEnabled}"
+        <Button Content="Registrar Aluno" IsEnabled="{Binding Path=IsControlsEnabled,
+                UpdateSourceTrigger=PropertyChanged}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 Grid.Column="5" Click="RegisterClick"
                 KeyDown="RegisterKeyDown"/>
-        <Button Content="Cancelar" Grid.Column="1" IsEnabled="{Binding Path=IsPanelOpen}"
+        <Button Content="Cancelar" Grid.Column="1" IsEnabled="{Binding Path=IsControlsEnabled,
+                UpdateSourceTrigger=PropertyChanged}"
                 Visibility="{Binding Path=IsPanelOpen,
                 Converter={StaticResource BooleanToVisibilityConverter}}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"

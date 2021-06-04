@@ -4,17 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:crud_progressao_students.ViewModels"
-        xmlns:converters="clr-namespace:crud_progressao_library.Converters;assembly=crud-progressao-library"
+        xmlns:libraryConverters="clr-namespace:crud_progressao_library.Converters;assembly=crud-progressao-library"
+        xmlns:studentsConverters="clr-namespace:crud_progressao_students.Converters"
         d:DataContext="{d:DesignInstance Type=viewmodels:StudentWindowViewModel}"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Style="{StaticResource WindowStyle}" ResizeMode="NoResize"
         Title="{Binding Path=WindowTitle,
         UpdateSourceTrigger=PropertyChanged}" SizeToContent="WidthAndHeight">
     <Window.Resources>
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
-        <converters:BooleanToVisibilityCollapsedConverter x:Key="BooleanToVisibilityCollapsedConverter" />
+        <libraryConverters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <libraryConverters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <libraryConverters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
+        <libraryConverters:BooleanToVisibilityCollapsedConverter x:Key="BooleanToVisibilityCollapsedConverter" />
+        <studentsConverters:DiscountTypeToIntConverter x:Key="DiscountTypeToIntConverter" />
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -29,8 +31,11 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label x:Name="labelFeedback" Grid.Column="1" Grid.ColumnSpan="3"
-               d:Content="Feedback"/>
+        <Label Grid.Column="1" Grid.ColumnSpan="3"
+               d:Content="Feedback" Content="{Binding Path=LabelFeedbackText,
+               UpdateSourceTrigger=PropertyChanged}"
+               Foreground="{Binding Path=LabelFeedbackColor,
+               UpdateSourceTrigger=PropertyChanged}"/>
         <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
@@ -50,27 +55,35 @@
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
-            <Grid x:Name="gridPicture" Grid.ColumnSpan="2">
+            <Grid Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="32"/>
                 </Grid.RowDefinitions>
                 <Border Height="150" BorderThickness="1 0">
-                    <Image x:Name="imagePicture"
-                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Image Source="{Binding Path=Picture,
+                           UpdateSourceTrigger=PropertyChanged}"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Border>
-                <Button x:Name="buttonPicture" Grid.Row="1"
-                            Content="Adicionar foto" Click="PictureClick"
-                            KeyDown="PictureKeyDown"/>
+                <Button Grid.Row="1" d:Content="Adicionar foto"
+                        Content="{Binding Path=PictureButtonText,
+                        UpdateSourceTrigger=PropertyChanged}" Click="PictureClick"
+                        KeyDown="PictureKeyDown"
+                        IsEnabled="{Binding Path=IsControlsEnabled,
+                        UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <Grid Grid.Column="2" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="32"/>
                 </Grid.RowDefinitions>
-                <TextBox Grid.Row="0" x:Name="inputNote" Padding="4"
-                             Height="150" VerticalContentAlignment="Top"
-                             TextWrapping="Wrap" BorderThickness="0 0 1 0"/>
+                <TextBox Grid.Row="0" Padding="4"
+                         Height="150" VerticalContentAlignment="Top"
+                         TextWrapping="Wrap" BorderThickness="0 0 1 0"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding Path=Note,
+                         UpdateSourceTrigger=PropertyChanged}"/>
                 <Label Grid.Row="1" Content="Observações"
                            HorizontalAlignment="Stretch"
                            HorizontalContentAlignment="Center"
@@ -109,7 +122,7 @@
                      Mode=TwoWay}"/>
             <Label Content="Responsável" Grid.Row="2" Grid.Column="2"
                    Style="{StaticResource SmallLabel}"/>
-            <TextBox x:Name="inputResponsible" MinWidth="100" Grid.Row="2"
+            <TextBox MinWidth="100" Grid.Row="2"
                      Grid.Column="3" KeyDown="ConfirmKeyDown"
                      BorderThickness="1 0"
                      IsEnabled="{Binding Path=IsControlsEnabled,
@@ -134,7 +147,8 @@
                       UpdateSourceTrigger=PropertyChanged}"
                       SelectedIndex="{Binding Path=DiscountType,
                       UpdateSourceTrigger=PropertyChanged,
-                      Mode=TwoWay}">
+                      Mode=TwoWay,
+                      Converter={StaticResource DiscountTypeToIntConverter}}">
                 <ComboBoxItem IsSelected="True" Content="Desconto R$"/>
                 <ComboBoxItem Content="Desconto %"/>
             </ComboBox>
@@ -260,7 +274,8 @@
                       Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2"
                       d:Visibility="Visible"
                       Visibility="{Binding Path=HasPrivilege,
-                      UpdateSourceTrigger=PropertyChanged}"
+                      UpdateSourceTrigger=PropertyChanged,
+                      Converter={StaticResource BooleanToVisibilityConverter}}"
                       IsEnabled="{Binding Path=IsControlsEnabled,
                       UpdateSourceTrigger=PropertyChanged}"
                       IsChecked="{Binding Path=IsDeactivated,
@@ -273,7 +288,7 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="2"
+            <Button Grid.Column="2" d:Content="Registrar"
                 Content="{Binding Path=ConfirmButtonText,
                 UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"
                 KeyDown="ConfirmKeyDown" Margin="30 10" Click="ConfirmClick"

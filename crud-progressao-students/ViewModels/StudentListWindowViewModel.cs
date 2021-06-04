@@ -18,15 +18,21 @@ namespace crud_progressao_students.ViewModels {
         internal static StudentListWindowViewModel Singleton { get; private set; }
 
         internal DataGrid DataGrid { get; private set; }
-        internal ObservableCollection<Student> Students { get; private set; } = new ObservableCollection<Student>();
         internal Action SetFocusOnFirstNameFilter { get; set; }
 
         #region UI Bindings
+        public ObservableCollection<Student> Students {
+            get => _students;
+            private set {
+                _students = value;
+                OnPropertyChange(nameof(Students));
+            }
+        }
         public bool IsPanelOpen {
             get => _isPanelOpen;
             private set {
                 _isPanelOpen = value;
-                OnPropertyChange(nameof(IsControlsEnabled));
+                OnPropertyChange(nameof(IsPanelOpen));
             }
         }
         public string LabelFeedbackTotalText {
@@ -73,65 +79,66 @@ namespace crud_progressao_students.ViewModels {
         }
         public string FirstNameFilter {
             get => _firstNameFilter;
-            private set {
+            set {
                 _firstNameFilter = value;
                 OnPropertyChange(nameof(FirstNameFilter));
             }
         }
         public string LastNameFilter {
             get => _lastNameFilter;
-            private set {
+            set {
                 _lastNameFilter = value;
                 OnPropertyChange(nameof(LastNameFilter));
             }
         }
         public string ClassNameFilter {
             get => _classNameFilter;
-            private set {
+            set {
                 _classNameFilter = value;
                 OnPropertyChange(nameof(ClassNameFilter));
             }
         }
         public string ResponsibleFilter {
             get => _responsibleFilter;
-            private set {
+            set {
                 _responsibleFilter = value;
                 OnPropertyChange(nameof(ResponsibleFilter));
             }
         }
         public string AddressFilter {
             get => _addressFilter;
-            private set {
+            set {
                 _addressFilter = value;
                 OnPropertyChange(nameof(AddressFilter));
             }
         }
         public string DiscountFilter {
             get => _discountFilter;
-            private set {
+            set {
                 _discountFilter = value;
                 OnPropertyChange(nameof(DiscountFilter));
             }
         }
-        public bool IsShowingDeactivated {
-            get => _isShowingDeactivated;
-            private set {
-                _isShowingDeactivated = value;
-                OnPropertyChange(nameof(IsShowingDeactivated));
+        public bool IsShowingDeactivatedFilter {
+            get => _isShowingDeactivatedFilter;
+            set {
+                _isShowingDeactivatedFilter = value;
+                OnPropertyChange(nameof(IsShowingDeactivatedFilter));
             }
         }
-        public bool IsShowingOwingOnly {
-            get => _isShowingOwingOnly;
-            private set {
-                _isShowingOwingOnly = value;
-                OnPropertyChange(nameof(IsShowingOwingOnly));
+        public bool IsShowingOwingOnlyFilter {
+            get => _isShowingOwingOnlyFilter;
+            set {
+                _isShowingOwingOnlyFilter = value;
+                OnPropertyChange(nameof(IsShowingOwingOnlyFilter));
             }
         }
 
-        private string _labelFeedbackTotalText, _labelFeedbackAverageText, _labelFeedbackSumText, _firstNameFilter, _lastNameFilter, _classNameFilter,
+        private string _labelFeedbackTotalText = "", _labelFeedbackAverageText = "", _labelFeedbackSumText = "", _firstNameFilter, _lastNameFilter, _classNameFilter,
             _responsibleFilter, _addressFilter, _discountFilter;
         private Brush _labelFeedbackTotalColor = BrushColors.Black, _labelFeedbackAverageColor = BrushColors.Black, _labelFeedbackSumColor = BrushColors.Black;
-        private bool _isPanelOpen, _isShowingDeactivated, _isShowingOwingOnly;
+        private bool _isPanelOpen, _isShowingDeactivatedFilter, _isShowingOwingOnlyFilter;
+        private ObservableCollection<Student> _students = new();
         #endregion
 
         public StudentListWindowViewModel(DataGrid dataGrid) {
@@ -155,9 +162,9 @@ namespace crud_progressao_students.ViewModels {
 
             ObservableCollection<Student> students = DynamicToObservableCollectionConverter.Convert<Student>(result, new DynamicToStudentConverter());
 
-            if (!IsShowingDeactivated) students = ListHelper.RemoveDeactivated(students);
+            if (!IsShowingDeactivatedFilter) students = ListHelper.RemoveDeactivated(students);
 
-            if (IsShowingOwingOnly) students = ListHelper.FilterOwingOnly(students);
+            if (IsShowingOwingOnlyFilter) students = ListHelper.FilterOwingOnly(students);
 
             EnablePanelCommand(false);
             Students = students;
@@ -205,29 +212,47 @@ namespace crud_progressao_students.ViewModels {
                 ResponsibleFilter = "";
                 AddressFilter = "";
                 DiscountFilter = "";
-                IsShowingDeactivated = false;
-                IsShowingOwingOnly = false;
+                IsShowingDeactivatedFilter = false;
+                IsShowingOwingOnlyFilter = false;
             }
         }
 
+        internal void InvertIsDeactivatedCommand() {
+            IsShowingDeactivatedFilter = !IsShowingDeactivatedFilter;
+        }
+
+        internal void InvertIsOwingCommand() {
+            IsShowingOwingOnlyFilter = !IsShowingOwingOnlyFilter;
+        }
+
         internal void RegisterCommand() {
+            if (IsProcessingAsyncOperation()) return;
+
             EnablePanelCommand(false);
-            new StudentWindow(new StudentWindowViewModel()).ShowDialog();
+            new StudentWindow(new Student()).ShowDialog();
         }
 
         internal void EditCommand(object obj) {
-            new StudentWindow(new StudentWindowViewModel((Student)obj)).ShowDialog();
+            if (IsProcessingAsyncOperation()) return;
+
+            new StudentWindow((Student)obj).ShowDialog();
         }
 
         internal void PaymentsCommand(object obj) {
-            //new PaymentWindow(this, (Student)obj).ShowDialog();
+            if (IsProcessingAsyncOperation()) return;
+
+            new PaymentListWindow((Student)obj).ShowDialog();
         }
 
         internal void SearchCommand() {
+            if (IsProcessingAsyncOperation()) return;
+
             _ = SearchAsync();
         }
 
         internal void ReportCommand() {
+            if (IsProcessingAsyncOperation()) return;
+
             if (Students.Count == 0) {
                 SetFeedbackContent("Faça uma busca antes para poder gerar um relatório!", true);
                 return;

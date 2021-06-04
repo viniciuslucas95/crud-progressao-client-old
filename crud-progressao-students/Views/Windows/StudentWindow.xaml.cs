@@ -5,15 +5,14 @@ using crud_progressao_students.ViewModels;
 
 namespace crud_progressao_students.Views.Windows {
     public partial class StudentWindow : Window {
-
-
         private readonly StudentWindowViewModel _dataContext;
 
-        public StudentWindow(StudentWindowViewModel dataContext) {
+        public StudentWindow(object obj) {
+            _dataContext = new StudentWindowViewModel(obj) {
+                Close = Close
+            };
             InitializeComponent();
-            _dataContext = dataContext;
-            _dataContext.Close = Close;
-            DataContext = dataContext;
+            DataContext = _dataContext;
         }
 
         private void OnPaymentValuesChange(object sender, TextChangedEventArgs e) {

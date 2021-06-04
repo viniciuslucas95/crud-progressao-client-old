@@ -22,6 +22,18 @@ namespace crud_progressao_students.Views.Windows {
             _dataContext.SearchCommand();
         }
 
+        private void OwingKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
+            _dataContext.InvertIsOwingCommand();
+        }
+
+        private void DeactivatedKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Return) return;
+
+            _dataContext.InvertIsDeactivatedCommand();
+        }
+
         private void SearchClick(object sender, RoutedEventArgs e) {
             _dataContext.SearchCommand();
         }

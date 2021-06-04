@@ -45,7 +45,7 @@ namespace crud_progressao_library.ViewModels {
         }
 
         private bool _isControlsEnabled = true, _hasPrivilege;
-        private string _labelFeedbackText, _windowTitle;
+        private string _labelFeedbackText = "", _windowTitle;
         private Brush _labelFeedbackColor = BrushColors.Black;
         #endregion
 

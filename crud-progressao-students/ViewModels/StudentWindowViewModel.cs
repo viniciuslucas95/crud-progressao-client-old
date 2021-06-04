@@ -23,133 +23,133 @@ namespace crud_progressao_students.ViewModels {
         #region UI Bindings
         public string FirstName {
             get => _firstName;
-            private set {
+            set {
                 _firstName = value;
                 OnPropertyChange(nameof(FirstName));
             }
         }
         public string LastName {
             get => _lastName;
-            private set {
+            set {
                 _lastName = value;
                 OnPropertyChange(nameof(LastName));
             }
         }
         public string ClassName {
             get => _className;
-            private set {
+            set {
                 _className = value;
                 OnPropertyChange(nameof(ClassName));
             }
         }
         public string Responsible {
             get => _responsible;
-            private set {
+            set {
                 _responsible = value;
                 OnPropertyChange(nameof(Responsible));
             }
         }
         public string Address {
             get => _address;
-            private set {
+            set {
                 _address = value;
                 OnPropertyChange(nameof(Address));
             }
         }
         public double Installment {
             get => _installment;
-            private set {
+            set {
                 _installment = value;
                 OnPropertyChange(nameof(Installment));
             }
         }
         public double Discount {
             get => _discount;
-            private set {
+            set {
                 _discount = value;
                 OnPropertyChange(nameof(Discount));
             }
         }
         public DiscountType DiscountType {
             get => _discountType;
-            private set {
+            set {
                 _discountType = value;
                 OnPropertyChange(nameof(DiscountType));
             }
         }
         public int DueDate {
             get => _dueDate;
-            private set {
+            set {
                 _dueDate = value;
                 OnPropertyChange(nameof(DueDate));
             }
         }
         public string Note {
             get => _note;
-            private set {
+            set {
                 _note = value;
                 OnPropertyChange(nameof(Note));
             }
         }
         public long ZipCode {
             get => _zipCode;
-            private set {
+            set {
                 _zipCode = value;
                 OnPropertyChange(nameof(ZipCode));
             }
         }
         public long Landline {
             get => _landline;
-            private set {
+            set {
                 _landline = value;
                 OnPropertyChange(nameof(Landline));
             }
         }
         public long CellPhone {
             get => _cellPhone;
-            private set {
+            set {
                 _cellPhone = value;
                 OnPropertyChange(nameof(CellPhone));
             }
         }
         public string Email {
             get => _email;
-            private set {
+            set {
                 _email = value;
                 OnPropertyChange(nameof(Email));
             }
         }
         public long Rg {
             get => _rg;
-            private set {
+            set {
                 _rg = value;
                 OnPropertyChange(nameof(Rg));
             }
         }
         public long Cpf {
             get => _cpf;
-            private set {
+            set {
                 _cpf = value;
                 OnPropertyChange(nameof(Cpf));
             }
         }
         public long RgResponsible {
             get => _rgResponsible;
-            private set {
+            set {
                 _rgResponsible = value;
                 OnPropertyChange(nameof(RgResponsible));
             }
         }
         public long CpfResponsible {
             get => _cpfResponsible;
-            private set {
+            set {
                 _cpfResponsible = value;
                 OnPropertyChange(nameof(CpfResponsible));
             }
         }
         public bool IsDeactivated {
             get => _isDeactivated;
-            private set {
+            set {
                 _isDeactivated = value;
                 OnPropertyChange(nameof(IsDeactivated));
             }
@@ -170,14 +170,14 @@ namespace crud_progressao_students.ViewModels {
         }
         public bool CanDelete {
             get => _canDelete;
-            set {
+            private set {
                 _canDelete = value;
                 OnPropertyChange(nameof(CanDelete));
             }
         }
         public bool CanEdit {
             get => _canEdit;
-            set {
+            private set {
                 _canEdit = value;
                 OnPropertyChange(nameof(CanEdit));
             }
@@ -198,7 +198,7 @@ namespace crud_progressao_students.ViewModels {
         }
         public bool IsCancelButtonEnabled {
             get => _isCancelButtonEnabled;
-            set {
+            private set {
                 _isCancelButtonEnabled = value;
                 OnPropertyChange(nameof(IsCancelButtonEnabled));
             }
@@ -209,12 +209,12 @@ namespace crud_progressao_students.ViewModels {
         private DiscountType _discountType;
         private int _dueDate;
         private long _zipCode, _landline, _cellPhone, _rg, _cpf, _rgResponsible, _cpfResponsible;
-        private bool _isDeactivated, _canDelete, _isCancelButtonEnabled, _canEdit;
+        private bool _isDeactivated, _canDelete, _isCancelButtonEnabled = true, _canEdit = true;
         private BitmapImage _picture;
         #endregion
 
-        public StudentWindowViewModel(Student student = new()) {
-            _student = student;
+        public StudentWindowViewModel(object student) {
+            _student = (Student)student;
             _param = _student.Id;
             _studentListViewModel = StudentListWindowViewModel.Singleton;
             HasPrivilege = _studentListViewModel.HasPrivilege;
@@ -369,7 +369,6 @@ namespace crud_progressao_students.ViewModels {
             WindowTitle = "Atualizar informações do aluno";
             ConfirmButtonText = "Atualizar";
             CanDelete = HasPrivilege;
-            CanEdit = true;
 
             if (IsDeactivated) {
                 if (!HasPrivilege) {
