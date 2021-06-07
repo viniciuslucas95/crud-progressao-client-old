@@ -21,7 +21,7 @@ namespace crud_progressao_students.Views.Windows {
         }
 
         private void OnInputTextChange(object sender, RoutedEventArgs e) {
-            _dataContext.PasswordText = inputPassword.Password;
+            _dataContext.Password = inputPassword.Password;
             _dataContext.CheckText();
         }
 

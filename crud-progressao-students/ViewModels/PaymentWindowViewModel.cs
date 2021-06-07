@@ -1,4 +1,5 @@
-﻿using crud_progressao_library.Services;
+﻿using crud_progressao_library.Scripts;
+using crud_progressao_library.Services;
 using crud_progressao_library.ViewModels;
 using crud_progressao_students.DataTypes;
 using crud_progressao_students.Models;
@@ -54,14 +55,14 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(DueDateYear));
             }
         }
-        public double Installment {
+        public string Installment {
             get => _installment;
             set {
                 _installment = value;
                 OnPropertyChange(nameof(Installment));
             }
         }
-        public double Discount {
+        public string Discount {
             get => _discount;
             set {
                 _discount = value;
@@ -103,7 +104,7 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(PaidDateYear));
             }
         }
-        public double PaidValue {
+        public string PaidValue {
             get => _paidValue;
             set {
                 _paidValue = value;
@@ -117,7 +118,7 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(Note));
             }
         }
-        public double Total {
+        public string Total {
             get => _total;
             private set {
                 _total = value;
@@ -161,10 +162,33 @@ namespace crud_progressao_students.ViewModels {
         }
 
         private int _month, _year, _dueDateDay, _dueDateMonth, _dueDateYear, _paidDateDay, _paidDateMonth, _paidDateYear;
-        private double _installment, _discount, _paidValue, _total;
         private bool _isPaid, _isPaymentInputsEnabled, _canDelete, _canEdit = true, _isCancelButtonEnabled = true;
-        private string _note, _confirmButtonText;
+        private string _note, _confirmButtonText, _installment, _discount, _paidValue, _total;
         private DiscountType _discountType;
+        #endregion
+
+        #region ConvertedStrings
+        private double InstallmentDouble {
+            get {
+                _ = StringConverter.TransformIntoDouble(Installment, out double result);
+
+                return result;
+            }
+        }
+        private double DiscountDouble {
+            get {
+                _ = StringConverter.TransformIntoDouble(Discount, out double result);
+
+                return result;
+            }
+        }
+        private double PaidValueDouble {
+            get {
+                _ = StringConverter.TransformIntoDouble(PaidValue, out double result);
+
+                return result;
+            }
+        }
         #endregion
 
         public PaymentWindowViewModel(PaymentListWindowViewModel paymentListViewModel, object payment) {
@@ -185,7 +209,7 @@ namespace crud_progressao_students.ViewModels {
         private async Task ConfirmAsync() {
             EnableControls(false);
 
-            if (CheckIfMonthAlreadyExists() || !CheckIfDatesAreValid()) {
+            if (CheckIfMonthAlreadyExists() || !CheckInputsValue()) {
                 EnableControls(true);
                 return;
             }
@@ -255,11 +279,9 @@ namespace crud_progressao_students.ViewModels {
             IsPaid = !IsPaid;
         }
 
-        internal void UpdateTotalValueCommand() {
-            Total = DiscountType == DiscountType.Fixed
-                ? Installment - Discount
-                : Installment - Installment * Discount / 100;
-        }
+        internal void UpdateTotalValueCommand() => Total = DiscountType == DiscountType.Fixed
+                ? Math.Round(InstallmentDouble - DiscountDouble, 2).ToString()
+                : Math.Round(InstallmentDouble - (InstallmentDouble * DiscountDouble / 100), 2).ToString();
 
         internal void SetIsPaid(bool value) {
             IsPaid = value;
@@ -275,16 +297,50 @@ namespace crud_progressao_students.ViewModels {
             if(IsPaid) IsPaymentInputsEnabled = value;
         }
 
+        private bool CheckInputsValue() {
+            if (!double.TryParse(Installment, out double _)) {
+                SetFeedbackContent("Valor inválido na parcela!", true);
+                return false;
+            } else if (!double.TryParse(Discount, out double _)) {
+                SetFeedbackContent("Valor inválido no disconto!", true);
+                return false;
+            } else if (!double.TryParse(PaidValue, out double _)) {
+                SetFeedbackContent("Valor inválido no valor pago!", true);
+                return false;
+            }
+
+            string month = $"{1}/{Month}/{Year}";
+            string dueDate = $"{DueDateDay}/{DueDateMonth}/{DueDateYear}";
+            string paidDate = $"{PaidDateDay}/{PaidDateMonth}/{PaidDateYear}";
+
+            if (!DateTime.TryParse(month, out DateTime _)) {
+                SetFeedbackContent("Valor inválido na data do mês!", true);
+                return false;
+            }
+
+            if (!DateTime.TryParse(dueDate, out DateTime _)) {
+                SetFeedbackContent("Valor inválido na data de vencimento!", true);
+                return false;
+            }
+
+            if (!DateTime.TryParse(paidDate, out DateTime _)) {
+                SetFeedbackContent("Valor inválido na data de pagamento!", true);
+                return false;
+            }
+
+            return true;
+        }
+
         private Payment GetUpdatedPaymentValues() {
             return new Payment() {
                 Id = _payment.Id,
                 Month = new int[2] { Month, Year },
                 DueDate = new int[3] { DueDateDay, DueDateMonth, DueDateYear },
                 PaidDate = new int[3] { PaidDateDay, PaidDateMonth, PaidDateYear },
-                Installment = Installment,
-                Discount = Discount,
+                Installment = InstallmentDouble,
+                Discount = DiscountDouble,
                 DiscountType = DiscountType,
-                PaidValue = PaidValue,
+                PaidValue = PaidValueDouble,
                 Note = Note,
                 IsPaid = IsPaid
             };
@@ -331,29 +387,6 @@ namespace crud_progressao_students.ViewModels {
             return false;
         }
 
-        private bool CheckIfDatesAreValid() {
-            /*string month = $"{1}/{userControlMonth.inputMonth.Text}/{userControlMonth.inputYear.Text}";
-            string dueDate = $"{userControlDueDate.inputDay.Text}/{userControlDueDate.inputMonth.Text}/{userControlDueDate.inputYear.Text}";
-            string paidDate = $"{userControlPaidDate.inputDay.Text}/{userControlPaidDate.inputMonth.Text}/{userControlPaidDate.inputYear.Text}";
-
-            if (!DateTime.TryParse(month, out DateTime _)) {
-                LabelTextSetter.SetText(labelFeedback, "Data do mês inválida!", true);
-                return false;
-            }
-
-            if (!DateTime.TryParse(dueDate, out DateTime _)) {
-                LabelTextSetter.SetText(labelFeedback, "Data de vencimento inválida!", true);
-                return false;
-            }
-
-            if (!DateTime.TryParse(paidDate, out DateTime _)) {
-                LabelTextSetter.SetText(labelFeedback, "Data de pagamento inválida!", true);
-                return false;
-            }*/
-
-            return true;
-        }
-
         private void SetExistentValues() {
             WindowTitle = "Editar pagamento";
             ConfirmButtonText = "Editar";
@@ -365,11 +398,11 @@ namespace crud_progressao_students.ViewModels {
             PaidDateDay = _payment.IsPaid ? _payment.PaidDate[0] : DateTime.Now.Day;
             PaidDateMonth = _payment.IsPaid ? _payment.PaidDate[1] : DateTime.Now.Month;
             PaidDateYear = _payment.IsPaid ? _payment.PaidDate[2] : DateTime.Now.Year;
-            Installment = _payment.Installment;
-            Discount = _payment.Discount;
+            Installment = _payment.Installment.ToString();
+            Discount = _payment.Discount.ToString();
             DiscountType = _payment.DiscountType;
-            Total = _payment.Total;
-            PaidValue = _payment.IsPaid ? _payment.PaidValue : _payment.Total;
+            Total = _payment.Total.ToString();
+            PaidValue = _payment.IsPaid ? _payment.PaidValue.ToString() : _payment.Total.ToString();
             Note = _payment.Note;
             IsPaid = _payment.IsPaid;
             CanDelete = HasPrivilege;
@@ -403,14 +436,14 @@ namespace crud_progressao_students.ViewModels {
             DueDateDay = student.DueDate;
             DueDateMonth = nextAvaliableMonth.Month;
             DueDateYear = nextAvaliableMonth.Year;
-            Installment = student.Installment;
-            Discount = student.Discount;
+            Installment = student.Installment.ToString();
+            Discount = student.Discount.ToString();
             DiscountType = student.DiscountType;
-            Total = student.Total;
+            Total = student.Total.ToString();
             PaidDateDay = DateTime.Now.Day;
             PaidDateMonth = DateTime.Now.Month;
             PaidDateYear = DateTime.Now.Year;
-            PaidValue = student.Total;
+            PaidValue = student.Total.ToString();
         }
     }
 }

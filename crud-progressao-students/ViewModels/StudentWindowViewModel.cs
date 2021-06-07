@@ -7,6 +7,7 @@ using crud_progressao_students.Scripts;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -56,14 +57,14 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(Address));
             }
         }
-        public double Installment {
+        public string Installment {
             get => _installment;
             set {
                 _installment = value;
                 OnPropertyChange(nameof(Installment));
             }
         }
-        public double Discount {
+        public string Discount {
             get => _discount;
             set {
                 _discount = value;
@@ -91,21 +92,21 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(Note));
             }
         }
-        public long ZipCode {
+        public string ZipCode {
             get => _zipCode;
             set {
                 _zipCode = value;
                 OnPropertyChange(nameof(ZipCode));
             }
         }
-        public long Landline {
+        public string Landline {
             get => _landline;
             set {
                 _landline = value;
                 OnPropertyChange(nameof(Landline));
             }
         }
-        public long CellPhone {
+        public string CellPhone {
             get => _cellPhone;
             set {
                 _cellPhone = value;
@@ -119,28 +120,28 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(Email));
             }
         }
-        public long Rg {
+        public string Rg {
             get => _rg;
             set {
                 _rg = value;
                 OnPropertyChange(nameof(Rg));
             }
         }
-        public long Cpf {
+        public string Cpf {
             get => _cpf;
             set {
                 _cpf = value;
                 OnPropertyChange(nameof(Cpf));
             }
         }
-        public long RgResponsible {
+        public string RgResponsible {
             get => _rgResponsible;
             set {
                 _rgResponsible = value;
                 OnPropertyChange(nameof(RgResponsible));
             }
         }
-        public long CpfResponsible {
+        public string CpfResponsible {
             get => _cpfResponsible;
             set {
                 _cpfResponsible = value;
@@ -161,8 +162,8 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(Picture));
             }
         }
-        public double Total {
-            get => _total;
+        public string Total {
+            get => "R$ " + _total;
             private set {
                 _total = value;
                 OnPropertyChange(nameof(Total));
@@ -204,13 +205,79 @@ namespace crud_progressao_students.ViewModels {
             }
         }
 
-        private string _firstName, _lastName, _className, _responsible, _address, _note, _email, _confirmButtonText = "Registrar", _pictureButtonText = "Adicionar foto";
-        private double _installment, _discount, _total;
+        private string _firstName, _lastName, _className, _responsible, _address, _note, _email, _zipCode = "0", _landline = "0", _cellPhone = "0", _rg = "0", _cpf = "0",
+            _rgResponsible = "0", _cpfResponsible = "0", _installment = "0", _discount = "0", _total = "0", _confirmButtonText = "Registrar",
+            _pictureButtonText = "Adicionar foto";
         private DiscountType _discountType;
         private int _dueDate;
-        private long _zipCode, _landline, _cellPhone, _rg, _cpf, _rgResponsible, _cpfResponsible;
         private bool _isDeactivated, _canDelete, _isCancelButtonEnabled = true, _canEdit = true;
         private BitmapImage _picture;
+        #endregion
+
+        #region ConvertedStrings
+        private double InstallmentDouble {
+            get {
+                _ = StringConverter.TransformIntoDouble(Installment, out double result);
+
+                return result;
+            }
+        }
+        private double DiscountDouble {
+            get {
+                _ = StringConverter.TransformIntoDouble(Discount, out double result);
+
+                return result;
+            }
+        }
+        private long ZipCodeLong {
+            get {
+                _ = StringConverter.TransformIntoLong(ZipCode, out long result);
+
+                return result;
+            }
+        }
+        private long LandlineLong {
+            get {
+                _ = StringConverter.TransformIntoLong(Landline, out long result);
+
+                return result;
+            }
+        }
+        private long CellPhoneLong {
+            get {
+                _ = StringConverter.TransformIntoLong(CellPhone, out long result);
+
+                return result;
+            }
+        }
+        private long RgLong {
+            get {
+                _ = StringConverter.TransformIntoLong(Rg, out long result);
+
+                return result;
+            }
+        }
+        private long CpfLong {
+            get {
+                _ = StringConverter.TransformIntoLong(Cpf, out long result);
+
+                return result;
+            }
+        }
+        private long RgResponsibleLong {
+            get {
+                _ = StringConverter.TransformIntoLong(RgResponsible, out long result);
+
+                return result;
+            }
+        }
+        private long CpfResponsibleLong {
+            get {
+                _ = StringConverter.TransformIntoLong(CpfResponsible, out long result);
+
+                return result;
+            }
+        }
         #endregion
 
         public StudentWindowViewModel(object student) {
@@ -227,6 +294,11 @@ namespace crud_progressao_students.ViewModels {
 
         private async Task ConfirmAsync() {
             EnableControls(false);
+
+            if (!CheckInputsValue()) {
+                EnableControls(true);
+                return;
+            }
 
             if (string.IsNullOrEmpty(_student.Id)) { // Register
                 SetFeedbackContent("Registrando novo aluno...");
@@ -294,16 +366,38 @@ namespace crud_progressao_students.ViewModels {
             }
         }
 
-        internal void UpdateTotalValueCommand() {
-            Total = DiscountType == DiscountType.Fixed
-                ? Installment - Discount
-                : Installment - Installment * Discount / 100;
-        }
+        internal void UpdateTotalValueCommand() => Total = DiscountType == DiscountType.Fixed
+                ? Math.Round(InstallmentDouble - DiscountDouble, 2).ToString()
+                : Math.Round(InstallmentDouble - (InstallmentDouble * DiscountDouble / 100), 2).ToString();
 
         protected override void EnableControls(bool value) {
             base.EnableControls(value);
 
             IsCancelButtonEnabled = value;
+        }
+
+        private bool CheckInputsValue() {
+            if (string.IsNullOrEmpty(FirstName)) {
+                SetFeedbackContent("Campo de nome não pode ser vazio!", true);
+                return false;
+            } else if (string.IsNullOrEmpty(LastName)) {
+                SetFeedbackContent("Campo de sobrenome não pode ser vazio!", true);
+                return false;
+            } else if (string.IsNullOrEmpty(ClassName)) {
+                SetFeedbackContent("Campo de turma não pode ser vazio!", true);
+                return false;
+            } else if (!double.TryParse(Installment, out double _)) {
+                SetFeedbackContent("Valor inválido na parcela!", true);
+                return false;
+            } else if (!double.TryParse(Discount, out double _)) {
+                SetFeedbackContent("Valor inválido no disconto!", true);
+                return false;
+            } else if (DueDate is < 1 or > 31) {
+                SetFeedbackContent("O vencimento tem que estar entre o dia 1 e 31!", true);
+                return false;
+            }
+
+            return true;
         }
 
         private Student GetUpdatedStudentValues() {
@@ -314,21 +408,21 @@ namespace crud_progressao_students.ViewModels {
                 ClassName = ClassName,
                 Responsible = Responsible,
                 Address = Address,
-                Installment = Installment,
-                Discount = Discount,
+                Installment = InstallmentDouble,
+                Discount = DiscountDouble,
                 DiscountType = DiscountType,
                 DueDate = DueDate,
                 Note = Note,
                 Picture = Picture,
                 Payments = _student.Payments ?? new List<Payment>(),
-                ZipCode = ZipCode,
-                Landline = Landline,
-                CellPhone = CellPhone,
+                ZipCode = ZipCodeLong,
+                Landline = LandlineLong,
+                CellPhone = CellPhoneLong,
                 Email = Email,
-                Rg = Rg,
-                Cpf = Cpf,
-                RgResponsible = RgResponsible,
-                CpfResponsible = CpfResponsible,
+                Rg = RgLong,
+                Cpf = CpfLong,
+                RgResponsible = RgResponsibleLong,
+                CpfResponsible = CpfResponsibleLong,
                 IsDeactivated = IsDeactivated
             };
         }
@@ -350,20 +444,20 @@ namespace crud_progressao_students.ViewModels {
             ClassName = _student.ClassName;
             Responsible = _student.Responsible;
             Address = _student.Address;
-            Installment = _student.Installment;
-            Discount = _student.Discount;
+            Installment = _student.Installment.ToString();
+            Discount = _student.Discount.ToString();
             DiscountType = _student.DiscountType;
             DueDate = _student.DueDate;
             Note = _student.Note;
             Picture = _student.Picture;
-            ZipCode = _student.ZipCode;
-            Landline = _student.Landline;
-            CellPhone = _student.CellPhone;
+            ZipCode = _student.ZipCode.ToString();
+            Landline = _student.Landline.ToString();
+            CellPhone = _student.CellPhone.ToString();
             Email = _student.Email;
-            Rg = _student.Rg;
-            Cpf = _student.Cpf;
-            RgResponsible = _student.RgResponsible;
-            CpfResponsible = _student.CpfResponsible;
+            Rg = _student.Rg.ToString();
+            Cpf = _student.Cpf.ToString();
+            RgResponsible = _student.RgResponsible.ToString();
+            CpfResponsible = _student.CpfResponsible.ToString();
             IsDeactivated = _student.IsDeactivated;
 
             WindowTitle = "Atualizar informações do aluno";

@@ -27,7 +27,7 @@
         <TextBox x:Name="inputUsername" Grid.Column="1" Grid.Row="1"
                  KeyDown="ConfirmKeyDown" BorderThickness="1 0 1 1"
                  TextChanged="OnInputTextChange" IsEnabled="{Binding Path=IsControlsEnabled,
-                 UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=UsernameText,
+                 UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=Username,
                  UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
         <Label Content="Senha" Grid.Row="2" Style="{StaticResource SmallLabel}"
                BorderThickness="1 0 0 1"/>

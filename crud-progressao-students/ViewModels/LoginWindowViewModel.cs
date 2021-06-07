@@ -9,7 +9,7 @@ namespace crud_progressao_students.ViewModels {
         private const string VERSION = "2.92";
 
         internal Action CloseWindow, SetFocusOnUsernameInput;
-        public string PasswordText { get; set; }
+        public string Password { get; set; }
 
         #region UI Bindings
         public bool IsConfirmButtonEnabled {
@@ -19,11 +19,11 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(IsConfirmButtonEnabled));
             }
         }
-        public string UsernameText {
+        public string Username {
             get => _username;
             set {
                 _username = value;
-                OnPropertyChange(nameof(UsernameText));
+                OnPropertyChange(nameof(Username));
             }
         }
 
@@ -38,13 +38,13 @@ namespace crud_progressao_students.ViewModels {
         private async Task LogInAsync() {
             EnableControls(false);
             SetFeedbackContent("Logando...");
-            string query = $"username={UsernameText}&password={PasswordText}&version={VERSION}";
+            string query = $"username={Username}&password={Password}&version={VERSION}";
             string url = "login";
             dynamic result = await ServerApi.GetAsync(url, query);
 
             if (result != null) {
-                ServerApi.SetHeader("username", UsernameText);
-                ServerApi.SetHeader("password", PasswordText);
+                ServerApi.SetHeader("username", Username);
+                ServerApi.SetHeader("password", Password);
 
                 if ((bool)result.privilege) ServerApi.SetHeader("privilege", "true");
 
@@ -59,7 +59,7 @@ namespace crud_progressao_students.ViewModels {
         }
 
         internal void CheckText() {
-            if (string.IsNullOrEmpty(UsernameText) || string.IsNullOrEmpty(PasswordText)) {
+            if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password)) {
                 IsConfirmButtonEnabled = false;
                 return;
             }

@@ -138,8 +138,7 @@
                      IsEnabled="{Binding Path=IsControlsEnabled,
                      UpdateSourceTrigger=PropertyChanged}"
                      Text="{Binding Path=Installment,
-                     UpdateSourceTrigger=PropertyChanged,
-                     Mode=TwoWay}"/>
+                     UpdateSourceTrigger=PropertyChanged}"/>
             <ComboBox Grid.Row="3" Grid.Column="2" BorderThickness="0 1"
                       SelectionChanged="OnComboBoxSelectionChange"
                       Template="{StaticResource ComboBoxTemplate}"
