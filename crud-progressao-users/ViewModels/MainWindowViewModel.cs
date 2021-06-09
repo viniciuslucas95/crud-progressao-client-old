@@ -1,10 +1,10 @@
-﻿using crud_progressao_library.Scripts;
+﻿using crud_progressao_library.Constants;
+using crud_progressao_library.Scripts;
 using crud_progressao_library.Services;
 using crud_progressao_library.ViewModels;
 using crud_progressao_users.Models;
 using crud_progressao_users.Scripts;
 using crud_progressao_users.Views.Windows;
-using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -29,6 +29,8 @@ namespace crud_progressao_users.ViewModels {
 
         public MainWindowViewModel(DataGrid dataGrid) {
             DataGrid = dataGrid;
+            ServerApi.SetHeader("appVersion", $"{Program.VERSION_HASH}");
+            ServerApi.SetHeader("userRouter", $"{Program.USER_ROUTER}");
 
             _ = GetUsers();
         }

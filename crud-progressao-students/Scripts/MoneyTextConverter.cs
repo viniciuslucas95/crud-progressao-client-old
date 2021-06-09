@@ -1,5 +1,5 @@
 ﻿using System;
-using crud_progressao_students.DataTypes;
+using crud_progressao_library.DataTypes;
 
 namespace crud_progressao_students.Scripts {
     internal static class MoneyTextConverter {

@@ -1,5 +1,4 @@
-﻿using crud_progressao_students.DataTypes;
-using crud_progressao_students.Models;
+﻿using crud_progressao_students.Models;
 using crud_progressao_library.DataTypes;
 using System.Collections.Generic;
 

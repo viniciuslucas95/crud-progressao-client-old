@@ -7,7 +7,6 @@ namespace crud_progressao_users.Scripts {
             return new User() {
                 Id = data._id,
                 Username = data.username,
-                Password = data.password,
                 Privilege = data.privilege
             };
         }

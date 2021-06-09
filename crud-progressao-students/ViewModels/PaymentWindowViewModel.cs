@@ -1,9 +1,8 @@
 ﻿using crud_progressao_library.Scripts;
 using crud_progressao_library.Services;
 using crud_progressao_library.ViewModels;
-using crud_progressao_students.DataTypes;
+using crud_progressao_library.DataTypes;
 using crud_progressao_students.Models;
-using crud_progressao_students.Scripts;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

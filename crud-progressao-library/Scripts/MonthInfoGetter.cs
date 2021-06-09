@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace crud_progressao_students.Scripts {
-    internal static class MonthInfoGetter {
-        internal static string GetMonthName(int month) {
+namespace crud_progressao_library.Scripts {
+    public static class MonthInfoGetter {
+        public static string GetMonthName(int month) {
             return month switch {
                 1 => "Janeiro",
                 2 => "Fevereiro",
@@ -20,14 +20,14 @@ namespace crud_progressao_students.Scripts {
             };
         }
 
-        internal static DateTime GetPreviousMonth(DateTime dateTime) {
+        public static DateTime GetPreviousMonth(DateTime dateTime) {
             if (dateTime.Month == 1)
                 return new DateTime(dateTime.Year - 1, 12, 1);
 
             return new DateTime(dateTime.Year, dateTime.Month - 1, 1);
         }
 
-        internal static DateTime GetNextMonth(DateTime dateTime) {
+        public static DateTime GetNextMonth(DateTime dateTime) {
             if (dateTime.Month == 12)
                 return new DateTime(dateTime.Year + 1, 1, 1);
 

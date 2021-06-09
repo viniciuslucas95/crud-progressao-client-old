@@ -53,5 +53,10 @@ namespace crud_progressao_users.Views.Windows {
         private void OnInputTextChange(object sender, TextChangedEventArgs e) {
             _dataContext.CheckText();
         }
+
+        private void OnPasswordChanged(object sender, RoutedEventArgs e) {
+            _dataContext.SetPasswordCommand(inputPassword.Password);
+            _dataContext.CheckText();
+        }
     }
 }

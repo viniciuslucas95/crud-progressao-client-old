@@ -1,14 +1,11 @@
-﻿using crud_progressao_students.Scripts;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace crud_progressao_students.Converters {
-    internal class DateTimeWithMonthAndYearOnlyConverter : IValueConverter {
+namespace crud_progressao_library.Converters {
+    public class YesNoBooleanToTextConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            DateTime date = (DateTime)value;
-
-            return $"{MonthInfoGetter.GetMonthName(date.Month)} de {date.Year}";
+            return (bool)value ? "Sim" : "Não";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

@@ -21,7 +21,6 @@ namespace crud_progressao_students.Views.Windows {
         }
 
         private void OnInputTextChange(object sender, RoutedEventArgs e) {
-            _dataContext.Password = inputPassword.Password;
             _dataContext.CheckText();
         }
 
@@ -33,6 +32,11 @@ namespace crud_progressao_students.Views.Windows {
             if (e.Key != Key.Return) return;
 
             _dataContext.ConfirmCommand();
+        }
+
+        private void OnPasswordChanged(object sender, RoutedEventArgs e) {
+            _dataContext.SetPasswordCommand(inputPassword.Password);
+            _dataContext.CheckText();
         }
     }
 }

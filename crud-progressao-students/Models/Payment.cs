@@ -1,4 +1,4 @@
-﻿using crud_progressao_students.DataTypes;
+﻿using crud_progressao_library.DataTypes;
 using crud_progressao_students.Scripts;
 using System;
 

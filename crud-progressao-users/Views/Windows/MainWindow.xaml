@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:converters="clr-namespace:crud_progressao_users.Converters"
+        xmlns:converters="clr-namespace:crud_progressao_library.Converters;assembly=crud-progressao-library"
         xmlns:viewmodels="clr-namespace:crud_progressao_users.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
@@ -30,13 +30,10 @@
                     <DataGridTextColumn Header="Usuário"
                                     Binding="{Binding Username}" Width="*"
                                     MinWidth="50"/>
-                    <DataGridTextColumn Header="Senha"
-                                    Binding="{Binding Password}" Width="*"
-                                    MinWidth="50"/>
                     <DataGridTextColumn Header="Privilégio"
                                     Binding="{Binding Privilege,
                                     Converter={StaticResource YesNoBooleanToTextConverter}}"
-                                    Width="*" MinWidth="50"/>
+                                    Width="0.5*" MinWidth="50"/>
                 </DataGrid.Columns>
                 <DataGrid.RowDetailsTemplate>
                     <DataTemplate>

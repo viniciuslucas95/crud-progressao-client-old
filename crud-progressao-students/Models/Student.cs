@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Media.Imaging;
-using crud_progressao_students.DataTypes;
+using crud_progressao_library.DataTypes;
 using crud_progressao_students.Scripts;
 
 namespace crud_progressao_students.Models {

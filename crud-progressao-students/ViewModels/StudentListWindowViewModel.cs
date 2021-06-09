@@ -144,7 +144,6 @@ namespace crud_progressao_students.ViewModels {
         public StudentListWindowViewModel(DataGrid dataGrid) {
             Singleton = this;
             DataGrid = dataGrid;
-            HasPrivilege = ServerApi.HasPrivilege;
         }
 
         private async Task SearchAsync() {

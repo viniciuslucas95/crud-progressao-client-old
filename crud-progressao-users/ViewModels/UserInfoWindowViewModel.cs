@@ -30,32 +30,11 @@ namespace crud_progressao_users.ViewModels {
                 OnPropertyChange(nameof(IsConfirmButtonEnabled));
             }
         }
-        public string UsernameText {
+        public string Username {
             get => _username;
             set {
                 _username = value;
-                OnPropertyChange(nameof(UsernameText));
-            }
-        }
-        public string PasswordText {
-            get => _password;
-            set {
-                _password = value;
-                OnPropertyChange(nameof(PasswordText));
-            }
-        }
-        public bool HasPrivilege {
-            get => _hasPrivilege;
-            set {
-                _hasPrivilege = value;
-                OnPropertyChange(nameof(HasPrivilege));
-            }
-        }
-        public string WindowTitle {
-            get => _windowTitle;
-            private set {
-                _windowTitle = value;
-                OnPropertyChange(nameof(WindowTitle));
+                OnPropertyChange(nameof(Username));
             }
         }
         public string ConfirmButtonText {
@@ -67,13 +46,16 @@ namespace crud_progressao_users.ViewModels {
         }
 
         private Visibility _deleteButtonVisibility = Visibility.Collapsed;
-        private string _windowTitle = "Registrar Usuário", _confirmButtonText = "Registrar", _username, _password;
-        private bool _hasPrivilege, _isConfirmButtonEnabled;
+        private string _confirmButtonText = "Registrar", _username;
+        private bool _isConfirmButtonEnabled;
         #endregion
+
+        private string _password;
 
         public UserInfoWindowViewModel(MainWindowViewModel mainWindowViewModel, User user = new User()) {
             _mainWindowViewModel = mainWindowViewModel;
             _user = user;
+            WindowTitle = "Criar usuário";
 
             if (!string.IsNullOrEmpty(_user.Id))
                 SetExistentValues();
@@ -84,7 +66,7 @@ namespace crud_progressao_users.ViewModels {
 
             if (string.IsNullOrEmpty(_user.Id)) { // Register
                 SetFeedbackContent("Registrando novo usuário...");
-                string id = await ServerApi.RegisterAsync(URL, _user.Id, UpdatedUser());
+                string id = await ServerApi.RegisterAsync(URL, _user.Id, GetUserDTO());
 
                 if (!string.IsNullOrEmpty(id)) {
                     _mainWindowViewModel.SetFeedbackContent("Registrando novo usuário...");
@@ -97,7 +79,7 @@ namespace crud_progressao_users.ViewModels {
                 SetFeedbackContent("Erro ao tentar registrar o usuário!", true);
             } else { // Update
                 SetFeedbackContent("Atualizando informações do usuário...");
-                bool result = await ServerApi.UpdateAsync(URL, _user.Id, UpdatedUser());
+                bool result = await ServerApi.UpdateAsync(URL, _user.Id, GetUserDTO());
 
                 if (result) {
                     _mainWindowViewModel.SetFeedbackContent("Informações do aluno atualizada!");
@@ -130,7 +112,7 @@ namespace crud_progressao_users.ViewModels {
         }
 
         internal void CheckText() {
-            if (string.IsNullOrEmpty(UsernameText) || string.IsNullOrEmpty(PasswordText)) {
+            if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(_password)) {
                 IsConfirmButtonEnabled = false;
                 return;
             }
@@ -152,24 +134,34 @@ namespace crud_progressao_users.ViewModels {
             _ = DeleteAsync();
         }
 
+        internal void SetPasswordCommand(string value) => _password = value;
+
         protected override void EnableControls(bool value) {
             base.EnableControls(value);
 
             IsConfirmButtonEnabled = value;
         }
 
-        private User UpdatedUser() {
+        private object GetUserDTO() {
+            return new {
+                _user.Id,
+                Username,
+                Password = _password,
+                Privilege = HasPrivilege
+            };
+        }
+
+        private User GetUser() {
             return new User() {
                 Id = _user.Id,
-                Username = UsernameText,
-                Password = PasswordText,
+                Username = Username,
                 Privilege = HasPrivilege
             };
         }
 
         private void InsertUser() {
-            _user = UpdatedUser();
-            _mainWindowViewModel.Users.Insert(0, _user);
+            _user = GetUser();
+           _mainWindowViewModel.Users.Insert(0, _user);
             DataGridController.SelectAndScrollToItemInDataGrid(_mainWindowViewModel.DataGrid, _user);
         }
 
@@ -177,8 +169,7 @@ namespace crud_progressao_users.ViewModels {
             DeleteButtonVisibility = Visibility.Visible;
             WindowTitle = "Atualizar usuário";
             ConfirmButtonText = "Atualizar";
-            UsernameText = _user.Username;
-            PasswordText = _user.Password;
+            Username = _user.Username;
             HasPrivilege = _user.Privilege;
         }
     }

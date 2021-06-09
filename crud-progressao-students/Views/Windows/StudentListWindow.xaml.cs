@@ -8,10 +8,11 @@ namespace crud_progressao_students.Views.Windows {
 
         private readonly StudentListWindowViewModel _dataContext;
 
-        public StudentListWindow() {
+        public StudentListWindow(bool hasPrivilege) {
             InitializeComponent();
             _dataContext = new(dataGridStudents) {
-                SetFocusOnFirstNameFilter = () => inputFirstName.Focus()
+                SetFocusOnFirstNameFilter = () => inputFirstName.Focus(),
+                HasPrivilege = hasPrivilege
             };
             DataContext = _dataContext;
         }

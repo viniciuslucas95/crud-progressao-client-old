@@ -33,7 +33,8 @@
                BorderThickness="1 0 0 1"/>
         <PasswordBox x:Name="inputPassword" Grid.Row="2" Grid.Column="1"
                      KeyDown="ConfirmKeyDown" BorderThickness="1 0 1 1"
-                     PasswordChanged="OnInputTextChange" IsEnabled="{Binding Path=IsControlsEnabled,
+                     PasswordChanged="OnPasswordChanged"
+                     IsEnabled="{Binding Path=IsControlsEnabled,
                      UpdateSourceTrigger=PropertyChanged}"/>
         <Button x:Name="buttonLogin" Grid.Row="3" Grid.ColumnSpan="2"
                 Content="Logar" Click="ConfirmClick" IsEnabled="{Binding Path=IsConfirmButtonEnabled,

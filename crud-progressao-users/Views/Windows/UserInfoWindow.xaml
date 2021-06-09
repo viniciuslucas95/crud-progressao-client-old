@@ -6,8 +6,9 @@
         xmlns:viewmodels="clr-namespace:crud_progressao_users.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:UserInfoWindowViewModel}"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-        Style="{StaticResource WindowStyle}" Title="{Binding Path=WindowTitle}"
-        SizeToContent="Height" MinWidth="300" Width="300" d:Title="Registrar usuário">
+        Style="{StaticResource WindowStyle}" Title="{Binding Path=WindowTitle,
+        UpdateSourceTrigger=PropertyChanged}" SizeToContent="Height"
+        MinWidth="300" Width="300" d:Title="Registrar usuário">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -30,16 +31,14 @@
                  KeyDown="ConfirmKeyDown" TextChanged="OnInputTextChange"
                  IsEnabled="{Binding Path=IsControlsEnabled,
                  UpdateSourceTrigger=PropertyChanged}"
-                 Text="{Binding Path=UsernameText, UpdateSourceTrigger=PropertyChanged,
+                 Text="{Binding Path=Username, UpdateSourceTrigger=PropertyChanged,
                  Mode=TwoWay}"/>
         <Label Grid.Row="2" Content="Senha" BorderThickness="1 0 1 0"/>
-        <TextBox x:Name="inputPassword" Grid.Row="2" Grid.Column="1"
-                 KeyDown="ConfirmKeyDown" TextChanged="OnInputTextChange"
+        <PasswordBox x:Name="inputPassword" Grid.Row="2" Grid.Column="1"
+                 KeyDown="ConfirmKeyDown" PasswordChanged="OnPasswordChanged"
                  Grid.ColumnSpan="2" BorderThickness="0 0 1 0"
                  IsEnabled="{Binding Path=IsControlsEnabled,
-                 UpdateSourceTrigger=PropertyChanged}"
-                 Text="{Binding Path=PasswordText, UpdateSourceTrigger=PropertyChanged,
-                 Mode=TwoWay}"/>
+                 UpdateSourceTrigger=PropertyChanged}"/>
         <Rectangle Grid.Row="3" Grid.ColumnSpan="3" Fill="White"
                    Stroke="#FF787878" StrokeThickness="1"/>
         <CheckBox x:Name="checkBoxPrivilege" Grid.Row="3" Grid.ColumnSpan="3"

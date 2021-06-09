@@ -4,18 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:crud_progressao_students.ViewModels"
-        xmlns:studentsConverters="clr-namespace:crud_progressao_students.Converters"
-        xmlns:libraryConverters="clr-namespace:crud_progressao_library.Converters;assembly=crud-progressao-library"
+        xmlns:converters="clr-namespace:crud_progressao_library.Converters;assembly=crud-progressao-library"
         d:DataContext="{d:DesignInstance Type=viewmodels:PaymentListWindowViewModel}"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" MinWidth="500"
         Style="{StaticResource WindowStyle}" Width="750" Height="460" MinHeight="460"
         Title="{Binding Path=WindowTitle}">
     <Window.Resources>
-        <studentsConverters:DateTimeWithMonthAndYearOnlyConverter x:Key="DateTimeWithMonthAndYearOnlyConverter"/>
-        <libraryConverters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <libraryConverters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <libraryConverters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
-        <libraryConverters:BooleanToVisibilityCollapsedConverter x:Key="BooleanToVisibilityCollapsedConverter" />
+        <converters:DateTimeWithMonthAndYearOnlyConverter x:Key="DateTimeWithMonthAndYearOnlyConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
+        <converters:BooleanToVisibilityCollapsedConverter x:Key="BooleanToVisibilityCollapsedConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>

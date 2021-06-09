@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace crud_progressao_library.Services {
     public static class ServerApi {
-        public static bool HasPrivilege { get { return _client.DefaultRequestHeaders.Contains("privilege"); } }
         public static bool IsProcessingAsyncOperation { get; private set; }
 
         private static readonly string _baseUrl = ConfigFileGetter.GetConfigFile();
