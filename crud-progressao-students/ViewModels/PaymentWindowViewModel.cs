@@ -300,29 +300,29 @@ namespace crud_progressao_students.ViewModels {
             if (!double.TryParse(Installment, out double _)) {
                 SetFeedbackContent("Valor inválido na parcela!", true);
                 return false;
-            } else if (!double.TryParse(Discount, out double _)) {
+            }
+            
+            if (!double.TryParse(Discount, out double _)) {
                 SetFeedbackContent("Valor inválido no disconto!", true);
                 return false;
-            } else if (!double.TryParse(PaidValue, out double _)) {
+            }
+            
+            if (!double.TryParse(PaidValue, out double _)) {
                 SetFeedbackContent("Valor inválido no valor pago!", true);
                 return false;
             }
 
-            string month = $"{1}/{Month}/{Year}";
-            string dueDate = $"{DueDateDay}/{DueDateMonth}/{DueDateYear}";
-            string paidDate = $"{PaidDateDay}/{PaidDateMonth}/{PaidDateYear}";
-
-            if (!DateTime.TryParse(month, out DateTime _)) {
+            if (!MonthInfoGetter.CheckIfDateExists(1, Month, Year)) {
                 SetFeedbackContent("Valor inválido na data do mês!", true);
                 return false;
             }
 
-            if (!DateTime.TryParse(dueDate, out DateTime _)) {
+            if (!MonthInfoGetter.CheckIfDateExists(DueDateDay, DueDateMonth, DueDateYear)) {
                 SetFeedbackContent("Valor inválido na data de vencimento!", true);
                 return false;
             }
 
-            if (!DateTime.TryParse(paidDate, out DateTime _)) {
+            if (!MonthInfoGetter.CheckIfDateExists(PaidDateDay, PaidDateMonth, PaidDateYear)) {
                 SetFeedbackContent("Valor inválido na data de pagamento!", true);
                 return false;
             }

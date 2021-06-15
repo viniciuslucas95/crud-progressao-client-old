@@ -257,14 +257,7 @@ namespace crud_progressao_students.ViewModels {
                 return;
             }
 
-            SetFeedbackContent("Gerando relatório...");
-
-            if (ReportGenerator.Generate(Students)) {
-                SetFeedbackContent("Relatório gerado");
-                return;
-            }
-
-            SetFeedbackContent("Não foi possível gerar o relatório!", true);
+            new ReportGeneratorWindow(new ReportGeneratorWindowViewModel(Students)).ShowDialog();
         }
 
         private void SetFeedbackTotalContent(string text, bool error = false) {

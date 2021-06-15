@@ -1,0 +1,72 @@
+﻿<Window x:Class="crud_progressao_students.Views.Windows.ReportGeneratorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:crud_progressao_students.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:ReportGeneratorWindowViewModel}"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Style="{StaticResource WindowStyle}" SizeToContent="Height" MinWidth="300" Width="300"
+        Title="Gerar Relatório">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label d:Content="Feedback" Content="{Binding Path=LabelFeedbackText,
+               UpdateSourceTrigger=PropertyChanged}" Foreground="{Binding Path=LabelFeedbackColor,
+               UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" BorderThickness="1"/>
+        <Label Grid.Row="1" Content="Data" BorderThickness="1 0 0 1"
+               Style="{StaticResource SmallLabel}"/>
+        <Border Grid.Column="1" BorderThickness="1 0 0 1" Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1.2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox FontSize="14" BorderThickness="0" Padding="8 0 4 0"
+                         TextAlignment="Center" Text="{Binding Path=Month,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="/" Grid.Column="1" Padding="0 4"
+                       BorderThickness="0" Foreground="#FF787878"
+                       FontSize="16"/>
+                <TextBox FontSize="14" Grid.Column="2" BorderThickness="0"
+                         TextAlignment="Center" Padding="4 0 8 0"
+                         Text="{Binding Path=Year,
+                         UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         IsEnabled="{Binding Path=IsControlsEnabled,
+                         UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="2" Content="Imprimir" Click="PrintClick"
+                    KeyDown="PrintKeyDown" Margin="10"
+                    IsEnabled="{Binding Path=IsControlsEnabled,
+                    UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Salvar" Click="SaveClick" Grid.Column="1"
+                    KeyDown="SaveKeyDown" Margin="10"
+                    IsEnabled="{Binding Path=IsControlsEnabled,
+                    UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Fechar" Click="CloseClick" KeyDown="CloseKeyDown"
+                    Margin="10" IsEnabled="{Binding Path=IsControlsEnabled,
+                    UpdateSourceTrigger=PropertyChanged}"/>
+        </Grid>
+    </Grid>
+</Window>
