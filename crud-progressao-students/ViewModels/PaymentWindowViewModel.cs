@@ -19,35 +19,35 @@ namespace crud_progressao_students.ViewModels {
         private Payment _payment;
 
         #region UI Bindings
-        public int Month {
+        public string Month {
             get => _month;
             set {
                 _month = value;
                 OnPropertyChange(nameof(Month));
             }
         }
-        public int Year {
+        public string Year {
             get => _year;
             set {
                 _year = value;
                 OnPropertyChange(nameof(Year));
             }
         }
-        public int DueDateDay {
+        public string DueDateDay {
             get => _dueDateDay;
             set {
                 _dueDateDay = value;
                 OnPropertyChange(nameof(DueDateDay));
             }
         }
-        public int DueDateMonth {
+        public string DueDateMonth {
             get => _dueDateMonth;
             set {
                 _dueDateMonth = value;
                 OnPropertyChange(nameof(DueDateMonth));
             }
         }
-        public int DueDateYear {
+        public string DueDateYear {
             get => _dueDateYear;
             set {
                 _dueDateYear = value;
@@ -82,21 +82,21 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(IsPaid));
             }
         }
-        public int PaidDateDay {
+        public string PaidDateDay {
             get => _paidDateDay;
             set {
                 _paidDateDay = value;
                 OnPropertyChange(nameof(PaidDateDay));
             }
         }
-        public int PaidDateMonth {
+        public string PaidDateMonth {
             get => _paidDateMonth;
             set {
                 _paidDateMonth = value;
                 OnPropertyChange(nameof(PaidDateMonth));
             }
         }
-        public int PaidDateYear {
+        public string PaidDateYear {
             get => _paidDateYear;
             set {
                 _paidDateYear = value;
@@ -160,9 +160,9 @@ namespace crud_progressao_students.ViewModels {
             }
         }
 
-        private int _month, _year, _dueDateDay, _dueDateMonth, _dueDateYear, _paidDateDay, _paidDateMonth, _paidDateYear;
         private bool _isPaid, _isPaymentInputsEnabled, _canDelete, _canEdit = true, _isCancelButtonEnabled = true;
-        private string _note, _confirmButtonText, _installment, _discount, _paidValue, _total;
+        private string _note, _confirmButtonText, _installment, _discount, _paidValue, _total, _month, _year, _dueDateDay, _dueDateMonth,
+            _dueDateYear, _paidDateDay, _paidDateMonth, _paidDateYear;
         private DiscountType _discountType;
         #endregion
 
@@ -184,6 +184,62 @@ namespace crud_progressao_students.ViewModels {
         private double PaidValueDouble {
             get {
                 _ = StringConverter.TransformIntoDouble(PaidValue, out double result);
+
+                return result;
+            }
+        }
+        private int MonthInt {
+            get {
+                _ = StringConverter.TransformIntoInt(Month, out int result);
+
+                return result;
+            }
+        }
+        private int YearInt {
+            get {
+                _ = StringConverter.TransformIntoInt(Year, out int result);
+
+                return result;
+            }
+        }
+        private int DueDateDayInt {
+            get {
+                _ = StringConverter.TransformIntoInt(DueDateDay, out int result);
+
+                return result;
+            }
+        }
+        private int DueDateMonthInt {
+            get {
+                _ = StringConverter.TransformIntoInt(DueDateMonth, out int result);
+
+                return result;
+            }
+        }
+        private int DueDateYearInt {
+            get {
+                _ = StringConverter.TransformIntoInt(DueDateYear, out int result);
+
+                return result;
+            }
+        }
+        private int PaidDateDayInt {
+            get {
+                _ = StringConverter.TransformIntoInt(PaidDateDay, out int result);
+
+                return result;
+            }
+        }
+        private int PaidDateMonthInt {
+            get {
+                _ = StringConverter.TransformIntoInt(PaidDateMonth, out int result);
+
+                return result;
+            }
+        }
+        private int PaidDateYearInt {
+            get {
+                _ = StringConverter.TransformIntoInt(PaidDateYear, out int result);
 
                 return result;
             }
@@ -312,17 +368,17 @@ namespace crud_progressao_students.ViewModels {
                 return false;
             }
 
-            if (!MonthInfoGetter.CheckIfDateExists(1, Month, Year)) {
+            if (!MonthInfoGetter.CheckIfDateExists(1, MonthInt, YearInt)) {
                 SetFeedbackContent("Valor inválido na data do mês!", true);
                 return false;
             }
 
-            if (!MonthInfoGetter.CheckIfDateExists(DueDateDay, DueDateMonth, DueDateYear)) {
+            if (!MonthInfoGetter.CheckIfDateExists(DueDateDayInt, DueDateMonthInt, DueDateYearInt)) {
                 SetFeedbackContent("Valor inválido na data de vencimento!", true);
                 return false;
             }
 
-            if (!MonthInfoGetter.CheckIfDateExists(PaidDateDay, PaidDateMonth, PaidDateYear)) {
+            if (!MonthInfoGetter.CheckIfDateExists(PaidDateDayInt, PaidDateMonthInt, PaidDateYearInt)) {
                 SetFeedbackContent("Valor inválido na data de pagamento!", true);
                 return false;
             }
@@ -333,9 +389,9 @@ namespace crud_progressao_students.ViewModels {
         private Payment GetUpdatedPaymentValues() {
             return new Payment() {
                 Id = _payment.Id,
-                Month = new int[2] { Month, Year },
-                DueDate = new int[3] { DueDateDay, DueDateMonth, DueDateYear },
-                PaidDate = new int[3] { PaidDateDay, PaidDateMonth, PaidDateYear },
+                Month = new int[2] { MonthInt, YearInt },
+                DueDate = new int[3] { DueDateDayInt, DueDateMonthInt, DueDateYearInt },
+                PaidDate = new int[3] { PaidDateDayInt, PaidDateMonthInt, PaidDateYearInt },
                 Installment = InstallmentDouble,
                 Discount = DiscountDouble,
                 DiscountType = DiscountType,
@@ -389,14 +445,14 @@ namespace crud_progressao_students.ViewModels {
         private void SetExistentValues() {
             WindowTitle = "Editar pagamento";
             ConfirmButtonText = "Editar";
-            Month = _payment.Month[0];
-            Year = _payment.Month[1];
-            DueDateDay = _payment.DueDate[0];
-            DueDateMonth = _payment.DueDate[1];
-            DueDateYear = _payment.DueDate[2];
-            PaidDateDay = _payment.IsPaid ? _payment.PaidDate[0] : DateTime.Now.Day;
-            PaidDateMonth = _payment.IsPaid ? _payment.PaidDate[1] : DateTime.Now.Month;
-            PaidDateYear = _payment.IsPaid ? _payment.PaidDate[2] : DateTime.Now.Year;
+            Month = _payment.Month[0].ToString();
+            Year = _payment.Month[1].ToString();
+            DueDateDay = _payment.DueDate[0].ToString();
+            DueDateMonth = _payment.DueDate[1].ToString();
+            DueDateYear = _payment.DueDate[2].ToString();
+            PaidDateDay = _payment.IsPaid ? _payment.PaidDate[0].ToString() : DateTime.Now.Day.ToString();
+            PaidDateMonth = _payment.IsPaid ? _payment.PaidDate[1].ToString() : DateTime.Now.Month.ToString();
+            PaidDateYear = _payment.IsPaid ? _payment.PaidDate[2].ToString() : DateTime.Now.Year.ToString();
             Installment = _payment.Installment.ToString();
             Discount = _payment.Discount.ToString();
             DiscountType = _payment.DiscountType;
@@ -430,18 +486,18 @@ namespace crud_progressao_students.ViewModels {
             }
 
             Student student = _paymentListViewModel.Student;
-            Month = nextAvaliableMonth.Month;
-            Year = nextAvaliableMonth.Year;
-            DueDateDay = student.DueDate;
-            DueDateMonth = nextAvaliableMonth.Month;
-            DueDateYear = nextAvaliableMonth.Year;
+            Month = nextAvaliableMonth.Month.ToString();
+            Year = nextAvaliableMonth.Year.ToString();
+            DueDateDay = student.DueDate.ToString();
+            DueDateMonth = nextAvaliableMonth.Month.ToString();
+            DueDateYear = nextAvaliableMonth.Year.ToString();
             Installment = student.Installment.ToString();
             Discount = student.Discount.ToString();
             DiscountType = student.DiscountType;
             Total = student.Total.ToString();
-            PaidDateDay = DateTime.Now.Day;
-            PaidDateMonth = DateTime.Now.Month;
-            PaidDateYear = DateTime.Now.Year;
+            PaidDateDay = DateTime.Now.Day.ToString();
+            PaidDateMonth = DateTime.Now.Month.ToString();
+            PaidDateYear = DateTime.Now.Year.ToString();
             PaidValue = student.Total.ToString();
         }
     }

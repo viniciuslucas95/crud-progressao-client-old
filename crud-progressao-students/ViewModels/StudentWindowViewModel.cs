@@ -78,7 +78,7 @@ namespace crud_progressao_students.ViewModels {
                 OnPropertyChange(nameof(DiscountType));
             }
         }
-        public int DueDate {
+        public string DueDate {
             get => _dueDate;
             set {
                 _dueDate = value;
@@ -207,9 +207,8 @@ namespace crud_progressao_students.ViewModels {
 
         private string _firstName, _lastName, _className, _responsible, _address, _note, _email, _zipCode = "0", _landline = "0", _cellPhone = "0", _rg = "0", _cpf = "0",
             _rgResponsible = "0", _cpfResponsible = "0", _installment = "0", _discount = "0", _total = "0", _confirmButtonText = "Registrar",
-            _pictureButtonText = "Adicionar foto";
+            _pictureButtonText = "Adicionar foto", _dueDate;
         private DiscountType _discountType;
-        private int _dueDate;
         private bool _isDeactivated, _canDelete, _isCancelButtonEnabled = true, _canEdit = true;
         private BitmapImage _picture;
         #endregion
@@ -274,6 +273,13 @@ namespace crud_progressao_students.ViewModels {
         private long CpfResponsibleLong {
             get {
                 _ = StringConverter.TransformIntoLong(CpfResponsible, out long result);
+
+                return result;
+            }
+        }
+        private int DueDateInt {
+            get {
+                _ = StringConverter.TransformIntoInt(DueDate, out int result);
 
                 return result;
             }
@@ -392,7 +398,7 @@ namespace crud_progressao_students.ViewModels {
             } else if (!double.TryParse(Discount, out double _)) {
                 SetFeedbackContent("Valor inválido no disconto!", true);
                 return false;
-            } else if (DueDate is < 1 or > 31) {
+            } else if (DueDateInt is < 1 or > 31) {
                 SetFeedbackContent("O vencimento tem que estar entre o dia 1 e 31!", true);
                 return false;
             }
@@ -411,7 +417,7 @@ namespace crud_progressao_students.ViewModels {
                 Installment = InstallmentDouble,
                 Discount = DiscountDouble,
                 DiscountType = DiscountType,
-                DueDate = DueDate,
+                DueDate = DueDateInt,
                 Note = Note,
                 Picture = Picture,
                 Payments = _student.Payments ?? new List<Payment>(),
@@ -447,7 +453,7 @@ namespace crud_progressao_students.ViewModels {
             Installment = _student.Installment.ToString();
             Discount = _student.Discount.ToString();
             DiscountType = _student.DiscountType;
-            DueDate = _student.DueDate;
+            DueDate = _student.DueDate.ToString();
             Note = _student.Note;
             Picture = _student.Picture;
             ZipCode = _student.ZipCode.ToString();

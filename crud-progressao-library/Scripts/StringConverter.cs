@@ -14,5 +14,9 @@ namespace crud_progressao_library.Scripts {
         public static bool TransformIntoDouble(string value, out double result) {
             return double.TryParse(value, NumberStyles.Currency, CultureInfo.CreateSpecificCulture("pt-BR"), out result);
         }
+
+        public static bool TransformIntoInt(string value, out int result) {
+            return int.TryParse(value, NumberStyles.Currency, CultureInfo.CreateSpecificCulture("pt-BR"), out result);
+        }
     }
 }
